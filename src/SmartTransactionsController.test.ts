@@ -15,6 +15,11 @@ describe('SmartTransactionsController', () => {
     });
   });
 
+  afterEach(async () => {
+    jest.clearAllMocks();
+    await smartTransactionsController.stop();
+  });
+
   it('should initialize with default config', () => {
     expect(smartTransactionsController.config).toStrictEqual({
       interval: DEFAULT_INTERVAL,
@@ -40,7 +45,6 @@ describe('SmartTransactionsController', () => {
       const pollSpy = jest.spyOn(smartTransactionsController, 'poll');
       networkListener({ provider: { chainId: '2' } } as NetworkState);
       expect(pollSpy).toHaveBeenCalled();
-      pollSpy.mockClear();
     });
   });
 
@@ -68,8 +72,6 @@ describe('SmartTransactionsController', () => {
       await smartTransactionsController.stop();
       jest.clearAllTimers();
       jest.useRealTimers();
-      pollSpy.mockClear();
-      updateSmartTransactionsSpy.mockClear();
     });
 
     it('should not updateSmartTransactions on unsupported networks', async () => {
@@ -80,7 +82,6 @@ describe('SmartTransactionsController', () => {
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
       networkListener({ provider: { chainId: '56' } } as NetworkState);
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
-      updateSmartTransactionsSpy.mockClear();
     });
   });
 
