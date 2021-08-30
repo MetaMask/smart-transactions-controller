@@ -19,7 +19,7 @@ export interface SmartTransactionsState extends BaseState {
   userOptIn: boolean | undefined;
 }
 
-export default class SmartTrackingController extends BaseController<
+export default class SmartTransactionsController extends BaseController<
   SmartTransactionsConfig,
   SmartTransactionsState
 > {
