@@ -23,6 +23,9 @@
     "build:clean": "rimraf dist && yarn build",
     "build": "tsc --project ."
   },
+  "dependencies": {
+    "@metamask/controllers": "^15.0.0"
+  },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^1.0.5",
     "@metamask/auto-changelog": "^2.3.0",
@@ -60,8 +63,5 @@
       "secp256k1": false,
       "core-js": false
     }
-  },
-  "dependencies": {
-    "@metamask/controllers": "^15.0.0"
   }
 }
