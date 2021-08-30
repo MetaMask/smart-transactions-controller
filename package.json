@@ -1,7 +1,7 @@
 {
-  "name": "@metamask/module-template",
+  "name": "@metamask/smart-transactions-controller",
   "version": "0.0.0",
-  "description": "The MetaMask Node module template.",
+  "description": "MetaMask controller for Smart Transactions.",
   "repository": {
     "type": "git",
     "url": "https://github.com/MetaMask/metamask-module-template.git"
@@ -55,7 +55,13 @@
   },
   "lavamoat": {
     "allowScripts": {
-      "@lavamoat/preinstall-always-fail": false
+      "@lavamoat/preinstall-always-fail": false,
+      "keccak": false,
+      "secp256k1": false,
+      "core-js": false
     }
+  },
+  "dependencies": {
+    "@metamask/controllers": "^15.0.0"
   }
 }
