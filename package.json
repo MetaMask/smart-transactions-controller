@@ -24,7 +24,8 @@
     "build": "tsc --project ."
   },
   "dependencies": {
-    "@metamask/controllers": "^15.0.0"
+    "@metamask/controllers": "^15.0.0",
+    "@types/node": "^16.7.8"
   },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^1.0.5",
