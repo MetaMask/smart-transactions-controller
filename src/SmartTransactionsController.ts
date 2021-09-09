@@ -58,7 +58,7 @@ export default class SmartTransactionsController extends BaseController<
       this.update({
         smartTransactions: {
           ...this.state.smartTransactions,
-          [chainId]: this.state.smartTransactions?.[chainId].map(
+          [chainId]: this.state.smartTransactions[chainId].map(
             (item, index) => {
               return index === currentIndex ? smartTransaction : item;
             },
