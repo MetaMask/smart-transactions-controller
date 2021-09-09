@@ -49,8 +49,8 @@ export default class SmartTransactionsController extends BaseController<
         smartTransactions: {
           ...this.state.smartTransactions,
           [chainId]: [
-            smartTransaction,
             ...this.state.smartTransactions?.[chainId],
+            smartTransaction,
           ],
         },
       });
@@ -58,11 +58,11 @@ export default class SmartTransactionsController extends BaseController<
       this.update({
         smartTransactions: {
           ...this.state.smartTransactions,
-          [chainId]: [
-            ...this.state.smartTransactions?.[chainId]?.slice(0, currentIndex),
-            smartTransaction,
-            ...this.state.smartTransactions?.[chainId]?.slice(currentIndex + 1),
-          ],
+          [chainId]: this.state.smartTransactions?.[chainId].map(
+            (item, index) => {
+              return index === currentIndex ? smartTransaction : item;
+            },
+          ),
         },
       });
     }
