@@ -23,7 +23,7 @@ describe('SmartTransactionsController', () => {
   it('initializes with default config', () => {
     expect(smartTransactionsController.config).toStrictEqual({
       interval: DEFAULT_INTERVAL,
-      allowedNetworks: ['1'],
+      supportedChainIds: ['1'],
       chainId: '',
       clientId: 'default',
     });
