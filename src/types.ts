@@ -43,4 +43,4 @@ export type UnsignedTransaction = any;
 export type SignedTransaction = any;
 
 // TODO
-export type SignedCancellation = any;
+export type SignedCanceledTransaction = any;

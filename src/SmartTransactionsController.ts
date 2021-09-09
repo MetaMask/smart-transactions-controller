@@ -9,7 +9,7 @@ import {
   APIType,
   SmartTransaction,
   SignedTransaction,
-  SignedCancellation,
+  SignedCanceledTransaction,
   UnsignedTransaction,
 } from './types';
 import { getAPIRequestURL, isSmartTransactionPending } from './utils';
@@ -206,10 +206,10 @@ export default class SmartTransactionsController extends BaseController<
   // * transaction controller external transactions list
   async submitSignedTransactions({
     signedTransactions,
-    signedCancellations,
+    signedCanceledTransactions,
   }: {
     signedTransactions: SignedTransaction[];
-    signedCancellations: SignedCancellation[];
+    signedCanceledTransactions: SignedCanceledTransaction[];
   }) {
     const { chainId } = this.config;
     const data = await this.fetch(
@@ -218,7 +218,8 @@ export default class SmartTransactionsController extends BaseController<
         method: 'POST',
         body: JSON.stringify({
           signedTransactions,
-          signedCancellations,
+          // TODO: Check if canceled transactions can be part of signedTransactions.
+          signedCanceledTransactions,
         }),
       },
     );
