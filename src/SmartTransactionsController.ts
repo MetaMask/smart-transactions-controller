@@ -113,6 +113,14 @@ export default class SmartTransactionsController extends BaseController<
     onNetworkStateChange(({ provider }) => {
       const { chainId } = provider;
       this.configure({ chainId });
+      if (this.config.supportedChainIds.includes(chainId)) {
+        this.update({
+          smartTransactions: {
+            ...this.state.smartTransactions,
+            [chainId]: this.state.smartTransactions[chainId] ?? [],
+          },
+        });
+      }
       this.poll();
     });
 
