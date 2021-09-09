@@ -143,10 +143,9 @@ export default class SmartTransactionsController extends BaseController<
   async updateSmartTransactions() {
     const { smartTransactions } = this.state;
     const { chainId } = this.config;
-    const currentChainIdSmartTransactions = smartTransactions[chainId];
 
     const transactionsToUpdate: string[] = [];
-    currentChainIdSmartTransactions.forEach((smartTransaction) => {
+    smartTransactions[chainId]?.forEach((smartTransaction) => {
       if (isSmartTransactionPending(smartTransaction)) {
         transactionsToUpdate.push(smartTransaction.UUID);
       }
