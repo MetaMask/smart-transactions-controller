@@ -102,30 +102,34 @@ const createSignedCanceledTransaction = () => {
   };
 };
 
-const createPendingStatusApiResponse = () => {
-  return {
-    uuid: 'uuid1',
-    status: {
-      cancellationFeeWei: 0,
-      cancellationReason: 'not_cancelled',
-      deadlineRatio: 0.0006295545895894369,
-      minedTx: 'not_mined',
+const createPendingBatchStatusApiResponse = () => {
+  return [
+    {
+      uuid: 'uuid1',
+      status: {
+        cancellationFeeWei: 0,
+        cancellationReason: 'not_cancelled',
+        deadlineRatio: 0.0006295545895894369,
+        minedTx: 'not_mined',
+      },
     },
-  };
+  ];
 };
 
-const createSuccessStatusApiResponse = () => {
-  return {
-    uuid: 'uuid1',
-    status: {
-      cancellationFeeWei: 36777567771000,
-      cancellationReason: 'not_cancelled',
-      deadlineRatio: 0.6400288486480713,
-      minedHash:
-        '0x55ad39634ee10d417b6e190cfd3736098957e958879cffe78f1f00f4fd2654d6',
-      minedTx: 'success',
+const createSuccessBatchStatusApiResponse = () => {
+  return [
+    {
+      uuid: 'uuid1',
+      status: {
+        cancellationFeeWei: 36777567771000,
+        cancellationReason: 'not_cancelled',
+        deadlineRatio: 0.6400288486480713,
+        minedHash:
+          '0x55ad39634ee10d417b6e190cfd3736098957e958879cffe78f1f00f4fd2654d6',
+        minedTx: 'success',
+      },
     },
-  };
+  ];
 };
 
 describe('SmartTransactionsController', () => {
@@ -267,14 +271,14 @@ describe('SmartTransactionsController', () => {
   describe('fetchSmartTransactionsStatus', () => {
     it('fetches a pending status for a single smart transaction via batch_status API', async () => {
       const uuids = ['uuid1'];
-      const pendingStatusApiResponse = createPendingStatusApiResponse();
+      const pendingBatchStatusApiResponse = createPendingBatchStatusApiResponse();
       nock(API_BASE_URL)
         .get(`/networks/${CHAIN_IDS.ETHEREUM}/batch_status?uuids=uuid1`)
-        .reply(200, [pendingStatusApiResponse]);
+        .reply(200, pendingBatchStatusApiResponse);
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids);
       expect(smartTransactionsController.state).toStrictEqual({
         smartTransactions: {
-          '1': [pendingStatusApiResponse],
+          '1': pendingBatchStatusApiResponse,
         },
         userOptIn: undefined,
       });
@@ -282,23 +286,23 @@ describe('SmartTransactionsController', () => {
 
     it('fetches a success status for a single smart transaction via batch_status API', async () => {
       const uuids = ['uuid1'];
-      const pendingStatusApiResponse = createPendingStatusApiResponse();
-      const successStatusApiResponse = createSuccessStatusApiResponse();
+      const pendingBatchStatusApiResponse = createPendingBatchStatusApiResponse();
+      const successBatchStatusApiResponse = createSuccessBatchStatusApiResponse();
       smartTransactionsController.update({
         smartTransactions: {
           [CHAIN_IDS.ETHEREUM]: [
-            pendingStatusApiResponse,
+            pendingBatchStatusApiResponse[0],
           ] as SmartTransaction[],
         },
       });
 
       nock(API_BASE_URL)
         .get(`/networks/${CHAIN_IDS.ETHEREUM}/batch_status?uuids=uuid1`)
-        .reply(200, [successStatusApiResponse]);
+        .reply(200, successBatchStatusApiResponse);
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids);
       expect(smartTransactionsController.state).toStrictEqual({
         smartTransactions: {
-          '1': [successStatusApiResponse],
+          '1': successBatchStatusApiResponse,
         },
         userOptIn: undefined,
       });
