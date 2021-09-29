@@ -75,11 +75,10 @@ export default class SmartTransactionsController extends BaseController<
     const { clientId } = this.config;
     const fetchOptions = {
       ...options,
-      headers: clientId
-        ? {
-            'X-Client-Id': clientId,
-          }
-        : undefined,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(clientId && { 'X-Client-Id': clientId }),
+      },
     };
 
     return handleFetch(request, fetchOptions);
