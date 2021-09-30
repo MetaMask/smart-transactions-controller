@@ -101,7 +101,7 @@ export default class SmartTransactionsController extends BaseController<
       interval: DEFAULT_INTERVAL,
       chainId: CHAIN_IDS.ETHEREUM,
       clientId: 'default',
-      supportedChainIds: [CHAIN_IDS.ETHEREUM],
+      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.RINKEBY],
     };
 
     this.defaultState = {
