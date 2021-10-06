@@ -40,12 +40,13 @@ export default class SmartTransactionsController extends BaseController<
 > {
   private timeoutHandle?: NodeJS.Timeout;
 
+  private nonceTracker: any;
+
   private updateSmartTransaction(smartTransaction: SmartTransaction): void {
     const { chainId } = this.config;
     const currentIndex = this.state.smartTransactions[chainId]?.findIndex(
       (st) => st.uuid === smartTransaction.uuid,
     );
-
     if (currentIndex === -1 || currentIndex === undefined) {
       this.update({
         smartTransactions: {
@@ -87,10 +88,12 @@ export default class SmartTransactionsController extends BaseController<
   constructor(
     {
       onNetworkStateChange,
+      nonceTracker,
     }: {
       onNetworkStateChange: (
         listener: (networkState: NetworkState) => void,
       ) => void;
+      nonceTracker: any;
     },
     config?: Partial<SmartTransactionsControllerConfig>,
     state?: Partial<SmartTransactionsControllerState>,
@@ -108,6 +111,8 @@ export default class SmartTransactionsController extends BaseController<
       smartTransactions: {},
       userOptIn: undefined,
     };
+
+    this.nonceTracker = nonceTracker;
 
     this.initialize();
     this.initializeSmartTransactionsForChainId();
@@ -174,7 +179,9 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   // ! Ask backend API to accept list of uuids as params
-  async fetchSmartTransactionsStatus(uuids: string[]): Promise<void> {
+  async fetchSmartTransactionsStatus(
+    uuids: string[],
+  ): Promise<SmartTransaction[]> {
     const { chainId } = this.config;
 
     const params = new URLSearchParams({
@@ -191,6 +198,18 @@ export default class SmartTransactionsController extends BaseController<
     data.forEach((smartTransaction) => {
       this.updateSmartTransaction(smartTransaction);
     });
+
+    return data;
+  }
+
+  async addNonceToTransaction(
+    transaction: UnsignedTransaction,
+  ): Promise<UnsignedTransaction> {
+    const nonceLock = await this.nonceTracker.getNonceLock(transaction.from);
+    const nonce = nonceLock.nextNonce;
+    nonceLock.releaseLock();
+    transaction.nonce = nonce;
+    return transaction;
   }
 
   async getUnsignedTransactionsAndEstimates(
@@ -205,11 +224,14 @@ export default class SmartTransactionsController extends BaseController<
   }> {
     const { chainId } = this.config;
 
+    const unsignedTransactionWithNonce = await this.addNonceToTransaction(
+      unsignedTransaction,
+    );
     const data = await this.fetch(
       getAPIRequestURL(APIType.GET_TRANSACTIONS, chainId),
       {
         method: 'POST',
-        body: JSON.stringify({ tx: unsignedTransaction }),
+        body: JSON.stringify({ tx: unsignedTransactionWithNonce }),
       },
     );
 
@@ -231,13 +253,13 @@ export default class SmartTransactionsController extends BaseController<
       {
         method: 'POST',
         body: JSON.stringify({
-          signedTransactions,
-          // TODO: Check if canceled transactions can be part of signedTransactions.
-          signedCanceledTransactions,
+          rawTxs: signedTransactions,
+          rawCancelTxs: signedCanceledTransactions,
         }),
       },
     );
     this.updateSmartTransaction({ uuid: data.uuid });
+    return data;
   }
 
   // ! This should return if the cancellation was on chain or not (for nonce management)
