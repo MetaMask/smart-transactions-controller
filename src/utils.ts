@@ -26,7 +26,7 @@ export function getAPIRequestURL(apiType: APIType, chainId: string): string {
     }
 
     case APIType.BATCH_STATUS: {
-      return `${API_BASE_URL}/networks/${chainIdDec}/batch_status`;
+      return `${API_BASE_URL}/networks/${chainIdDec}/batchStatus`;
     }
 
     case APIType.LIVENESS: {
