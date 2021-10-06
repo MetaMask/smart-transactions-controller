@@ -6,6 +6,7 @@ describe('default export', () => {
     expect(
       new DefaultExport({
         onNetworkStateChange: jest.fn(),
+        nonceTracker: jest.fn(),
       }),
     ).toBeInstanceOf(SmartTransactionsController);
   });
