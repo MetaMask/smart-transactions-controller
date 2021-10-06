@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:4000';
+export const API_BASE_URL = 'https://transaction.metaswap-dev.codefi.network';
 export const CHAIN_IDS = {
   ETHEREUM: '0x1', // 1 in dec
   RINKEBY: '0x4', // 4 in dec
