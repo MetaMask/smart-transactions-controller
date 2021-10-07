@@ -208,8 +208,10 @@ export default class SmartTransactionsController extends BaseController<
     const nonceLock = await this.nonceTracker.getNonceLock(transaction.from);
     const nonce = nonceLock.nextNonce;
     nonceLock.releaseLock();
-    transaction.nonce = nonce;
-    return transaction;
+    return {
+      ...transaction,
+      nonce,
+    };
   }
 
   async getUnsignedTransactionsAndEstimates(

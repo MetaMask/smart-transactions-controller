@@ -3,10 +3,6 @@ module.exports = {
 
   extends: ['@metamask/eslint-config'],
 
-  rules: {
-    'require-atomic-updates': 'off',
-  },
-
   overrides: [
     {
       files: ['*.ts'],
