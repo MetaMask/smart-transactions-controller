@@ -280,7 +280,9 @@ export default class SmartTransactionsController extends BaseController<
   // TODO Matt: add tests for this method
   async fetchLiveness(): Promise<boolean> {
     const { chainId } = this.config;
-    const response = await this.fetch(getAPIRequestURL(APIType.LIVENESS, chainId));
+    const response = await this.fetch(
+      getAPIRequestURL(APIType.LIVENESS, chainId),
+    );
     return response;
   }
 }
