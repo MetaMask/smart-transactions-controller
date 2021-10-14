@@ -275,4 +275,9 @@ export default class SmartTransactionsController extends BaseController<
       body: JSON.stringify({ uuid }),
     });
   }
+
+  async checkLiveness(): Promise<boolean> {
+    const { chainId } = this.config;
+    return await this.fetch(getAPIRequestURL(APIType.LIVENESS, chainId))
+  }
 }
