@@ -194,12 +194,15 @@ export default class SmartTransactionsController extends BaseController<
     )}?${params.toString()}`;
 
     const data: any = await this.fetch(url);
-    Object.keys(data).forEach((uuid) => {
-      this.updateSmartTransaction({
-        uuid,
-        status: data[uuid],
-      } as SmartTransaction);
-    });
+    const dataUuids = Object.keys(data);
+    if (dataUuids && dataUuids.length > 0) {
+      dataUuids.forEach((uuid) => {
+        this.updateSmartTransaction({
+          uuid,
+          status: data[uuid],
+        } as SmartTransaction);
+      });
+    }
     return data;
   }
 
