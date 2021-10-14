@@ -283,6 +283,6 @@ export default class SmartTransactionsController extends BaseController<
     const response = await this.fetch(
       getAPIRequestURL(APIType.LIVENESS, chainId),
     );
-    return response;
+    return Boolean(response.lastBlock);
   }
 }
