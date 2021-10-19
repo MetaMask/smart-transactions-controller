@@ -327,10 +327,10 @@ describe('SmartTransactionsController', () => {
 
   describe('fetchLiveness', () => {
     it('fetches a liveness for Smart Transactions API', async () => {
-      const pendingBatchStatusApiResponse = createSuccessLivenessApiResponse();
+      const successLivenessApiResponse = createSuccessLivenessApiResponse();
       nock(API_BASE_URL)
         .get(`/networks/${ethereumChainIdDec}/health`)
-        .reply(200, pendingBatchStatusApiResponse);
+        .reply(200, successLivenessApiResponse);
       const liveness = await smartTransactionsController.fetchLiveness();
       expect(liveness).toBe(true);
     });
