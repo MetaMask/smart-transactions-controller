@@ -11,6 +11,7 @@ import {
   SignedTransaction,
   SignedCanceledTransaction,
   UnsignedTransaction,
+  SmartTransactionsStatus,
 } from './types';
 import { getAPIRequestURL, isSmartTransactionPending } from './utils';
 import { CHAIN_IDS } from './constants';
@@ -47,6 +48,7 @@ export default class SmartTransactionsController extends BaseController<
     const currentIndex = this.state.smartTransactions[chainId]?.findIndex(
       (st) => st.uuid === smartTransaction.uuid,
     );
+    console.log('update smart transaction', smartTransaction, currentIndex);
     if (currentIndex === -1 || currentIndex === undefined) {
       this.update({
         smartTransactions: {
@@ -193,10 +195,13 @@ export default class SmartTransactionsController extends BaseController<
       chainId,
     )}?${params.toString()}`;
 
-    const data: SmartTransaction[] = await this.fetch(url);
+    const data = await this.fetch(url);
 
-    data.forEach((smartTransaction) => {
-      this.updateSmartTransaction(smartTransaction);
+    Object.entries(data).forEach(([uuid, smartTransaction]) => {
+      this.updateSmartTransaction({
+        status: smartTransaction as SmartTransactionsStatus,
+        uuid,
+      });
     });
 
     return data;
