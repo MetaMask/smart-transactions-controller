@@ -34,6 +34,9 @@ export interface SmartTransactionsStatus {
 export interface SmartTransaction {
   uuid: string;
   status?: SmartTransactionsStatus;
+  time?: number;
+  sourceTokenSymbol?: string;
+  destinationTokenSymbol?: string;
 }
 
 // TODO: maybe grab the type from transactions controller?

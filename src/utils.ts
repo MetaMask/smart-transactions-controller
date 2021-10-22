@@ -1,4 +1,9 @@
-import { APIType, SmartTransaction, SmartTransactionMinedTx } from './types';
+import {
+  APIType,
+  SmartTransaction,
+  SmartTransactionMinedTx,
+  SmartTransactionsStatus,
+} from './types';
 import { API_BASE_URL, CHAIN_IDS_HEX_TO_DEC } from './constants';
 
 export function isSmartTransactionPending(smartTransaction: SmartTransaction) {
@@ -8,6 +13,10 @@ export function isSmartTransactionPending(smartTransaction: SmartTransaction) {
       smartTransaction.status.minedTx === SmartTransactionMinedTx.NOT_MINED)
   );
 }
+
+export const isSmartTransactionStatusResolved = (
+  status: SmartTransactionsStatus | string,
+) => status === 'uuid_not_found';
 
 // TODO use actual url once API is defined
 export function getAPIRequestURL(apiType: APIType, chainId: string): string {

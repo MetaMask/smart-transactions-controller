@@ -13,7 +13,11 @@ import {
   UnsignedTransaction,
   SmartTransactionsStatus,
 } from './types';
-import { getAPIRequestURL, isSmartTransactionPending } from './utils';
+import {
+  getAPIRequestURL,
+  isSmartTransactionPending,
+  isSmartTransactionStatusResolved,
+} from './utils';
 import { CHAIN_IDS } from './constants';
 
 const { handleFetch, safelyExecute } = util;
@@ -21,7 +25,7 @@ const { handleFetch, safelyExecute } = util;
 // TODO: JSDoc all methods
 // TODO: Remove all comments (* ! ?)
 
-export const DEFAULT_INTERVAL = 5 * 60 * 1000;
+export const DEFAULT_INTERVAL = 10 * 1000;
 
 export interface SmartTransactionsControllerConfig extends BaseConfig {
   interval: number;
@@ -65,7 +69,9 @@ export default class SmartTransactionsController extends BaseController<
           ...this.state.smartTransactions,
           [chainId]: this.state.smartTransactions[chainId].map(
             (item, index) => {
-              return index === currentIndex ? smartTransaction : item;
+              return index === currentIndex
+                ? { ...item, ...smartTransaction }
+                : item;
             },
           ),
         },
@@ -142,6 +148,7 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   async poll(interval?: number): Promise<void> {
+    console.log('poll');
     const { chainId, supportedChainIds } = this.config;
     interval && this.configure({ interval }, false, false);
     this.timeoutHandle && clearTimeout(this.timeoutHandle);
@@ -166,12 +173,13 @@ export default class SmartTransactionsController extends BaseController<
     const { smartTransactions } = this.state;
     const { chainId } = this.config;
 
-    const transactionsToUpdate: string[] = [];
-    smartTransactions[chainId]?.forEach((smartTransaction) => {
-      if (isSmartTransactionPending(smartTransaction)) {
-        transactionsToUpdate.push(smartTransaction.uuid);
-      }
-    });
+    const transactionsToUpdate: string[] = smartTransactions[chainId]
+      ?.filter((smartTransaction) =>
+        isSmartTransactionPending(smartTransaction),
+      )
+      .map((smartTransaction) => smartTransaction.uuid);
+
+    console.log('update smart transactions', transactionsToUpdate);
 
     if (transactionsToUpdate.length > 0) {
       this.fetchSmartTransactionsStatus(transactionsToUpdate);
@@ -198,10 +206,16 @@ export default class SmartTransactionsController extends BaseController<
     const data = await this.fetch(url);
 
     Object.entries(data).forEach(([uuid, smartTransaction]) => {
-      this.updateSmartTransaction({
-        status: smartTransaction as SmartTransactionsStatus,
-        uuid,
-      });
+      if (
+        !isSmartTransactionStatusResolved(
+          smartTransaction as SmartTransactionsStatus | string,
+        )
+      ) {
+        this.updateSmartTransaction({
+          status: smartTransaction as SmartTransactionsStatus,
+          uuid,
+        });
+      }
     });
 
     return data;
@@ -250,11 +264,20 @@ export default class SmartTransactionsController extends BaseController<
   async submitSignedTransactions({
     signedTransactions,
     signedCanceledTransactions,
+    sourceTokenSymbol,
+    destinationTokenSymbol,
   }: {
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions: SignedCanceledTransaction[];
+    sourceTokenSymbol: string;
+    destinationTokenSymbol: string;
   }) {
     const { chainId } = this.config;
+    console.log(
+      'signed transactions',
+      signedTransactions,
+      signedCanceledTransactions,
+    );
     const data = await this.fetch(
       getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
       {
@@ -265,7 +288,15 @@ export default class SmartTransactionsController extends BaseController<
         }),
       },
     );
-    this.updateSmartTransaction({ uuid: data.uuid });
+    const time = Date.now();
+    this.updateSmartTransaction({
+      uuid: data.uuid,
+      sourceTokenSymbol,
+      destinationTokenSymbol,
+      time,
+    });
+    // poll transactions until it is resolved somehow
+    this.poll();
     return data;
   }
 
