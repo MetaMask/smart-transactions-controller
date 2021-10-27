@@ -47,6 +47,8 @@ export default class SmartTransactionsController extends BaseController<
 
   private nonceTracker: any;
 
+  private query: any;
+
   private updateSmartTransaction(smartTransaction: SmartTransaction): void {
     const { chainId } = this.config;
     const currentIndex = this.state.smartTransactions[chainId]?.findIndex(
@@ -97,11 +99,13 @@ export default class SmartTransactionsController extends BaseController<
     {
       onNetworkStateChange,
       nonceTracker,
+      query,
     }: {
       onNetworkStateChange: (
         listener: (networkState: NetworkState) => void,
       ) => void;
       nonceTracker: any;
+      query: any;
     },
     config?: Partial<SmartTransactionsControllerConfig>,
     state?: Partial<SmartTransactionsControllerState>,
@@ -122,6 +126,8 @@ export default class SmartTransactionsController extends BaseController<
 
     this.nonceTracker = nonceTracker;
 
+    this.query = query;
+
     this.initialize();
     this.initializeSmartTransactionsForChainId();
 
@@ -129,9 +135,11 @@ export default class SmartTransactionsController extends BaseController<
       const { chainId } = provider;
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
+      console.log('on network state change');
       this.poll();
     });
 
+    console.log('instantiation');
     this.poll();
   }
 
@@ -157,11 +165,13 @@ export default class SmartTransactionsController extends BaseController<
     }
     await safelyExecute(() => this.updateSmartTransactions());
     this.timeoutHandle = setTimeout(() => {
+      console.log('set timeout');
       this.poll(this.config.interval);
     }, this.config.interval);
   }
 
   async stop() {
+    console.log('stop poll');
     this.timeoutHandle && clearTimeout(this.timeoutHandle);
   }
 
@@ -296,6 +306,7 @@ export default class SmartTransactionsController extends BaseController<
       time,
     });
     // poll transactions until it is resolved somehow
+    console.log('submit signed');
     this.poll();
     return data;
   }
