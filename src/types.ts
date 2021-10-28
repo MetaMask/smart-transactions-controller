@@ -19,6 +19,11 @@ export enum SmartTransactionMinedTx {
 }
 
 export enum SmartTransactionCancellationReason {
+  WOULD_REVERT = 'would_revert',
+  TOO_CHEAP = 'too_cheap',
+  DEADLINE_MISSED = 'deadline_missed',
+  INVALID_NONCE = 'invalid_nonce',
+  USER_CANCELLED = 'user_cancelled',
   NOT_CANCELLED = 'not_cancelled',
 }
 
@@ -33,10 +38,21 @@ export interface SmartTransactionsStatus {
 
 export interface SmartTransaction {
   uuid: string;
-  status?: SmartTransactionsStatus;
-  time?: number;
-  sourceTokenSymbol?: string;
+  chainId?: string;
+  destinationTokenAddress?: string;
+  destinationTokenDecimals?: string;
   destinationTokenSymbol?: string;
+  metamaskNetworkId?: string;
+  nonceDetails?: any;
+  origin?: string;
+  preTxBalance?: string;
+  status?: SmartTransactionsStatus;
+  sourceTokenSymbol?: string;
+  swapMetaData?: any;
+  swapTokenValue?: string;
+  time?: number;
+  txParams?: any;
+  type?: string;
 }
 
 // TODO: maybe grab the type from transactions controller?

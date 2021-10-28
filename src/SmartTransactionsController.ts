@@ -5,6 +5,7 @@ import {
   NetworkState,
   util,
 } from '@metamask/controllers';
+import { ethers } from 'ethers';
 import {
   APIType,
   SmartTransaction,
@@ -12,6 +13,7 @@ import {
   SignedCanceledTransaction,
   UnsignedTransaction,
   SmartTransactionsStatus,
+  SmartTransactionCancellationReason,
 } from './types';
 import {
   getAPIRequestURL,
@@ -21,6 +23,41 @@ import {
 import { CHAIN_IDS } from './constants';
 
 const { handleFetch, safelyExecute } = util;
+
+const calculateStatus = (status: SmartTransactionsStatus) => {
+  const cancellations = [
+    SmartTransactionCancellationReason.WOULD_REVERT,
+    SmartTransactionCancellationReason.TOO_CHEAP,
+    SmartTransactionCancellationReason.DEADLINE_MISSED,
+    SmartTransactionCancellationReason.INVALID_NONCE,
+    SmartTransactionCancellationReason.USER_CANCELLED,
+  ];
+  if (status?.minedTx) {
+    if (status.minedTx === 'not_mined') {
+      if (
+        status.cancellationReason ===
+        SmartTransactionCancellationReason.NOT_CANCELLED
+      ) {
+        return 'pending';
+      }
+
+      const isCancellation =
+        cancellations.findIndex(
+          (cancellation) => cancellation === status.cancellationReason,
+        ) > -1;
+      if (isCancellation) {
+        return 'cancelled';
+      }
+    }
+  } else if (status?.minedTx === 'success') {
+    return 'success';
+  } else if (status?.minedTx === 'reverted') {
+    return 'reverted';
+  } else if (status?.minedTx === 'unknown') {
+    return 'unknown';
+  }
+  return '';
+};
 
 // TODO: JSDoc all methods
 // TODO: Remove all comments (* ! ?)
@@ -47,7 +84,9 @@ export default class SmartTransactionsController extends BaseController<
 
   private nonceTracker: any;
 
-  private query: any;
+  private getNetwork: any;
+
+  private ethersProvider: any;
 
   private updateSmartTransaction(smartTransaction: SmartTransaction): void {
     const { chainId } = this.config;
@@ -99,13 +138,15 @@ export default class SmartTransactionsController extends BaseController<
     {
       onNetworkStateChange,
       nonceTracker,
-      query,
+      getNetwork,
+      provider,
     }: {
       onNetworkStateChange: (
         listener: (networkState: NetworkState) => void,
       ) => void;
       nonceTracker: any;
-      query: any;
+      getNetwork: any;
+      provider: any;
     },
     config?: Partial<SmartTransactionsControllerConfig>,
     state?: Partial<SmartTransactionsControllerState>,
@@ -124,19 +165,23 @@ export default class SmartTransactionsController extends BaseController<
       userOptIn: undefined,
     };
 
-    this.nonceTracker = nonceTracker;
+    console.log('args', nonceTracker, getNetwork, provider);
 
-    this.query = query;
+    this.nonceTracker = nonceTracker;
+    this.getNetwork = getNetwork;
+    console.log('provider', provider);
+    this.ethersProvider = new ethers.providers.Web3Provider(provider);
 
     this.initialize();
     this.initializeSmartTransactionsForChainId();
 
-    onNetworkStateChange(({ provider }) => {
-      const { chainId } = provider;
+    onNetworkStateChange(({ provider: newProvider }) => {
+      const { chainId } = newProvider;
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
       console.log('on network state change');
       this.poll();
+      this.ethersProvider = new ethers.providers.Web3Provider(provider);
     });
 
     console.log('instantiation');
@@ -198,6 +243,40 @@ export default class SmartTransactionsController extends BaseController<
     }
   }
 
+  confirmSmartTransaction(smartTransaction: SmartTransaction) {
+    console.log(`smartTransaction`, smartTransaction);
+    // save hash
+  }
+
+  removeSmartTransaction(uuid: string) {
+    console.log('remove smart tx', uuid);
+    // get smart transaction and status
+    const { chainId } = this.config;
+    const currentSmartTransactions = this.state.smartTransactions[chainId];
+    const currentIndex = currentSmartTransactions?.findIndex(
+      (st) => st.uuid === uuid,
+    );
+    const smartTransaction = currentSmartTransactions?.[currentIndex];
+    const status: string | undefined = smartTransaction?.status
+      ? calculateStatus(smartTransaction.status)
+      : undefined;
+    if (status === 'success') {
+      // if success, save it to transactions controller
+      this.confirmSmartTransaction(smartTransaction);
+    }
+    // always remove it
+    const nextSmartTransactions = currentSmartTransactions
+      .slice(0, currentIndex)
+      .concat(currentSmartTransactions.slice(currentIndex + 1));
+    console.log(`nextSmartTransactions`, nextSmartTransactions);
+    this.update({
+      smartTransactions: {
+        ...this.state.smartTransactions,
+        [chainId]: nextSmartTransactions,
+      },
+    });
+  }
+
   // ! Ask backend API to accept list of uuids as params
   async fetchSmartTransactionsStatus(
     uuids: string[],
@@ -217,10 +296,12 @@ export default class SmartTransactionsController extends BaseController<
 
     Object.entries(data).forEach(([uuid, smartTransaction]) => {
       if (
-        !isSmartTransactionStatusResolved(
+        isSmartTransactionStatusResolved(
           smartTransaction as SmartTransactionsStatus | string,
         )
       ) {
+        this.removeSmartTransaction(uuid);
+      } else {
         this.updateSmartTransaction({
           status: smartTransaction as SmartTransactionsStatus,
           uuid,
@@ -272,15 +353,13 @@ export default class SmartTransactionsController extends BaseController<
   // * After this successful call client must add a nonce representative to
   // * transaction controller external transactions list
   async submitSignedTransactions({
+    txParams,
     signedTransactions,
     signedCanceledTransactions,
-    sourceTokenSymbol,
-    destinationTokenSymbol,
   }: {
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions: SignedCanceledTransaction[];
-    sourceTokenSymbol: string;
-    destinationTokenSymbol: string;
+    txParams?: any;
   }) {
     const { chainId } = this.config;
     console.log(
@@ -299,12 +378,32 @@ export default class SmartTransactionsController extends BaseController<
       },
     );
     const time = Date.now();
+    // metamaskNetworkId
+    const metamaskNetworkId = this.getNetwork();
+    // preTxBalance
+    const preTxBalanceBN = await this.ethersProvider.getBalance(txParams?.from);
+    const preTxBalance = preTxBalanceBN.toHexString();
+    console.log('stx uuid', data.uuid);
+    // nonce details
+    const nonceLock = await this.nonceTracker.getNonceLock(txParams?.from);
+    const nonce = nonceLock.nextNonce;
+    if (!txParams?.nonce) {
+      txParams.nonce = nonce;
+    }
+    console.log(`nonce`, nonce);
+    const { nonceDetails } = nonceLock;
+    console.log(`nonceDetails`, nonceDetails);
+
     this.updateSmartTransaction({
-      uuid: data.uuid,
-      sourceTokenSymbol,
-      destinationTokenSymbol,
+      chainId,
+      nonceDetails,
+      metamaskNetworkId,
+      preTxBalance,
       time,
+      txParams,
+      uuid: data.uuid,
     });
+    nonceLock.releaseLock();
     // poll transactions until it is resolved somehow
     console.log('submit signed');
     this.poll();

@@ -1,6 +1,6 @@
 {
   "name": "@metamask/smart-transactions-controller",
-  "version": "1.0.0-2f8e22c2",
+  "version": "1.0.0-762d49810",
   "description": "MetaMask controller for Smart Transactions.",
   "repository": {
     "type": "git",
@@ -26,7 +26,8 @@
     "build:link": "yarn build && cd dist && yarn link && rm -rf node_modules && cd .."
   },
   "dependencies": {
-    "@metamask/controllers": "^16.0.0"
+    "@metamask/controllers": "^16.0.0",
+    "ethers": "^5.5.1"
   },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^1.0.5",
