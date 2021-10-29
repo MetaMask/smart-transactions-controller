@@ -5,7 +5,9 @@ import {
   NetworkState,
   util,
 } from '@metamask/controllers';
+import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
+import mapValues from 'lodash/mapValues';
 import {
   APIType,
   SmartTransaction,
@@ -32,22 +34,20 @@ const calculateStatus = (status: SmartTransactionsStatus) => {
     SmartTransactionCancellationReason.INVALID_NONCE,
     SmartTransactionCancellationReason.USER_CANCELLED,
   ];
-  if (status?.minedTx) {
-    if (status.minedTx === 'not_mined') {
-      if (
-        status.cancellationReason ===
-        SmartTransactionCancellationReason.NOT_CANCELLED
-      ) {
-        return 'pending';
-      }
+  if (status?.minedTx === 'not_mined') {
+    if (
+      status.cancellationReason ===
+      SmartTransactionCancellationReason.NOT_CANCELLED
+    ) {
+      return 'pending';
+    }
 
-      const isCancellation =
-        cancellations.findIndex(
-          (cancellation) => cancellation === status.cancellationReason,
-        ) > -1;
-      if (isCancellation) {
-        return 'cancelled';
-      }
+    const isCancellation =
+      cancellations.findIndex(
+        (cancellation) => cancellation === status.cancellationReason,
+      ) > -1;
+    if (isCancellation) {
+      return 'cancelled';
     }
   } else if (status?.minedTx === 'success') {
     return 'success';
@@ -88,12 +88,13 @@ export default class SmartTransactionsController extends BaseController<
 
   private ethersProvider: any;
 
+  private txController: any;
+
   private updateSmartTransaction(smartTransaction: SmartTransaction): void {
     const { chainId } = this.config;
     const currentIndex = this.state.smartTransactions[chainId]?.findIndex(
       (st) => st.uuid === smartTransaction.uuid,
     );
-    console.log('update smart transaction', smartTransaction, currentIndex);
     if (currentIndex === -1 || currentIndex === undefined) {
       this.update({
         smartTransactions: {
@@ -140,6 +141,7 @@ export default class SmartTransactionsController extends BaseController<
       nonceTracker,
       getNetwork,
       provider,
+      txController,
     }: {
       onNetworkStateChange: (
         listener: (networkState: NetworkState) => void,
@@ -147,6 +149,7 @@ export default class SmartTransactionsController extends BaseController<
       nonceTracker: any;
       getNetwork: any;
       provider: any;
+      txController: any;
     },
     config?: Partial<SmartTransactionsControllerConfig>,
     state?: Partial<SmartTransactionsControllerState>,
@@ -165,12 +168,10 @@ export default class SmartTransactionsController extends BaseController<
       userOptIn: undefined,
     };
 
-    console.log('args', nonceTracker, getNetwork, provider);
-
     this.nonceTracker = nonceTracker;
     this.getNetwork = getNetwork;
-    console.log('provider', provider);
     this.ethersProvider = new ethers.providers.Web3Provider(provider);
+    this.txController = txController;
 
     this.initialize();
     this.initializeSmartTransactionsForChainId();
@@ -179,12 +180,10 @@ export default class SmartTransactionsController extends BaseController<
       const { chainId } = newProvider;
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
-      console.log('on network state change');
       this.poll();
       this.ethersProvider = new ethers.providers.Web3Provider(provider);
     });
 
-    console.log('instantiation');
     this.poll();
   }
 
@@ -228,13 +227,28 @@ export default class SmartTransactionsController extends BaseController<
     const { smartTransactions } = this.state;
     const { chainId } = this.config;
 
-    const transactionsToUpdate: string[] = smartTransactions[chainId]
-      ?.filter((smartTransaction) =>
-        isSmartTransactionPending(smartTransaction),
-      )
-      .map((smartTransaction) => smartTransaction.uuid);
+    const smartTransactionsWStatus: any[] = smartTransactions[chainId]?.map(
+      (smartTransaction) => ({
+        ...smartTransaction,
+        state: smartTransaction.status
+          ? calculateStatus(smartTransaction.status)
+          : undefined,
+      }),
+    );
 
-    console.log('update smart transactions', transactionsToUpdate);
+    const successfulSTX = smartTransactionsWStatus.filter(
+      (stx) => stx.state === 'success',
+    );
+
+    if (successfulSTX.length > 0) {
+      await Promise.all(
+        successfulSTX.map((stx) => this.confirmSmartTransaction(stx)),
+      );
+    }
+
+    const transactionsToUpdate: string[] = smartTransactionsWStatus
+      .filter((smartTransaction) => isSmartTransactionPending(smartTransaction))
+      .map((smartTransaction) => smartTransaction.uuid);
 
     if (transactionsToUpdate.length > 0) {
       this.fetchSmartTransactionsStatus(transactionsToUpdate);
@@ -243,14 +257,46 @@ export default class SmartTransactionsController extends BaseController<
     }
   }
 
-  confirmSmartTransaction(smartTransaction: SmartTransaction) {
-    console.log(`smartTransaction`, smartTransaction);
-    // save hash
+  async confirmSmartTransaction(smartTransaction: SmartTransaction) {
+    const txHash = smartTransaction.status?.minedHash;
+    try {
+      const transactionReceipt = await this.ethersProvider.getTransactionReceipt(
+        txHash,
+      );
+      if (transactionReceipt?.blockNumber) {
+        const blockData = await this.ethersProvider.getBlock(
+          transactionReceipt?.blockNumber,
+          false,
+        );
+        const baseFeePerGas = blockData?.baseFeePerGas.toHexString();
+        console.log(`blockData`, baseFeePerGas);
+        const txReceipt = mapValues(transactionReceipt, (value) => {
+          if (value instanceof ethers.BigNumber) {
+            return value.toHexString();
+          }
+          return value;
+        });
+        // call confirmExternalTransaction
+        console.log('tx receipt', transactionReceipt, txReceipt);
+        const txMeta = {
+          ...smartTransaction,
+          id: smartTransaction.uuid,
+          status: 'confirmed',
+          hash: txHash,
+        };
+        console.log(`txMeta`, txMeta);
+        this.txController.confirmExternalTransaction(
+          txMeta,
+          transactionReceipt,
+          baseFeePerGas,
+        );
+      }
+    } catch (e) {
+      console.log('confirm error', e);
+    }
   }
 
   removeSmartTransaction(uuid: string) {
-    console.log('remove smart tx', uuid);
-    // get smart transaction and status
     const { chainId } = this.config;
     const currentSmartTransactions = this.state.smartTransactions[chainId];
     const currentIndex = currentSmartTransactions?.findIndex(
@@ -268,7 +314,6 @@ export default class SmartTransactionsController extends BaseController<
     const nextSmartTransactions = currentSmartTransactions
       .slice(0, currentIndex)
       .concat(currentSmartTransactions.slice(currentIndex + 1));
-    console.log(`nextSmartTransactions`, nextSmartTransactions);
     this.update({
       smartTransactions: {
         ...this.state.smartTransactions,
@@ -362,11 +407,6 @@ export default class SmartTransactionsController extends BaseController<
     txParams?: any;
   }) {
     const { chainId } = this.config;
-    console.log(
-      'signed transactions',
-      signedTransactions,
-      signedCanceledTransactions,
-    );
     const data = await this.fetch(
       getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
       {
@@ -378,21 +418,17 @@ export default class SmartTransactionsController extends BaseController<
       },
     );
     const time = Date.now();
-    // metamaskNetworkId
     const metamaskNetworkId = this.getNetwork();
-    // preTxBalance
     const preTxBalanceBN = await this.ethersProvider.getBalance(txParams?.from);
-    const preTxBalance = preTxBalanceBN.toHexString();
-    console.log('stx uuid', data.uuid);
-    // nonce details
+    const preTxBalance = new BigNumber(preTxBalanceBN.toHexString()).toString(
+      16,
+    );
     const nonceLock = await this.nonceTracker.getNonceLock(txParams?.from);
     const nonce = nonceLock.nextNonce;
     if (!txParams?.nonce) {
       txParams.nonce = nonce;
     }
-    console.log(`nonce`, nonce);
     const { nonceDetails } = nonceLock;
-    console.log(`nonceDetails`, nonceDetails);
 
     this.updateSmartTransaction({
       chainId,
@@ -405,7 +441,6 @@ export default class SmartTransactionsController extends BaseController<
     });
     nonceLock.releaseLock();
     // poll transactions until it is resolved somehow
-    console.log('submit signed');
     this.poll();
     return data;
   }

@@ -1,6 +1,6 @@
 {
   "name": "@metamask/smart-transactions-controller",
-  "version": "1.0.0-762d49810",
+  "version": "1.0.0-597bcc912",
   "description": "MetaMask controller for Smart Transactions.",
   "repository": {
     "type": "git",
@@ -27,7 +27,10 @@
   },
   "dependencies": {
     "@metamask/controllers": "^16.0.0",
-    "ethers": "^5.5.1"
+    "@types/lodash": "^4.14.176",
+    "bignumber.js": "^9.0.1",
+    "ethers": "^5.5.1",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^1.0.5",
