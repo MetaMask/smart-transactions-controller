@@ -201,7 +201,6 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   async poll(interval?: number): Promise<void> {
-    console.log('poll');
     const { chainId, supportedChainIds } = this.config;
     interval && this.configure({ interval }, false, false);
     this.timeoutHandle && clearTimeout(this.timeoutHandle);
@@ -210,13 +209,11 @@ export default class SmartTransactionsController extends BaseController<
     }
     await safelyExecute(() => this.updateSmartTransactions());
     this.timeoutHandle = setTimeout(() => {
-      console.log('set timeout');
       this.poll(this.config.interval);
     }, this.config.interval);
   }
 
   async stop() {
-    console.log('stop poll');
     this.timeoutHandle && clearTimeout(this.timeoutHandle);
   }
 
@@ -271,7 +268,6 @@ export default class SmartTransactionsController extends BaseController<
           false,
         );
         const baseFeePerGas = blockData?.baseFeePerGas.toHexString();
-        console.log(`blockData`, baseFeePerGas);
         const txReceipt = mapValues(transactionReceipt, (value) => {
           if (value instanceof ethers.BigNumber) {
             return value.toHexString();
@@ -300,7 +296,7 @@ export default class SmartTransactionsController extends BaseController<
         });
       }
     } catch (e) {
-      console.log('confirm error', e);
+      console.error('confirm error', e);
     }
   }
 
@@ -314,8 +310,8 @@ export default class SmartTransactionsController extends BaseController<
     const status: string | undefined = smartTransaction?.status
       ? calculateStatus(smartTransaction.status)
       : undefined;
-    if (status === 'success') {
-      // if success, save it to transactions controller
+    if (status === 'success' || status === 'reverted') {
+      // if confirmed (success or reverted), save it to transactions controller
       this.confirmSmartTransaction(smartTransaction);
     }
     // always remove it
