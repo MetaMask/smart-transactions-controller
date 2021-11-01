@@ -53,6 +53,7 @@ export interface SmartTransaction {
   time?: number;
   txParams?: any;
   type?: string;
+  confirmed?: boolean;
 }
 
 // TODO: maybe grab the type from transactions controller?

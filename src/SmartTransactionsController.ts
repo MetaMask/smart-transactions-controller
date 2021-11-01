@@ -8,6 +8,7 @@ import {
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import mapValues from 'lodash/mapValues';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   APIType,
   SmartTransaction,
@@ -47,7 +48,7 @@ const calculateStatus = (status: SmartTransactionsStatus) => {
         (cancellation) => cancellation === status.cancellationReason,
       ) > -1;
     if (isCancellation) {
-      return 'cancelled';
+      return `cancelled_${status.cancellationReason}`;
     }
   } else if (status?.minedTx === 'success') {
     return 'success';
@@ -237,7 +238,8 @@ export default class SmartTransactionsController extends BaseController<
     );
 
     const successfulSTX = smartTransactionsWStatus.filter(
-      (stx) => stx.state === 'success',
+      (stx) =>
+        (stx.state === 'success' || stx.state === 'reverted') && !stx.confirmed,
     );
 
     if (successfulSTX.length > 0) {
@@ -277,19 +279,25 @@ export default class SmartTransactionsController extends BaseController<
           return value;
         });
         // call confirmExternalTransaction
-        console.log('tx receipt', transactionReceipt, txReceipt);
-        const txMeta = {
+        const originalTxMeta = {
           ...smartTransaction,
           id: smartTransaction.uuid,
           status: 'confirmed',
           hash: txHash,
         };
-        console.log(`txMeta`, txMeta);
+        const snapshot = cloneDeep(originalTxMeta);
+        const history = [snapshot];
+        const txMeta = { ...originalTxMeta, history };
         this.txController.confirmExternalTransaction(
           txMeta,
-          transactionReceipt,
+          txReceipt,
           baseFeePerGas,
         );
+
+        this.updateSmartTransaction({
+          ...smartTransaction,
+          confirmed: true,
+        });
       }
     } catch (e) {
       console.log('confirm error', e);
@@ -424,7 +432,7 @@ export default class SmartTransactionsController extends BaseController<
       16,
     );
     const nonceLock = await this.nonceTracker.getNonceLock(txParams?.from);
-    const nonce = nonceLock.nextNonce;
+    const nonce = ethers.utils.hexlify(nonceLock.nextNonce);
     if (!txParams?.nonce) {
       txParams.nonce = nonce;
     }
