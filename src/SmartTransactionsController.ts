@@ -306,14 +306,6 @@ export default class SmartTransactionsController extends BaseController<
     const currentIndex = currentSmartTransactions?.findIndex(
       (st) => st.uuid === uuid,
     );
-    const smartTransaction = currentSmartTransactions?.[currentIndex];
-    const status: string | undefined = smartTransaction?.status
-      ? calculateStatus(smartTransaction.status)
-      : undefined;
-    if (status === 'success' || status === 'reverted') {
-      // if confirmed (success or reverted), save it to transactions controller
-      this.confirmSmartTransaction(smartTransaction);
-    }
     // always remove it
     const nextSmartTransactions = currentSmartTransactions
       .slice(0, currentIndex)
