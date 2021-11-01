@@ -17,6 +17,9 @@ import {
   UnsignedTransaction,
   SmartTransactionsStatus,
   SmartTransactionCancellationReason,
+  SmartTransactionStatuses,
+  cancellationReasonToStatusMap,
+  SmartTransactionMinedTx,
 } from './types';
 import {
   getAPIRequestURL,
@@ -28,6 +31,9 @@ import { CHAIN_IDS } from './constants';
 const { handleFetch, safelyExecute } = util;
 
 const calculateStatus = (status: SmartTransactionsStatus) => {
+  if (isSmartTransactionStatusResolved(status)) {
+    return SmartTransactionStatuses.RESOLVED;
+  }
   const cancellations = [
     SmartTransactionCancellationReason.WOULD_REVERT,
     SmartTransactionCancellationReason.TOO_CHEAP,
@@ -35,29 +41,29 @@ const calculateStatus = (status: SmartTransactionsStatus) => {
     SmartTransactionCancellationReason.INVALID_NONCE,
     SmartTransactionCancellationReason.USER_CANCELLED,
   ];
-  if (status?.minedTx === 'not_mined') {
+  if (status?.minedTx === SmartTransactionMinedTx.NOT_MINED) {
     if (
       status.cancellationReason ===
       SmartTransactionCancellationReason.NOT_CANCELLED
     ) {
-      return 'pending';
+      return SmartTransactionStatuses.PENDING;
     }
 
     const isCancellation =
       cancellations.findIndex(
         (cancellation) => cancellation === status.cancellationReason,
       ) > -1;
-    if (isCancellation) {
-      return `cancelled_${status.cancellationReason}`;
+    if (status.cancellationReason && isCancellation) {
+      return cancellationReasonToStatusMap[status.cancellationReason];
     }
-  } else if (status?.minedTx === 'success') {
-    return 'success';
-  } else if (status?.minedTx === 'reverted') {
-    return 'reverted';
-  } else if (status?.minedTx === 'unknown') {
-    return 'unknown';
+  } else if (status?.minedTx === SmartTransactionMinedTx.SUCCESS) {
+    return SmartTransactionStatuses.SUCCESS;
+  } else if (status?.minedTx === SmartTransactionMinedTx.REVERTED) {
+    return SmartTransactionStatuses.REVERTED;
+  } else if (status?.minedTx === SmartTransactionMinedTx.UNKNOWN) {
+    return SmartTransactionStatuses.UNKNOWN;
   }
-  return '';
+  return SmartTransactionStatuses.UNKNOWN;
 };
 
 // TODO: JSDoc all methods
@@ -93,10 +99,14 @@ export default class SmartTransactionsController extends BaseController<
 
   private updateSmartTransaction(smartTransaction: SmartTransaction): void {
     const { chainId } = this.config;
-    const currentIndex = this.state.smartTransactions[chainId]?.findIndex(
+    const { smartTransactions } = this.state;
+    const currentSmartTransactions = smartTransactions[chainId];
+    const currentIndex = currentSmartTransactions?.findIndex(
       (st) => st.uuid === smartTransaction.uuid,
     );
+
     if (currentIndex === -1 || currentIndex === undefined) {
+      // add smart transaction
       this.update({
         smartTransactions: {
           ...this.state.smartTransactions,
@@ -106,20 +116,47 @@ export default class SmartTransactionsController extends BaseController<
           ],
         },
       });
-    } else {
+      return;
+    }
+
+    if (smartTransaction.status === SmartTransactionStatuses.RESOLVED) {
+      // remove smart transaction
+      const nextSmartTransactions = currentSmartTransactions
+        .slice(0, currentIndex)
+        .concat(currentSmartTransactions.slice(currentIndex + 1));
       this.update({
         smartTransactions: {
           ...this.state.smartTransactions,
-          [chainId]: this.state.smartTransactions[chainId].map(
-            (item, index) => {
-              return index === currentIndex
-                ? { ...item, ...smartTransaction }
-                : item;
-            },
-          ),
+          [chainId]: nextSmartTransactions,
         },
       });
+      return;
     }
+
+    if (
+      (smartTransaction.status === SmartTransactionStatuses.SUCCESS ||
+        smartTransaction.status === SmartTransactionStatuses.REVERTED) &&
+      !smartTransaction.confirmed
+    ) {
+      // confirm smart transaction
+      const currentSmartTransaction = currentSmartTransactions[currentIndex];
+      const nextSmartTransaction = {
+        ...currentSmartTransaction,
+        ...smartTransaction,
+      };
+      this.confirmSmartTransaction(nextSmartTransaction);
+    }
+
+    this.update({
+      smartTransactions: {
+        ...this.state.smartTransactions,
+        [chainId]: this.state.smartTransactions[chainId].map((item, index) => {
+          return index === currentIndex
+            ? { ...item, ...smartTransaction }
+            : item;
+        }),
+      },
+    });
   }
 
   /* istanbul ignore next */
@@ -225,27 +262,9 @@ export default class SmartTransactionsController extends BaseController<
     const { smartTransactions } = this.state;
     const { chainId } = this.config;
 
-    const smartTransactionsWStatus: any[] = smartTransactions[chainId]?.map(
-      (smartTransaction) => ({
-        ...smartTransaction,
-        state: smartTransaction.status
-          ? calculateStatus(smartTransaction.status)
-          : undefined,
-      }),
-    );
+    const currentSmartTransactions = smartTransactions?.[chainId];
 
-    const successfulSTX = smartTransactionsWStatus.filter(
-      (stx) =>
-        (stx.state === 'success' || stx.state === 'reverted') && !stx.confirmed,
-    );
-
-    if (successfulSTX.length > 0) {
-      await Promise.all(
-        successfulSTX.map((stx) => this.confirmSmartTransaction(stx)),
-      );
-    }
-
-    const transactionsToUpdate: string[] = smartTransactionsWStatus
+    const transactionsToUpdate: string[] = currentSmartTransactions
       .filter((smartTransaction) => isSmartTransactionPending(smartTransaction))
       .map((smartTransaction) => smartTransaction.uuid);
 
@@ -257,7 +276,7 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   async confirmSmartTransaction(smartTransaction: SmartTransaction) {
-    const txHash = smartTransaction.status?.minedHash;
+    const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
       const transactionReceipt = await this.ethersProvider.getTransactionReceipt(
         txHash,
@@ -300,24 +319,6 @@ export default class SmartTransactionsController extends BaseController<
     }
   }
 
-  removeSmartTransaction(uuid: string) {
-    const { chainId } = this.config;
-    const currentSmartTransactions = this.state.smartTransactions[chainId];
-    const currentIndex = currentSmartTransactions?.findIndex(
-      (st) => st.uuid === uuid,
-    );
-    // always remove it
-    const nextSmartTransactions = currentSmartTransactions
-      .slice(0, currentIndex)
-      .concat(currentSmartTransactions.slice(currentIndex + 1));
-    this.update({
-      smartTransactions: {
-        ...this.state.smartTransactions,
-        [chainId]: nextSmartTransactions,
-      },
-    });
-  }
-
   // ! Ask backend API to accept list of uuids as params
   async fetchSmartTransactionsStatus(
     uuids: string[],
@@ -336,18 +337,11 @@ export default class SmartTransactionsController extends BaseController<
     const data = await this.fetch(url);
 
     Object.entries(data).forEach(([uuid, smartTransaction]) => {
-      if (
-        isSmartTransactionStatusResolved(
-          smartTransaction as SmartTransactionsStatus | string,
-        )
-      ) {
-        this.removeSmartTransaction(uuid);
-      } else {
-        this.updateSmartTransaction({
-          status: smartTransaction as SmartTransactionsStatus,
-          uuid,
-        });
-      }
+      this.updateSmartTransaction({
+        statusMetadata: smartTransaction as SmartTransactionsStatus,
+        status: calculateStatus(smartTransaction as SmartTransactionsStatus),
+        uuid,
+      });
     });
 
     return data;

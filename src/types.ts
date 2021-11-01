@@ -27,6 +27,32 @@ export enum SmartTransactionCancellationReason {
   NOT_CANCELLED = 'not_cancelled',
 }
 
+export enum SmartTransactionStatuses {
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  REVERTED = 'reverted',
+  UNKNOWN = 'unknown',
+  CANCELLED_WOULD_REVERT = 'cancelled_would_revert',
+  CANCELLED_TOO_CHEAP = 'cancelled_too_cheap',
+  CANCELLED_DEADLINE_MISSED = 'cancelled_deadline_missed',
+  CANCELLED_INVALID_NONCE = 'cancelled_invalid_nonce',
+  CANCELLED_USER_CANCELLED = 'cancelled_user_cancelled',
+  RESOLVED = 'resolved',
+}
+
+export const cancellationReasonToStatusMap = {
+  [SmartTransactionCancellationReason.WOULD_REVERT]:
+    SmartTransactionStatuses.CANCELLED_WOULD_REVERT,
+  [SmartTransactionCancellationReason.TOO_CHEAP]:
+    SmartTransactionStatuses.CANCELLED_TOO_CHEAP,
+  [SmartTransactionCancellationReason.DEADLINE_MISSED]:
+    SmartTransactionStatuses.CANCELLED_DEADLINE_MISSED,
+  [SmartTransactionCancellationReason.INVALID_NONCE]:
+    SmartTransactionStatuses.CANCELLED_INVALID_NONCE,
+  [SmartTransactionCancellationReason.USER_CANCELLED]:
+    SmartTransactionStatuses.CANCELLED_USER_CANCELLED,
+};
+
 export interface SmartTransactionsStatus {
   error?: string;
   cancellationFeeWei: number;
@@ -46,7 +72,8 @@ export interface SmartTransaction {
   nonceDetails?: any;
   origin?: string;
   preTxBalance?: string;
-  status?: SmartTransactionsStatus;
+  status?: string;
+  statusMetadata?: SmartTransactionsStatus;
   sourceTokenSymbol?: string;
   swapMetaData?: any;
   swapTokenValue?: string;

@@ -1,17 +1,13 @@
 import {
   APIType,
   SmartTransaction,
-  SmartTransactionMinedTx,
   SmartTransactionsStatus,
+  SmartTransactionStatuses,
 } from './types';
 import { API_BASE_URL, CHAIN_IDS_HEX_TO_DEC } from './constants';
 
 export function isSmartTransactionPending(smartTransaction: SmartTransaction) {
-  return (
-    !smartTransaction.status ||
-    (!smartTransaction.status.error &&
-      smartTransaction.status.minedTx === SmartTransactionMinedTx.NOT_MINED)
-  );
+  return smartTransaction.status !== SmartTransactionStatuses.RESOLVED;
 }
 
 export const isSmartTransactionStatusResolved = (
