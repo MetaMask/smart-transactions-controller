@@ -145,17 +145,6 @@ export default class SmartTransactionsController extends BaseController<
         ...smartTransaction,
       };
       this.confirmSmartTransaction(nextSmartTransaction);
-      // remove smart transaction
-      const nextSmartTransactions = currentSmartTransactions
-        .slice(0, currentIndex)
-        .concat(currentSmartTransactions.slice(currentIndex + 1));
-      this.update({
-        smartTransactions: {
-          ...this.state.smartTransactions,
-          [chainId]: nextSmartTransactions,
-        },
-      });
-      return;
     }
 
     this.update({
@@ -465,5 +454,11 @@ export default class SmartTransactionsController extends BaseController<
       getAPIRequestURL(APIType.LIVENESS, chainId),
     );
     return Boolean(response.lastBlock);
+  }
+
+  async setStatusRefreshInterval(interval: number): Promise<void> {
+    if (interval !== this.config.interval) {
+      this.configure({ interval }, false, false);
+    }
   }
 }
