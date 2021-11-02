@@ -7,7 +7,7 @@ import {
 import { API_BASE_URL, CHAIN_IDS_HEX_TO_DEC } from './constants';
 
 export function isSmartTransactionPending(smartTransaction: SmartTransaction) {
-  return smartTransaction.status !== SmartTransactionStatuses.RESOLVED;
+  return smartTransaction.status === SmartTransactionStatuses.PENDING;
 }
 
 export const isSmartTransactionStatusResolved = (
