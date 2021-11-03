@@ -16,55 +16,16 @@ import {
   SignedCanceledTransaction,
   UnsignedTransaction,
   SmartTransactionsStatus,
-  SmartTransactionCancellationReason,
   SmartTransactionStatuses,
-  cancellationReasonToStatusMap,
-  SmartTransactionMinedTx,
 } from './types';
 import {
   getAPIRequestURL,
   isSmartTransactionPending,
-  isSmartTransactionStatusResolved,
+  calculateStatus,
 } from './utils';
 import { CHAIN_IDS } from './constants';
 
 const { handleFetch, safelyExecute } = util;
-
-const calculateStatus = (status: SmartTransactionsStatus) => {
-  if (isSmartTransactionStatusResolved(status)) {
-    return SmartTransactionStatuses.RESOLVED;
-  }
-  const cancellations = [
-    SmartTransactionCancellationReason.WOULD_REVERT,
-    SmartTransactionCancellationReason.TOO_CHEAP,
-    SmartTransactionCancellationReason.DEADLINE_MISSED,
-    SmartTransactionCancellationReason.INVALID_NONCE,
-    SmartTransactionCancellationReason.USER_CANCELLED,
-  ];
-  if (status?.minedTx === SmartTransactionMinedTx.NOT_MINED) {
-    if (
-      status.cancellationReason ===
-      SmartTransactionCancellationReason.NOT_CANCELLED
-    ) {
-      return SmartTransactionStatuses.PENDING;
-    }
-
-    const isCancellation =
-      cancellations.findIndex(
-        (cancellation) => cancellation === status.cancellationReason,
-      ) > -1;
-    if (status.cancellationReason && isCancellation) {
-      return cancellationReasonToStatusMap[status.cancellationReason];
-    }
-  } else if (status?.minedTx === SmartTransactionMinedTx.SUCCESS) {
-    return SmartTransactionStatuses.SUCCESS;
-  } else if (status?.minedTx === SmartTransactionMinedTx.REVERTED) {
-    return SmartTransactionStatuses.REVERTED;
-  } else if (status?.minedTx === SmartTransactionMinedTx.UNKNOWN) {
-    return SmartTransactionStatuses.UNKNOWN;
-  }
-  return SmartTransactionStatuses.UNKNOWN;
-};
 
 // TODO: JSDoc all methods
 // TODO: Remove all comments (* ! ?)
@@ -415,7 +376,7 @@ export default class SmartTransactionsController extends BaseController<
     );
     const nonceLock = await this.nonceTracker.getNonceLock(txParams?.from);
     const nonce = ethers.utils.hexlify(nonceLock.nextNonce);
-    if (!txParams?.nonce) {
+    if (txParams && !txParams?.nonce) {
       txParams.nonce = nonce;
     }
     const { nonceDetails } = nonceLock;
@@ -431,8 +392,6 @@ export default class SmartTransactionsController extends BaseController<
       uuid: data.uuid,
     });
     nonceLock.releaseLock();
-    // poll transactions until it is resolved somehow
-    this.poll();
     return data;
   }
 

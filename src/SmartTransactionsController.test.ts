@@ -6,6 +6,19 @@ import SmartTransactionsController, {
 import { API_BASE_URL, CHAIN_IDS, CHAIN_IDS_HEX_TO_DEC } from './constants';
 import { SmartTransaction } from './types';
 
+jest.mock('ethers', () => ({
+  ethers: {
+    providers: {
+      Web3Provider: class Web3Provider {
+        getBalance = () => ({ toHexString: () => '0x1000' });
+      },
+    },
+    utils: {
+      hexlify: (str: string) => `0x${str}`,
+    },
+  },
+}));
+
 const createUnsignedTransaction = () => {
   return {
     from: '0x268392a24B6b093127E8581eAfbD1DA228bAdAe3',
@@ -102,11 +115,21 @@ const createSignedCanceledTransaction = () => {
   };
 };
 
-const createPendingBatchStatusApiResponse = () => {
+const createPendingBatchStatusApiResponse = () => ({
+  uuid1: {
+    cancellationFeeWei: 0,
+    cancellationReason: 'not_cancelled',
+    deadlineRatio: 0.0006295545895894369,
+    minedTx: 'not_mined',
+  },
+});
+
+const createStateAfterPending = () => {
   return [
     {
       uuid: 'uuid1',
-      status: {
+      status: 'pending',
+      statusMetadata: {
         cancellationFeeWei: 0,
         cancellationReason: 'not_cancelled',
         deadlineRatio: 0.0006295545895894369,
@@ -116,11 +139,23 @@ const createPendingBatchStatusApiResponse = () => {
   ];
 };
 
-const createSuccessBatchStatusApiResponse = () => {
+const createSuccessBatchStatusApiResponse = () => ({
+  uuid2: {
+    cancellationFeeWei: 36777567771000,
+    cancellationReason: 'not_cancelled',
+    deadlineRatio: 0.6400288486480713,
+    minedHash:
+      '0x55ad39634ee10d417b6e190cfd3736098957e958879cffe78f1f00f4fd2654d6',
+    minedTx: 'success',
+  },
+});
+
+const createStateAfterSuccess = () => {
   return [
     {
-      uuid: 'uuid1',
-      status: {
+      uuid: 'uuid2',
+      status: 'success',
+      statusMetadata: {
         cancellationFeeWei: 36777567771000,
         cancellationReason: 'not_cancelled',
         deadlineRatio: 0.6400288486480713,
@@ -155,6 +190,9 @@ describe('SmartTransactionsController', () => {
           };
         }),
       },
+      getNetwork: jest.fn(() => '1'),
+      provider: jest.fn(),
+      txController: {},
     });
   });
 
@@ -273,14 +311,14 @@ describe('SmartTransactionsController', () => {
       await smartTransactionsController.submitSignedTransactions({
         signedTransactions: [signedTransaction],
         signedCanceledTransactions: [signedCanceledTransaction],
+        txParams: signedTransaction,
       });
 
-      expect(smartTransactionsController.state).toStrictEqual({
-        smartTransactions: {
-          [CHAIN_IDS.ETHEREUM]: [submitTransactionsApiResponse],
-        },
-        userOptIn: undefined,
-      });
+      expect(
+        smartTransactionsController.state.smartTransactions[
+          CHAIN_IDS.ETHEREUM
+        ][0].uuid,
+      ).toStrictEqual('dP23W7c2kt4FK9TmXOkz1UM2F20');
     });
   });
 
@@ -294,31 +332,31 @@ describe('SmartTransactionsController', () => {
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids);
       expect(smartTransactionsController.state).toStrictEqual({
         smartTransactions: {
-          [CHAIN_IDS.ETHEREUM]: pendingBatchStatusApiResponse,
+          [CHAIN_IDS.ETHEREUM]: createStateAfterPending(),
         },
         userOptIn: undefined,
       });
     });
 
     it('fetches a success status for a single smart transaction via batchStatus API', async () => {
-      const uuids = ['uuid1'];
-      const pendingBatchStatusApiResponse = createPendingBatchStatusApiResponse();
+      const uuids = ['uuid2'];
       const successBatchStatusApiResponse = createSuccessBatchStatusApiResponse();
       smartTransactionsController.update({
         smartTransactions: {
-          [CHAIN_IDS.ETHEREUM]: [
-            pendingBatchStatusApiResponse[0],
-          ] as SmartTransaction[],
+          [CHAIN_IDS.ETHEREUM]: createStateAfterPending() as SmartTransaction[],
         },
       });
 
       nock(API_BASE_URL)
-        .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid1`)
+        .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid2`)
         .reply(200, successBatchStatusApiResponse);
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids);
       expect(smartTransactionsController.state).toStrictEqual({
         smartTransactions: {
-          [CHAIN_IDS.ETHEREUM]: successBatchStatusApiResponse,
+          [CHAIN_IDS.ETHEREUM]: [
+            ...createStateAfterPending(),
+            ...createStateAfterSuccess(),
+          ],
         },
         userOptIn: undefined,
       });
