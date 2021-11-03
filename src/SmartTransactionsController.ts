@@ -179,20 +179,6 @@ export default class SmartTransactionsController extends BaseController<
       return;
     }
 
-    // if (smartTransaction.status === SmartTransactionStatuses.RESOLVED) {
-    //   // remove smart transaction
-    //   const nextSmartTransactions = currentSmartTransactions
-    //     .slice(0, currentIndex)
-    //     .concat(currentSmartTransactions.slice(currentIndex + 1));
-    //   this.update({
-    //     smartTransactions: {
-    //       ...this.state.smartTransactions,
-    //       [chainId]: nextSmartTransactions,
-    //     },
-    //   });
-    //   return;
-    // }
-
     if (
       (smartTransaction.status === SmartTransactionStatuses.SUCCESS ||
         smartTransaction.status === SmartTransactionStatuses.REVERTED) &&
