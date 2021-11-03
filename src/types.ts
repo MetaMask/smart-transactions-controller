@@ -68,6 +68,7 @@ export interface SmartTransaction {
   destinationTokenAddress?: string;
   destinationTokenDecimals?: string;
   destinationTokenSymbol?: string;
+  history?: any;
   metamaskNetworkId?: string;
   nonceDetails?: any;
   origin?: string;
