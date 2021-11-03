@@ -56,69 +56,7 @@ export default class SmartTransactionsController extends BaseController<
 
   private ethersProvider: any;
 
-  private txController: any;
-
-  private updateSmartTransaction(smartTransaction: SmartTransaction): void {
-    const { chainId } = this.config;
-    const { smartTransactions } = this.state;
-    const currentSmartTransactions = smartTransactions[chainId];
-    const currentIndex = currentSmartTransactions?.findIndex(
-      (st) => st.uuid === smartTransaction.uuid,
-    );
-
-    if (currentIndex === -1 || currentIndex === undefined) {
-      // add smart transaction
-      this.update({
-        smartTransactions: {
-          ...this.state.smartTransactions,
-          [chainId]: [
-            ...this.state.smartTransactions?.[chainId],
-            smartTransaction,
-          ],
-        },
-      });
-      return;
-    }
-
-    if (smartTransaction.status === SmartTransactionStatuses.RESOLVED) {
-      // remove smart transaction
-      const nextSmartTransactions = currentSmartTransactions
-        .slice(0, currentIndex)
-        .concat(currentSmartTransactions.slice(currentIndex + 1));
-      this.update({
-        smartTransactions: {
-          ...this.state.smartTransactions,
-          [chainId]: nextSmartTransactions,
-        },
-      });
-      return;
-    }
-
-    if (
-      (smartTransaction.status === SmartTransactionStatuses.SUCCESS ||
-        smartTransaction.status === SmartTransactionStatuses.REVERTED) &&
-      !smartTransaction.confirmed
-    ) {
-      // confirm smart transaction
-      const currentSmartTransaction = currentSmartTransactions[currentIndex];
-      const nextSmartTransaction = {
-        ...currentSmartTransaction,
-        ...smartTransaction,
-      };
-      this.confirmSmartTransaction(nextSmartTransaction);
-    }
-
-    this.update({
-      smartTransactions: {
-        ...this.state.smartTransactions,
-        [chainId]: this.state.smartTransactions[chainId].map((item, index) => {
-          return index === currentIndex
-            ? { ...item, ...smartTransaction }
-            : item;
-        }),
-      },
-    });
-  }
+  public txController: any;
 
   /* istanbul ignore next */
   private async fetch(request: string, options?: RequestInit) {
@@ -217,6 +155,68 @@ export default class SmartTransactionsController extends BaseController<
 
   setOptInState(state: boolean | undefined): void {
     this.update({ userOptIn: state });
+  }
+
+  updateSmartTransaction(smartTransaction: SmartTransaction): void {
+    const { chainId } = this.config;
+    const { smartTransactions } = this.state;
+    const currentSmartTransactions = smartTransactions[chainId];
+    const currentIndex = currentSmartTransactions?.findIndex(
+      (st) => st.uuid === smartTransaction.uuid,
+    );
+
+    if (currentIndex === -1 || currentIndex === undefined) {
+      // add smart transaction
+      this.update({
+        smartTransactions: {
+          ...this.state.smartTransactions,
+          [chainId]: [
+            ...this.state.smartTransactions?.[chainId],
+            smartTransaction,
+          ],
+        },
+      });
+      return;
+    }
+
+    // if (smartTransaction.status === SmartTransactionStatuses.RESOLVED) {
+    //   // remove smart transaction
+    //   const nextSmartTransactions = currentSmartTransactions
+    //     .slice(0, currentIndex)
+    //     .concat(currentSmartTransactions.slice(currentIndex + 1));
+    //   this.update({
+    //     smartTransactions: {
+    //       ...this.state.smartTransactions,
+    //       [chainId]: nextSmartTransactions,
+    //     },
+    //   });
+    //   return;
+    // }
+
+    if (
+      (smartTransaction.status === SmartTransactionStatuses.SUCCESS ||
+        smartTransaction.status === SmartTransactionStatuses.REVERTED) &&
+      !smartTransaction.confirmed
+    ) {
+      // confirm smart transaction
+      const currentSmartTransaction = currentSmartTransactions[currentIndex];
+      const nextSmartTransaction = {
+        ...currentSmartTransaction,
+        ...smartTransaction,
+      };
+      this.confirmSmartTransaction(nextSmartTransaction);
+    }
+
+    this.update({
+      smartTransactions: {
+        ...this.state.smartTransactions,
+        [chainId]: this.state.smartTransactions[chainId].map((item, index) => {
+          return index === currentIndex
+            ? { ...item, ...smartTransaction }
+            : item;
+        }),
+      },
+    });
   }
 
   async updateSmartTransactions() {

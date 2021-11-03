@@ -6,16 +6,23 @@ import SmartTransactionsController, {
 import { API_BASE_URL, CHAIN_IDS, CHAIN_IDS_HEX_TO_DEC } from './constants';
 import { SmartTransaction } from './types';
 
+const confirmExternalMock = jest.fn();
+
 jest.mock('ethers', () => ({
   ethers: {
     providers: {
       Web3Provider: class Web3Provider {
         getBalance = () => ({ toHexString: () => '0x1000' });
+
+        getTransactionReceipt = jest.fn(() => ({ blockNumber: '123' }));
+
+        getBlock = jest.fn();
       },
     },
     utils: {
       hexlify: (str: string) => `0x${str}`,
     },
+    BigNumber: class BigNumber {},
   },
 }));
 
@@ -121,6 +128,7 @@ const createPendingBatchStatusApiResponse = () => ({
     cancellationReason: 'not_cancelled',
     deadlineRatio: 0.0006295545895894369,
     minedTx: 'not_mined',
+    minedHash: '',
   },
 });
 
@@ -134,6 +142,7 @@ const createStateAfterPending = () => {
         cancellationReason: 'not_cancelled',
         deadlineRatio: 0.0006295545895894369,
         minedTx: 'not_mined',
+        minedHash: '',
       },
     },
   ];
@@ -192,7 +201,9 @@ describe('SmartTransactionsController', () => {
       },
       getNetwork: jest.fn(() => '1'),
       provider: jest.fn(),
-      txController: {},
+      txController: {
+        confirmExternalTransaction: confirmExternalMock,
+      },
     });
   });
 
@@ -371,6 +382,84 @@ describe('SmartTransactionsController', () => {
         .reply(200, successLivenessApiResponse);
       const liveness = await smartTransactionsController.fetchLiveness();
       expect(liveness).toBe(true);
+    });
+  });
+
+  describe('updateSmartTransaction', () => {
+    it('updates smart transaction based on uuid', () => {
+      const pendingStx = createStateAfterPending()[0];
+      smartTransactionsController.update({
+        smartTransactions: {
+          [CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
+        },
+      });
+      const updateTransaction = {
+        ...pendingStx,
+        status: 'test',
+      };
+      smartTransactionsController.updateSmartTransaction(
+        updateTransaction as SmartTransaction,
+      );
+
+      expect(
+        smartTransactionsController.state.smartTransactions[
+          CHAIN_IDS.ETHEREUM
+        ][0].status,
+      ).toStrictEqual('test');
+    });
+
+    it('confirms a smart transaction that has status success', async () => {
+      const confirmSpy = jest.spyOn(
+        smartTransactionsController,
+        'confirmSmartTransaction',
+      );
+      const pendingStx = createStateAfterPending()[0];
+      smartTransactionsController.update({
+        smartTransactions: {
+          [CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
+        },
+      });
+      const updateTransaction = {
+        ...pendingStx,
+        status: 'success',
+      };
+      smartTransactionsController.updateSmartTransaction(
+        updateTransaction as SmartTransaction,
+      );
+      expect(confirmSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('confirmSmartTransaction', () => {
+    it('calls confirm external transaction', async () => {
+      const successfulStx = createStateAfterSuccess()[0];
+      await smartTransactionsController.confirmSmartTransaction(
+        successfulStx as SmartTransaction,
+      );
+      expect(confirmExternalMock).toHaveBeenCalled();
+    });
+  });
+
+  describe('cancelSmartTransaction', () => {
+    it('sends POST call to Transactions API', async () => {
+      const apiCall = nock(API_BASE_URL)
+        .post(`/networks/${ethereumChainIdDec}/cancel`)
+        .reply(200, { message: 'successful' });
+      await smartTransactionsController.cancelSmartTransaction('uuid1');
+      expect(apiCall.isDone()).toBe(true);
+    });
+  });
+
+  describe('setStatusRefreshInterval', () => {
+    it('sets refresh interval if different', () => {
+      smartTransactionsController.setStatusRefreshInterval(100);
+      expect(smartTransactionsController.config.interval).toStrictEqual(100);
+    });
+
+    it('does not set refresh interval if they are the same', () => {
+      const configureSpy = jest.spyOn(smartTransactionsController, 'configure');
+      smartTransactionsController.setStatusRefreshInterval(DEFAULT_INTERVAL);
+      expect(configureSpy).toHaveBeenCalledTimes(0);
     });
   });
 });
