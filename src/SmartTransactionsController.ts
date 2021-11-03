@@ -32,8 +32,10 @@ const { handleFetch, safelyExecute } = util;
 
 // TODO: JSDoc all methods
 // TODO: Remove all comments (* ! ?)
+const SECOND = 1000;
 
-export const DEFAULT_INTERVAL = 10 * 1000;
+export const DEFAULT_INTERVAL = SECOND * 10;
+export const CANCELLABLE_INTERVAL = SECOND * 10.5;
 
 export interface SmartTransactionsControllerConfig extends BaseConfig {
   interval: number;
@@ -405,7 +407,16 @@ export default class SmartTransactionsController extends BaseController<
       time,
       txParams,
       uuid: data.uuid,
+      cancellable: true,
     });
+
+    setTimeout(() => {
+      console.log('reset cancellable');
+      this.updateSmartTransaction({
+        uuid: data.uuid,
+        cancellable: false,
+      });
+    }, CANCELLABLE_INTERVAL);
     nonceLock.releaseLock();
     return data;
   }

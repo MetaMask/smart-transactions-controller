@@ -82,6 +82,7 @@ export interface SmartTransaction {
   txParams?: any;
   type?: string;
   confirmed?: boolean;
+  cancellable?: boolean;
 }
 
 // TODO: maybe grab the type from transactions controller?
