@@ -5,22 +5,37 @@ import {
   NetworkState,
   util,
 } from '@metamask/controllers';
+import { BigNumber } from 'bignumber.js';
+import { ethers } from 'ethers';
+import mapValues from 'lodash/mapValues';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   APIType,
   SmartTransaction,
   SignedTransaction,
   SignedCanceledTransaction,
   UnsignedTransaction,
+  SmartTransactionsStatus,
+  SmartTransactionStatuses,
 } from './types';
-import { getAPIRequestURL, isSmartTransactionPending } from './utils';
+import {
+  getAPIRequestURL,
+  isSmartTransactionPending,
+  calculateStatus,
+  snapshotFromTxMeta,
+  replayHistory,
+  generateHistoryEntry,
+} from './utils';
 import { CHAIN_IDS } from './constants';
 
 const { handleFetch, safelyExecute } = util;
 
 // TODO: JSDoc all methods
 // TODO: Remove all comments (* ! ?)
+const SECOND = 1000;
 
-export const DEFAULT_INTERVAL = 5 * 60 * 1000;
+export const DEFAULT_INTERVAL = SECOND * 10;
+export const CANCELLABLE_INTERVAL = SECOND * 10.5;
 
 export interface SmartTransactionsControllerConfig extends BaseConfig {
   interval: number;
@@ -42,34 +57,11 @@ export default class SmartTransactionsController extends BaseController<
 
   private nonceTracker: any;
 
-  private updateSmartTransaction(smartTransaction: SmartTransaction): void {
-    const { chainId } = this.config;
-    const currentIndex = this.state.smartTransactions[chainId]?.findIndex(
-      (st) => st.uuid === smartTransaction.uuid,
-    );
-    if (currentIndex === -1 || currentIndex === undefined) {
-      this.update({
-        smartTransactions: {
-          ...this.state.smartTransactions,
-          [chainId]: [
-            ...this.state.smartTransactions?.[chainId],
-            smartTransaction,
-          ],
-        },
-      });
-    } else {
-      this.update({
-        smartTransactions: {
-          ...this.state.smartTransactions,
-          [chainId]: this.state.smartTransactions[chainId].map(
-            (item, index) => {
-              return index === currentIndex ? smartTransaction : item;
-            },
-          ),
-        },
-      });
-    }
-  }
+  private getNetwork: any;
+
+  private ethersProvider: any;
+
+  public txController: any;
 
   /* istanbul ignore next */
   private async fetch(request: string, options?: RequestInit) {
@@ -89,11 +81,17 @@ export default class SmartTransactionsController extends BaseController<
     {
       onNetworkStateChange,
       nonceTracker,
+      getNetwork,
+      provider,
+      txController,
     }: {
       onNetworkStateChange: (
         listener: (networkState: NetworkState) => void,
       ) => void;
       nonceTracker: any;
+      getNetwork: any;
+      provider: any;
+      txController: any;
     },
     config?: Partial<SmartTransactionsControllerConfig>,
     state?: Partial<SmartTransactionsControllerState>,
@@ -113,15 +111,19 @@ export default class SmartTransactionsController extends BaseController<
     };
 
     this.nonceTracker = nonceTracker;
+    this.getNetwork = getNetwork;
+    this.ethersProvider = new ethers.providers.Web3Provider(provider);
+    this.txController = txController;
 
     this.initialize();
     this.initializeSmartTransactionsForChainId();
 
-    onNetworkStateChange(({ provider }) => {
-      const { chainId } = provider;
+    onNetworkStateChange(({ provider: newProvider }) => {
+      const { chainId } = newProvider;
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
       this.poll();
+      this.ethersProvider = new ethers.providers.Web3Provider(provider);
     });
 
     this.poll();
@@ -160,21 +162,138 @@ export default class SmartTransactionsController extends BaseController<
     this.update({ userOptIn: state });
   }
 
+  updateSmartTransaction(smartTransaction: SmartTransaction): void {
+    const { chainId } = this.config;
+    const { smartTransactions } = this.state;
+    const currentSmartTransactions = smartTransactions[chainId];
+    const currentIndex = currentSmartTransactions?.findIndex(
+      (st) => st.uuid === smartTransaction.uuid,
+    );
+
+    if (currentIndex === -1 || currentIndex === undefined) {
+      // add smart transaction
+      const snapshot = cloneDeep(smartTransaction);
+      const history = [snapshot];
+      const historifiedSmartTransaction = { ...smartTransaction, history };
+      this.update({
+        smartTransactions: {
+          ...this.state.smartTransactions,
+          [chainId]: [
+            ...this.state.smartTransactions?.[chainId],
+            historifiedSmartTransaction,
+          ],
+        },
+      });
+      return;
+    }
+
+    if (
+      (smartTransaction.status === SmartTransactionStatuses.SUCCESS ||
+        smartTransaction.status === SmartTransactionStatuses.REVERTED) &&
+      !smartTransaction.confirmed
+    ) {
+      // confirm smart transaction
+      const currentSmartTransaction = currentSmartTransactions[currentIndex];
+      const nextSmartTransaction = {
+        ...currentSmartTransaction,
+        ...smartTransaction,
+      };
+      this.confirmSmartTransaction(nextSmartTransaction);
+    }
+
+    this.update({
+      smartTransactions: {
+        ...this.state.smartTransactions,
+        [chainId]: this.state.smartTransactions[chainId].map((item, index) => {
+          return index === currentIndex
+            ? { ...item, ...smartTransaction }
+            : item;
+        }),
+      },
+    });
+  }
+
   async updateSmartTransactions() {
     const { smartTransactions } = this.state;
     const { chainId } = this.config;
 
-    const transactionsToUpdate: string[] = [];
-    smartTransactions[chainId]?.forEach((smartTransaction) => {
-      if (isSmartTransactionPending(smartTransaction)) {
-        transactionsToUpdate.push(smartTransaction.uuid);
-      }
-    });
+    const currentSmartTransactions = smartTransactions?.[chainId];
+
+    const transactionsToUpdate: string[] = currentSmartTransactions
+      .filter((smartTransaction) => isSmartTransactionPending(smartTransaction))
+      .map((smartTransaction) => smartTransaction.uuid);
 
     if (transactionsToUpdate.length > 0) {
       this.fetchSmartTransactionsStatus(transactionsToUpdate);
     } else {
       this.stop();
+    }
+  }
+
+  async confirmSmartTransaction(smartTransaction: SmartTransaction) {
+    const txHash = smartTransaction.statusMetadata?.minedHash;
+    try {
+      const transactionReceipt = await this.ethersProvider.getTransactionReceipt(
+        txHash,
+      );
+      const transaction = await this.ethersProvider.getTransaction(txHash);
+      const maxFeePerGas = transaction.maxFeePerGas.toHexString();
+      const maxPriorityFeePerGas = transaction.maxPriorityFeePerGas.toHexString();
+      if (transactionReceipt?.blockNumber) {
+        const blockData = await this.ethersProvider.getBlock(
+          transactionReceipt?.blockNumber,
+          false,
+        );
+        const baseFeePerGas = blockData?.baseFeePerGas.toHexString();
+        const txReceipt = mapValues(transactionReceipt, (value) => {
+          if (value instanceof ethers.BigNumber) {
+            return value.toHexString();
+          }
+          return value;
+        });
+        const updatedTxParams = {
+          ...smartTransaction.txParams,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+        };
+        // call confirmExternalTransaction
+        const originalTxMeta = {
+          ...smartTransaction,
+          id: smartTransaction.uuid,
+          status: 'confirmed',
+          hash: txHash,
+          txParams: updatedTxParams,
+        };
+        // create txMeta snapshot for history
+        const snapshot = snapshotFromTxMeta(originalTxMeta);
+        // recover previous tx state obj
+        const previousState = replayHistory(originalTxMeta.history);
+        // generate history entry and add to history
+        const entry = generateHistoryEntry(
+          previousState,
+          snapshot,
+          'txStateManager: setting status to confirmed',
+        );
+        const txMeta =
+          entry.length > 0
+            ? {
+                ...originalTxMeta,
+                history: originalTxMeta.history.concat(entry),
+              }
+            : originalTxMeta;
+        this.txController.confirmExternalTransaction(
+          txMeta,
+          txReceipt,
+          baseFeePerGas,
+        );
+
+        this.updateSmartTransaction({
+          ...smartTransaction,
+          confirmed: true,
+        });
+      }
+    } catch (e) {
+      console.error('confirm error', e);
     }
   }
 
@@ -193,16 +312,16 @@ export default class SmartTransactionsController extends BaseController<
       chainId,
     )}?${params.toString()}`;
 
-    const data: any = await this.fetch(url);
-    const dataUuids = Object.keys(data);
-    if (dataUuids && dataUuids.length > 0) {
-      dataUuids.forEach((uuid) => {
-        this.updateSmartTransaction({
-          uuid,
-          status: data[uuid],
-        } as SmartTransaction);
+    const data = await this.fetch(url);
+
+    Object.entries(data).forEach(([uuid, smartTransaction]) => {
+      this.updateSmartTransaction({
+        statusMetadata: smartTransaction as SmartTransactionsStatus,
+        status: calculateStatus(smartTransaction as SmartTransactionsStatus),
+        uuid,
       });
-    }
+    });
+
     return data;
   }
 
@@ -247,11 +366,13 @@ export default class SmartTransactionsController extends BaseController<
   // * After this successful call client must add a nonce representative to
   // * transaction controller external transactions list
   async submitSignedTransactions({
+    txParams,
     signedTransactions,
     signedCanceledTransactions,
   }: {
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions: SignedCanceledTransaction[];
+    txParams?: any;
   }) {
     const { chainId } = this.config;
     const data = await this.fetch(
@@ -264,7 +385,39 @@ export default class SmartTransactionsController extends BaseController<
         }),
       },
     );
-    this.updateSmartTransaction({ uuid: data.uuid });
+    const time = Date.now();
+    const metamaskNetworkId = this.getNetwork();
+    const preTxBalanceBN = await this.ethersProvider.getBalance(txParams?.from);
+    const preTxBalance = new BigNumber(preTxBalanceBN.toHexString()).toString(
+      16,
+    );
+    const nonceLock = await this.nonceTracker.getNonceLock(txParams?.from);
+    const nonce = ethers.utils.hexlify(nonceLock.nextNonce);
+    if (txParams && !txParams?.nonce) {
+      txParams.nonce = nonce;
+    }
+    const { nonceDetails } = nonceLock;
+
+    this.updateSmartTransaction({
+      chainId,
+      nonceDetails,
+      metamaskNetworkId,
+      preTxBalance,
+      status: SmartTransactionStatuses.PENDING,
+      time,
+      txParams,
+      uuid: data.uuid,
+      cancellable: true,
+    });
+
+    setTimeout(() => {
+      console.log('reset cancellable');
+      this.updateSmartTransaction({
+        uuid: data.uuid,
+        cancellable: false,
+      });
+    }, CANCELLABLE_INTERVAL);
+    nonceLock.releaseLock();
     return data;
   }
 
@@ -286,5 +439,11 @@ export default class SmartTransactionsController extends BaseController<
       getAPIRequestURL(APIType.LIVENESS, chainId),
     );
     return Boolean(response.lastBlock);
+  }
+
+  async setStatusRefreshInterval(interval: number): Promise<void> {
+    if (interval !== this.config.interval) {
+      this.configure({ interval }, false, false);
+    }
   }
 }
