@@ -213,7 +213,7 @@ export default class SmartTransactionsController extends BaseController<
         cancelledNonceIndex > -1
           ? currentSmartTransactions
               .slice(0, cancelledNonceIndex)
-              .concat(currentSmartTransactions.slice(1))
+              .concat(currentSmartTransactions.slice(cancelledNonceIndex + 1))
               .concat(historifiedSmartTransaction)
           : currentSmartTransactions.concat(historifiedSmartTransaction);
       this.update({
