@@ -385,12 +385,21 @@ export default class SmartTransactionsController extends BaseController<
           baseFeePerGas,
         );
 
+        this.trackMetaMetricsEvent({
+          event: 'STX Confirmed',
+          category: 'swaps',
+        });
+
         this.updateSmartTransaction({
           ...smartTransaction,
           confirmed: true,
         });
       }
     } catch (e) {
+      this.trackMetaMetricsEvent({
+        event: 'STX Confirmation Failed',
+        category: 'swaps',
+      });
       console.error('confirm error', e);
     }
   }
