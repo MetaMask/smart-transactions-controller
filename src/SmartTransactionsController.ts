@@ -139,6 +139,7 @@ export default class SmartTransactionsController extends BaseController<
     this.subscribe((currentState: any) => this.checkPoll(currentState));
   }
 
+  // TODO: unit tests
   checkPoll(state: any) {
     const { smartTransactions } = state.smartTransactionsState;
     const currentSmartTransactions = smartTransactions[this.config.chainId];
@@ -169,6 +170,7 @@ export default class SmartTransactionsController extends BaseController<
     }
   }
 
+  // TODO: unit tests
   async poll(interval?: number): Promise<void> {
     const { chainId, supportedChainIds } = this.config;
     interval && this.configure({ interval }, false, false);
@@ -218,6 +220,7 @@ export default class SmartTransactionsController extends BaseController<
       return; // If status hasn't changed, don't track it again.
     }
 
+    // TODO: unit tests
     const sensitiveProperties = {
       stx_status: updatedSmartTransaction.status,
       token_from_address: updatedSmartTransaction.txParams?.from,
@@ -313,6 +316,7 @@ export default class SmartTransactionsController extends BaseController<
     });
   }
 
+  // TODO: unit tests
   async updateSmartTransactions() {
     const { smartTransactions } = this.state.smartTransactionsState;
     const { chainId } = this.config;
@@ -553,6 +557,7 @@ export default class SmartTransactionsController extends BaseController<
     }
   }
 
+  // TODO: unit tests
   getTransactions({
     addressFrom,
     status,
