@@ -4,7 +4,7 @@ import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
 import { API_BASE_URL, CHAIN_IDS, CHAIN_IDS_HEX_TO_DEC } from './constants';
-import { SmartTransaction } from './types';
+import { SmartTransaction, SmartTransactionStatuses } from './types';
 
 const confirmExternalMock = jest.fn();
 
@@ -31,9 +31,11 @@ jest.mock('ethers', () => ({
   },
 }));
 
+const addressFrom = '0x268392a24B6b093127E8581eAfbD1DA228bAdAe3';
+
 const createUnsignedTransaction = () => {
   return {
-    from: '0x268392a24B6b093127E8581eAfbD1DA228bAdAe3',
+    from: addressFrom,
     to: '0x0000000000000000000000000000000000000000',
     value: 0,
     data: '0x',
@@ -195,6 +197,8 @@ const testHistory = [
 
 const ethereumChainIdDec = CHAIN_IDS_HEX_TO_DEC[CHAIN_IDS.ETHEREUM];
 
+const trackSpy = jest.fn();
+
 describe('SmartTransactionsController', () => {
   let smartTransactionsController: SmartTransactionsController;
   let networkListener: (networkState: NetworkState) => void;
@@ -217,12 +221,12 @@ describe('SmartTransactionsController', () => {
       txController: {
         confirmExternalTransaction: confirmExternalMock,
       },
-      trackMetaMetricsEvent: jest.fn(),
+      trackMetaMetricsEvent: trackSpy,
     });
 
-    jest
-      .spyOn(smartTransactionsController, 'checkPoll')
-      .mockImplementation(() => ({}));
+    // jest
+    //   .spyOn(smartTransactionsController, 'checkPoll')
+    //   .mockImplementation(() => ({}));
   });
 
   afterEach(async () => {
@@ -264,6 +268,30 @@ describe('SmartTransactionsController', () => {
     });
   });
 
+  describe('checkPoll', () => {
+    it('calls poll if there is no pending transaction and pending transactions', () => {
+      const pollSpy = jest.spyOn(smartTransactionsController, 'poll');
+      const { smartTransactionsState } = smartTransactionsController.state;
+      const pendingStx = createStateAfterPending();
+      smartTransactionsController.update({
+        smartTransactionsState: {
+          ...smartTransactionsState,
+          smartTransactions: {
+            [CHAIN_IDS.ETHEREUM]: pendingStx as SmartTransaction[],
+          },
+        },
+      });
+      expect(pollSpy).toHaveBeenCalled();
+    });
+
+    it('calls stop if there is a timeoutHandle and no pending transactions', () => {
+      const stopSpy = jest.spyOn(smartTransactionsController, 'stop');
+      smartTransactionsController.timeoutHandle = setInterval(() => ({}));
+      smartTransactionsController.checkPoll(smartTransactionsController.state);
+      expect(stopSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('poll', () => {
     it('does not call updateSmartTransactions on unsupported networks', async () => {
       const updateSmartTransactionsSpy = jest.spyOn(
@@ -273,6 +301,38 @@ describe('SmartTransactionsController', () => {
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
       networkListener({ provider: { chainId: '56' } } as NetworkState);
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('trackStxStatusChange', () => {
+    it('does not track if no prevSmartTransactions', () => {
+      const smartTransaction = createStateAfterPending()[0];
+      smartTransactionsController.trackStxStatusChange(
+        smartTransaction as SmartTransaction,
+      );
+      expect(trackSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not track if smartTransaction and prevSmartTransaction have the same status', () => {
+      const smartTransaction = createStateAfterPending()[0];
+      smartTransactionsController.trackStxStatusChange(
+        smartTransaction as SmartTransaction,
+        smartTransaction as SmartTransaction,
+      );
+      expect(trackSpy).not.toHaveBeenCalled();
+    });
+
+    it('tracks status change if smartTransaction and prevSmartTransaction have different statuses', () => {
+      const smartTransaction = {
+        ...createStateAfterPending()[0],
+        swapMetaData: {},
+      };
+      const prevSmartTransaction = { ...smartTransaction, status: '' };
+      smartTransactionsController.trackStxStatusChange(
+        smartTransaction as SmartTransaction,
+        prevSmartTransaction as SmartTransaction,
+      );
+      expect(trackSpy).toHaveBeenCalled();
     });
   });
 
@@ -310,6 +370,12 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('submitSignedTransactions', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(smartTransactionsController, 'checkPoll')
+        .mockImplementation(() => ({}));
+    });
+
     it('submits a smart transaction with signed transactions', async () => {
       const signedTransaction = createSignedTransaction();
       const signedCanceledTransaction = createSignedCanceledTransaction();
@@ -332,6 +398,12 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('fetchSmartTransactionsStatus', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(smartTransactionsController, 'checkPoll')
+        .mockImplementation(() => ({}));
+    });
+
     it('fetches a pending status for a single smart transaction via batchStatus API', async () => {
       const uuids = ['uuid1'];
       const pendingBatchStatusApiResponse = createPendingBatchStatusApiResponse();
@@ -463,6 +535,23 @@ describe('SmartTransactionsController', () => {
       );
       expect(confirmExternalMock).toHaveBeenCalled();
     });
+
+    it('throws an error if ethersProvider fails', async () => {
+      smartTransactionsController.ethersProvider.getTransactionReceipt.mockRejectedValueOnce(
+        'random error' as never,
+      );
+      const successfulStx = {
+        ...createStateAfterSuccess()[0],
+        history: testHistory,
+      };
+      try {
+        await smartTransactionsController.confirmSmartTransaction(
+          successfulStx as SmartTransaction,
+        );
+      } finally {
+        expect(trackSpy).toHaveBeenCalled();
+      }
+    });
   });
 
   describe('cancelSmartTransaction', () => {
@@ -485,6 +574,40 @@ describe('SmartTransactionsController', () => {
       const configureSpy = jest.spyOn(smartTransactionsController, 'configure');
       smartTransactionsController.setStatusRefreshInterval(DEFAULT_INTERVAL);
       expect(configureSpy).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('getTransactions', () => {
+    it('retrieves smart transactions by addressFrom and status', () => {
+      const { smartTransactionsState } = smartTransactionsController.state;
+      const pendingStx = {
+        ...createStateAfterPending()[0],
+        history: testHistory,
+        txParams: {
+          from: addressFrom,
+        },
+      };
+      smartTransactionsController.update({
+        smartTransactionsState: {
+          ...smartTransactionsState,
+          smartTransactions: {
+            [CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
+          },
+        },
+      });
+      const pendingStxs = smartTransactionsController.getTransactions({
+        addressFrom,
+        status: SmartTransactionStatuses.PENDING,
+      });
+      expect(pendingStxs).toStrictEqual([pendingStx]);
+    });
+
+    it('returns empty array if there are no smart transactions', () => {
+      const transactions = smartTransactionsController.getTransactions({
+        addressFrom,
+        status: SmartTransactionStatuses.PENDING,
+      });
+      expect(transactions).toStrictEqual([]);
     });
   });
 });
