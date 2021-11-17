@@ -540,13 +540,10 @@ describe('SmartTransactionsController', () => {
         ...createStateAfterSuccess()[0],
         history: testHistory,
       };
-      try {
-        await smartTransactionsController.confirmSmartTransaction(
-          successfulStx as SmartTransaction,
-        );
-      } finally {
-        expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
-      }
+      await smartTransactionsController.confirmSmartTransaction(
+        successfulStx as SmartTransaction,
+      );
+      expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
     });
   });
 

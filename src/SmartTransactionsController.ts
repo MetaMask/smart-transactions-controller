@@ -334,7 +334,6 @@ export default class SmartTransactionsController extends BaseController<
       const transactionReceipt = await this.ethersProvider.getTransactionReceipt(
         txHash,
       );
-      console.log('transaction receipt', transactionReceipt);
       const transaction = await this.ethersProvider.getTransaction(txHash);
       const maxFeePerGas = transaction.maxFeePerGas?.toHexString();
       const maxPriorityFeePerGas = transaction.maxPriorityFeePerGas?.toHexString();
