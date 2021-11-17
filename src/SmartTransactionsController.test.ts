@@ -197,7 +197,7 @@ const testHistory = [
 
 const ethereumChainIdDec = CHAIN_IDS_HEX_TO_DEC[CHAIN_IDS.ETHEREUM];
 
-const trackSpy = jest.fn();
+const trackMetaMetricsEventSpy = jest.fn();
 
 describe('SmartTransactionsController', () => {
   let smartTransactionsController: SmartTransactionsController;
@@ -221,12 +221,8 @@ describe('SmartTransactionsController', () => {
       txController: {
         confirmExternalTransaction: confirmExternalMock,
       },
-      trackMetaMetricsEvent: trackSpy,
+      trackMetaMetricsEvent: trackMetaMetricsEventSpy,
     });
-
-    // jest
-    //   .spyOn(smartTransactionsController, 'checkPoll')
-    //   .mockImplementation(() => ({}));
   });
 
   afterEach(async () => {
@@ -310,7 +306,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.trackStxStatusChange(
         smartTransaction as SmartTransaction,
       );
-      expect(trackSpy).not.toHaveBeenCalled();
+      expect(trackMetaMetricsEventSpy).not.toHaveBeenCalled();
     });
 
     it('does not track if smartTransaction and prevSmartTransaction have the same status', () => {
@@ -319,7 +315,7 @@ describe('SmartTransactionsController', () => {
         smartTransaction as SmartTransaction,
         smartTransaction as SmartTransaction,
       );
-      expect(trackSpy).not.toHaveBeenCalled();
+      expect(trackMetaMetricsEventSpy).not.toHaveBeenCalled();
     });
 
     it('tracks status change if smartTransaction and prevSmartTransaction have different statuses', () => {
@@ -332,7 +328,7 @@ describe('SmartTransactionsController', () => {
         smartTransaction as SmartTransaction,
         prevSmartTransaction as SmartTransaction,
       );
-      expect(trackSpy).toHaveBeenCalled();
+      expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
     });
   });
 
@@ -549,7 +545,7 @@ describe('SmartTransactionsController', () => {
           successfulStx as SmartTransaction,
         );
       } finally {
-        expect(trackSpy).toHaveBeenCalled();
+        expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
       }
     });
   });
