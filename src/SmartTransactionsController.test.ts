@@ -223,6 +223,8 @@ describe('SmartTransactionsController', () => {
       },
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
     });
+    // eslint-disable-next-line jest/prefer-spy-on
+    smartTransactionsController.subscribe = jest.fn();
   });
 
   afterEach(async () => {
@@ -266,7 +268,11 @@ describe('SmartTransactionsController', () => {
 
   describe('checkPoll', () => {
     it('calls poll if there is no pending transaction and pending transactions', () => {
-      const pollSpy = jest.spyOn(smartTransactionsController, 'poll');
+      const pollSpy = jest
+        .spyOn(smartTransactionsController, 'poll')
+        .mockImplementation(() => {
+          return new Promise(() => ({}));
+        });
       const { smartTransactionsState } = smartTransactionsController.state;
       const pendingStx = createStateAfterPending();
       smartTransactionsController.update({
@@ -285,6 +291,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.timeoutHandle = setInterval(() => ({}));
       smartTransactionsController.checkPoll(smartTransactionsController.state);
       expect(stopSpy).toHaveBeenCalled();
+      clearInterval(smartTransactionsController.timeoutHandle);
     });
   });
 
@@ -297,6 +304,27 @@ describe('SmartTransactionsController', () => {
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
       networkListener({ provider: { chainId: '56' } } as NetworkState);
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateSmartTransactions', () => {
+    it('calls fetchSmartTransactionsStatus if there are pending transactions', () => {
+      const fetchSmartTransactionsStatusSpy = jest
+        .spyOn(smartTransactionsController, 'fetchSmartTransactionsStatus')
+        .mockImplementation(() => {
+          return new Promise(() => ({}));
+        });
+      const { smartTransactionsState } = smartTransactionsController.state;
+      const pendingStx = createStateAfterPending();
+      smartTransactionsController.update({
+        smartTransactionsState: {
+          ...smartTransactionsState,
+          smartTransactions: {
+            [CHAIN_IDS.ETHEREUM]: pendingStx as SmartTransaction[],
+          },
+        },
+      });
+      expect(fetchSmartTransactionsStatusSpy).toHaveBeenCalled();
     });
   });
 
@@ -367,9 +395,8 @@ describe('SmartTransactionsController', () => {
 
   describe('submitSignedTransactions', () => {
     beforeEach(() => {
-      jest
-        .spyOn(smartTransactionsController, 'checkPoll')
-        .mockImplementation(() => ({}));
+      // eslint-disable-next-line jest/prefer-spy-on
+      smartTransactionsController.checkPoll = jest.fn(() => ({}));
     });
 
     it('submits a smart transaction with signed transactions', async () => {
@@ -395,9 +422,8 @@ describe('SmartTransactionsController', () => {
 
   describe('fetchSmartTransactionsStatus', () => {
     beforeEach(() => {
-      jest
-        .spyOn(smartTransactionsController, 'checkPoll')
-        .mockImplementation(() => ({}));
+      // eslint-disable-next-line jest/prefer-spy-on
+      smartTransactionsController.checkPoll = jest.fn(() => ({}));
     });
 
     it('fetches a pending status for a single smart transaction via batchStatus API', async () => {
@@ -463,6 +489,11 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('updateSmartTransaction', () => {
+    beforeEach(() => {
+      // eslint-disable-next-line jest/prefer-spy-on
+      smartTransactionsController.checkPoll = jest.fn(() => ({}));
+    });
+
     it('updates smart transaction based on uuid', () => {
       const pendingStx = {
         ...createStateAfterPending()[0],
@@ -521,6 +552,11 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('confirmSmartTransaction', () => {
+    beforeEach(() => {
+      // eslint-disable-next-line jest/prefer-spy-on
+      smartTransactionsController.checkPoll = jest.fn(() => ({}));
+    });
+
     it('calls confirm external transaction', async () => {
       const successfulStx = {
         ...createStateAfterSuccess()[0],
@@ -571,6 +607,11 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('getTransactions', () => {
+    beforeEach(() => {
+      // eslint-disable-next-line jest/prefer-spy-on
+      smartTransactionsController.checkPoll = jest.fn(() => ({}));
+    });
+
     it('retrieves smart transactions by addressFrom and status', () => {
       const { smartTransactionsState } = smartTransactionsController.state;
       const pendingStx = {
