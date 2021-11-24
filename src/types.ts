@@ -85,6 +85,11 @@ export interface SmartTransaction {
   cancellable?: boolean;
 }
 
+export interface Fee {
+  maxFeePerGas: number;
+  maxPriorityFeePerGas: number;
+}
+
 // TODO: maybe grab the type from transactions controller?
 export type UnsignedTransaction = any;
 
