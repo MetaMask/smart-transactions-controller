@@ -459,13 +459,10 @@ export default class SmartTransactionsController extends BaseController<
     const unsignedTransactionWithNonce = await this.addNonceToTransaction(
       unsignedTransaction,
     );
-    const data = await this.fetch(
-      getAPIRequestURL(APIType.GET_FEES, chainId),
-      {
-        method: 'POST',
-        body: JSON.stringify({ tx: unsignedTransactionWithNonce }),
-      },
-    );
+    const data = await this.fetch(getAPIRequestURL(APIType.GET_FEES, chainId), {
+      method: 'POST',
+      body: JSON.stringify({ tx: unsignedTransactionWithNonce }),
+    });
 
     return data;
   }
