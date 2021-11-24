@@ -34,7 +34,7 @@ describe('src/utils.js', () => {
 
     it('returns a URL for getting transactions', () => {
       expect(
-        utils.getAPIRequestURL(APIType.GET_TRANSACTIONS, CHAIN_IDS.ETHEREUM),
+        utils.getAPIRequestURL(APIType.GET_FEES, CHAIN_IDS.ETHEREUM),
       ).toBe(`${API_BASE_URL}/networks/${ethereumChainIdDec}/getFees`);
     });
 

@@ -1,7 +1,7 @@
 /** API */
 
 export enum APIType {
-  'GET_TRANSACTIONS',
+  'GET_FEES',
   'SUBMIT_TRANSACTIONS',
   'CANCEL',
   'BATCH_STATUS',
