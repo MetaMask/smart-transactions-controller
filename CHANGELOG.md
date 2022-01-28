@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [1.7.0]
+### Added
+- Fix UTs, change threshold ([#49](https://github.com/MetaMask/smart-transactions-controller/pull/49))
 
 ## [1.6.0]
 ### Added
