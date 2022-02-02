@@ -595,9 +595,9 @@ export default class SmartTransactionsController extends BaseController<
     setTimeout(() => {
       if (!this.isNewSmartTransaction(data.uuid)) {
         // Only do this for an existing smart transaction. If an STX is not in the list anymore
-        // (e.g. because it was cancelled and a new one was submitted, which delets the first one),
+        // (e.g. because it was cancelled and a new one was submitted, which deletes the first one),
         // do not try to update the old one, because it would create a new one with most
-        // of the required params missing. It would only have "uuid" and "cancellable" params.
+        // of the required STX params missing. It would only have "uuid" and "cancellable" params.
         this.updateSmartTransaction({
           uuid: data.uuid,
           cancellable: false,
