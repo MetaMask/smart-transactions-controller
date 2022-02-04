@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [1.8.0]
-### Uncategorized
+### Added
 - Do not update an STX which doesn't exist anymore, add UTs ([#52](https://github.com/MetaMask/smart-transactions-controller/pull/52))
 
 ## [1.7.0]
