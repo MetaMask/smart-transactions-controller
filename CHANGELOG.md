@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [1.9.0]
-### Uncategorized
+### Added
 - Only accept the "getNonceLock" fn and not the whole "nonceTracker" ([#54](https://github.com/MetaMask/smart-transactions-controller/pull/54))
 
 ## [1.8.0]
