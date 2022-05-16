@@ -468,7 +468,7 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   async getFees(
-    unsignedTransaction: UnsignedTransaction,
+    tradeTx: UnsignedTransaction,
     approvalTx: UnsignedTransaction,
   ): Promise<Fees> {
     const { chainId } = this.config;
@@ -479,10 +479,10 @@ export default class SmartTransactionsController extends BaseController<
       );
       transactions.push(unsignedApprovalTransactionWithNonce);
     }
-    const unsignedTransactionWithNonce = await this.addNonceToTransaction(
-      unsignedTransaction,
+    const unsignedTradeTransactionWithNonce = await this.addNonceToTransaction(
+      tradeTx,
     );
-    transactions.push(unsignedTransactionWithNonce);
+    transactions.push(unsignedTradeTransactionWithNonce);
     const data = await this.fetch(getAPIRequestURL(APIType.GET_FEES, chainId), {
       method: 'POST',
       body: JSON.stringify({
