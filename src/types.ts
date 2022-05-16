@@ -109,13 +109,7 @@ export interface Fees {
   tradeTxFees: IndividualTxFees | undefined;
 }
 
-export interface EstimatedGas {
-  gasUsed: number;
-  gasLimit: number;
-  feeEstimate: number;
-}
-
-// TODO: maybe grab the type from transactions controller?
+// TODO
 export type UnsignedTransaction = any;
 
 // TODO

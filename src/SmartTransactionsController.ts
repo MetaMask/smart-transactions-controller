@@ -18,7 +18,6 @@ import {
   SmartTransactionsStatus,
   SmartTransactionStatuses,
   Fees,
-  EstimatedGas,
   IndividualTxFees,
 } from './types';
 import {
@@ -54,10 +53,6 @@ export interface SmartTransactionsControllerState extends BaseState {
     fees: {
       approvalTxFees: IndividualTxFees | undefined;
       tradeTxFees: IndividualTxFees | undefined;
-    };
-    estimatedGas: {
-      txData: EstimatedGas | undefined;
-      approvalTxData: EstimatedGas | undefined;
     };
   };
 }
@@ -131,10 +126,6 @@ export default class SmartTransactionsController extends BaseController<
           tradeTxFees: undefined,
         },
         liveness: true,
-        estimatedGas: {
-          txData: undefined,
-          approvalTxData: undefined,
-        },
       },
     };
 
@@ -478,13 +469,13 @@ export default class SmartTransactionsController extends BaseController<
 
   async getFees(
     unsignedTransaction: UnsignedTransaction,
-    approveTxParams: UnsignedTransaction,
+    approvalTx: UnsignedTransaction,
   ): Promise<Fees> {
     const { chainId } = this.config;
     const transactions = [];
-    if (approveTxParams) {
+    if (approvalTx) {
       const unsignedApprovalTransactionWithNonce = await this.addNonceToTransaction(
-        approveTxParams,
+        approvalTx,
       );
       transactions.push(unsignedApprovalTransactionWithNonce);
     }
@@ -500,7 +491,7 @@ export default class SmartTransactionsController extends BaseController<
     });
     let approvalTxFees;
     let tradeTxFees;
-    if (approveTxParams) {
+    if (approvalTx) {
       approvalTxFees = data?.txs[0];
       tradeTxFees = data?.txs[1];
     } else {
@@ -520,53 +511,6 @@ export default class SmartTransactionsController extends BaseController<
       approvalTxFees,
       tradeTxFees,
     };
-  }
-
-  async estimateGas(
-    unsignedTransaction: UnsignedTransaction,
-    approveTxParams: UnsignedTransaction,
-  ): Promise<EstimatedGas> {
-    const { chainId } = this.config;
-
-    let approvalTxData;
-    if (approveTxParams) {
-      const unsignedApprovalTransactionWithNonce = await this.addNonceToTransaction(
-        approveTxParams,
-      );
-      approvalTxData = await this.fetch(
-        getAPIRequestURL(APIType.ESTIMATE_GAS, chainId),
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            tx: unsignedApprovalTransactionWithNonce,
-          }),
-        },
-      );
-    }
-    const unsignedTransactionWithNonce = await this.addNonceToTransaction(
-      unsignedTransaction,
-    );
-    const data = await this.fetch(
-      getAPIRequestURL(APIType.ESTIMATE_GAS, chainId),
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          tx: unsignedTransactionWithNonce,
-          ...(approveTxParams && { pending_txs: [approveTxParams] }),
-        }),
-      },
-    );
-    this.update({
-      smartTransactionsState: {
-        ...this.state.smartTransactionsState,
-        estimatedGas: {
-          txData: data,
-          approvalTxData,
-        },
-      },
-    });
-
-    return data;
   }
 
   // * After this successful call client must add a nonce representative to
