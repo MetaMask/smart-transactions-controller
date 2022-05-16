@@ -96,12 +96,17 @@ export interface Fee {
   maxPriorityFeePerGas: number;
 }
 
-export interface Fees {
+export interface IndividualTxFees {
   fees: Fee[];
   cancelFees: Fee[];
   feeEstimate: number;
   gasLimit: number;
   gasUsed: number;
+}
+
+export interface Fees {
+  approvalTxFees: IndividualTxFees | undefined;
+  tradeTxFees: IndividualTxFees | undefined;
 }
 
 export interface EstimatedGas {
