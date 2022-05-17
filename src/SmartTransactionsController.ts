@@ -30,6 +30,7 @@ import {
   getStxProcessingTime,
   handleFetch,
   isSmartTransactionCancellable,
+  incrementNonceInHex,
 } from './utils';
 import { CHAIN_IDS } from './constants';
 
@@ -473,15 +474,22 @@ export default class SmartTransactionsController extends BaseController<
   ): Promise<Fees> {
     const { chainId } = this.config;
     const transactions = [];
+    let unsignedTradeTransactionWithNonce;
     if (approvalTx) {
       const unsignedApprovalTransactionWithNonce = await this.addNonceToTransaction(
         approvalTx,
       );
       transactions.push(unsignedApprovalTransactionWithNonce);
+      unsignedTradeTransactionWithNonce = {
+        ...tradeTx,
+        // If there is an approval tx, the trade tx's nonce is increased by 1.
+        nonce: incrementNonceInHex(unsignedApprovalTransactionWithNonce.nonce),
+      };
+    } else {
+      unsignedTradeTransactionWithNonce = await this.addNonceToTransaction(
+        tradeTx,
+      );
     }
-    const unsignedTradeTransactionWithNonce = await this.addNonceToTransaction(
-      tradeTx,
-    );
     transactions.push(unsignedTradeTransactionWithNonce);
     const data = await this.fetch(getAPIRequestURL(APIType.GET_FEES, chainId), {
       method: 'POST',
