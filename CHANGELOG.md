@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.1.0]
-### Uncategorized
+### Added
 - chore(deps): bump @metamask/controllers from 29.0.1 to 30.0.0 ([#75](https://github.com/MetaMask/smart-transactions-controller/pull/75))
 - chore(deps-dev): bump @metamask/auto-changelog from 2.5.0 to 2.6.0 ([#71](https://github.com/MetaMask/smart-transactions-controller/pull/71))
 - Return a pending status for a cancelled tx that hasn't been settled yet ([#74](https://github.com/MetaMask/smart-transactions-controller/pull/74))
