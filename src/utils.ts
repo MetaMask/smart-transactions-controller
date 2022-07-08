@@ -163,12 +163,12 @@ export const getStxProcessingTime = (
 };
 
 export const mapKeysToCamel = (
-  obj: Record<string, unknown>,
-): Record<string, unknown> => {
+  obj: Record<string, any>,
+): Record<string, any> => {
   if (!_.isObject(obj)) {
     return obj;
   }
-  const mappedValues = _.mapValues(obj, (val: Record<string, unknown>) => {
+  const mappedValues = _.mapValues(obj, (val: Record<string, any>) => {
     if (_.isArray(val)) {
       return val.map(mapKeysToCamel);
     } else if (_.isObject(val)) {
