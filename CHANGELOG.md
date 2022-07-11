@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.2.0]
-### Uncategorized
+### Changed
 - chore(deps): bump @metamask/controllers from 30.0.0 to 30.1.0 ([#81](https://github.com/MetaMask/smart-transactions-controller/pull/81))
 - chore(deps-dev): bump @metamask/eslint-config-nodejs from 8.0.0 to 9.0.0 ([#80](https://github.com/MetaMask/smart-transactions-controller/pull/80))
 - chore(deps-dev): bump @metamask/auto-changelog from 2.6.0 to 2.6.1 ([#79](https://github.com/MetaMask/smart-transactions-controller/pull/79))
