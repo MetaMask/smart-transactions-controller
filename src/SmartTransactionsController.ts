@@ -468,7 +468,7 @@ export default class SmartTransactionsController extends BaseController<
     };
   }
 
-  async clearFees(): Promise<Fees> {
+  clearFees(): Fees {
     const fees = {
       approvalTxFees: undefined,
       tradeTxFees: undefined,
