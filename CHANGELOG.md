@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.3.0]
-### Uncategorized
+### Added
 - Add the "clearFees" function ([#84](https://github.com/MetaMask/smart-transactions-controller/pull/84))
 
 ## [2.2.0]
