@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.3.1]
-### Uncategorized
+### Changed
 - Remove unnecessary event props ([#93](https://github.com/MetaMask/smart-transactions-controller/pull/93))
 - Update `is-release` filter ([#91](https://github.com/MetaMask/smart-transactions-controller/pull/91))
 - update is-release filter ([#89](https://github.com/MetaMask/smart-transactions-controller/pull/89))
