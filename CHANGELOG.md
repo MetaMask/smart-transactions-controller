@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.3.2]
-### Uncategorized
-- Replace `ethers` with submodules ([#95](https://github.com/MetaMask/smart-transactions-controller/pull/95))
+### Changed
+- Replace `ethers` with submodules (@ethersproject/bignumber,@ethersproject/bytes, @ethersproject/providers,) - no functional change ([#95](https://github.com/MetaMask/smart-transactions-controller/pull/95))
 
 ## [2.3.1]
 ### Changed
