@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [3.0.0]
-### Uncategorized
+### Changed
+- **BREAKING:** Bump required Node version to v14 ([#90](https://github.com/MetaMask/smart-transactions-controller/pull/90))
 - `@metamask/controllers@32.0.2` ([#104](https://github.com/MetaMask/smart-transactions-controller/pull/104))
-- BREAKING: Bump Node to v14 ([#90](https://github.com/MetaMask/smart-transactions-controller/pull/90))
 
 ## [2.3.2]
 ### Changed
