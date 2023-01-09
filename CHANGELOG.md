@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [3.1.0]
-### Uncategorized
-- chore(deps): bump @metamask/base-controller from 1.0.0 to 1.1.1 ([#112](https://github.com/MetaMask/smart-transactions-controller/pull/112))
-- Use controllers monorepo ([#110](https://github.com/MetaMask/smart-transactions-controller/pull/110))
-- chore(deps-dev): bump @metamask/auto-changelog from 3.0.0 to 3.1.0 ([#109](https://github.com/MetaMask/smart-transactions-controller/pull/109))
+### Changed
+- Replace use of full `@metamask/controllers` repo with packages from `@metamask/core-monorepo` ([#110](https://github.com/MetaMask/smart-transactions-controller/pull/110))
+
 
 ## [3.0.0]
 ### Changed
