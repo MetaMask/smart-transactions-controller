@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Replace use of full `@metamask/controllers` repo with packages from `@metamask/core-monorepo` ([#110](https://github.com/MetaMask/smart-transactions-controller/pull/110))
 
-
 ## [3.0.0]
 ### Changed
 - **BREAKING:** Bump required Node version to v14 ([#90](https://github.com/MetaMask/smart-transactions-controller/pull/90))
