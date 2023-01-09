@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0]
+### Uncategorized
+- chore(deps): bump @metamask/base-controller from 1.0.0 to 1.1.1 ([#112](https://github.com/MetaMask/smart-transactions-controller/pull/112))
+- Use controllers monorepo ([#110](https://github.com/MetaMask/smart-transactions-controller/pull/110))
+- chore(deps-dev): bump @metamask/auto-changelog from 3.0.0 to 3.1.0 ([#109](https://github.com/MetaMask/smart-transactions-controller/pull/109))
+
 ## [3.0.0]
 ### Changed
 - **BREAKING:** Bump required Node version to v14 ([#90](https://github.com/MetaMask/smart-transactions-controller/pull/90))
@@ -129,7 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v2.3.2...v3.0.0
 [2.3.2]: https://github.com/MetaMask/smart-transactions-controller/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v2.3.0...v2.3.1
