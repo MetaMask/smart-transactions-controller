@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.0]
 ### Changed
-- Replace use of full `@metamask/controllers` repo with packages from `@metamask/core-monorepo` ([#110](https://github.com/MetaMask/smart-transactions-controller/pull/110))
+- Replace use of full `@metamask/controllers` repo with packages from `@metamask/core-monorepo` ([#110](https://github.com/MetaMask/smart-transactions-controller/pull/110), [#112](https://github.com/MetaMask/smart-transactions-controller/pull/112), [#113](https://github.com/MetaMask/smart-transactions-controller/pull/113))
 
 ## [3.0.0]
 ### Changed
