@@ -230,7 +230,7 @@ export default class SmartTransactionsController extends BaseController<
     }
 
     const sensitiveProperties = {
-      stx_status: updatedSmartTransaction.status,
+      stx_status: updatedSmartTransaction.status as SmartTransactionStatuses,
       token_from_symbol: updatedSmartTransaction.sourceTokenSymbol,
       token_to_symbol: updatedSmartTransaction.destinationTokenSymbol,
       processing_time: getStxProcessingTime(updatedSmartTransaction.time),
@@ -238,6 +238,45 @@ export default class SmartTransactionsController extends BaseController<
       current_stx_enabled: true,
       stx_user_opt_in: true,
     };
+
+    // for reporting reasons we are logging also stx statuses mapped to regular tx statuses
+    // resulting in 2 events being logged for each stx status change
+    // the category: swaps and the category: Transactions
+    const txEventData = {
+      category: 'Transactions',
+      properties: {
+        chain_id: updatedSmartTransaction.chainId,
+        referrer: updatedSmartTransaction.origin,
+        network: updatedSmartTransaction.metamaskNetworkId,
+        // Hardcoded properties since we don't have access to the transaction object at this point
+        // These properties are the same for all STX
+        account_type: 'MetaMask',
+        transaction_type: 'contractInteraction',
+        source: 'user',
+        token_standard: 'NONE',
+      },
+      sensitiveProperties: {
+        status: sensitiveProperties.stx_status,
+        first_seen: updatedSmartTransaction.time,
+        completion_time: sensitiveProperties.processing_time,
+      },
+    };
+
+    if (sensitiveProperties.stx_status === SmartTransactionStatuses.PENDING) {
+      this.trackMetaMetricsEvent({
+        event: 'Transaction Submitted',
+        ...txEventData,
+      });
+    } else if (
+      sensitiveProperties.stx_status.includes(
+        SmartTransactionStatuses.CANCELLED,
+      )
+    ) {
+      this.trackMetaMetricsEvent({
+        event: 'Transaction Finalized',
+        ...txEventData,
+      });
+    }
 
     this.trackMetaMetricsEvent({
       event: 'STX Status Updated',
