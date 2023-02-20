@@ -831,12 +831,20 @@
     semver "^7.3.5"
     yargs "^17.0.1"
 
-"@metamask/base-controller@^1.0.0", "@metamask/base-controller@^1.1.1":
+"@metamask/base-controller@^1.0.0":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@metamask/base-controller/-/base-controller-1.1.1.tgz#34c2db471328b92a3a46f9c2547bbb9d37803258"
   integrity sha512-erDfd+OcHnixSZObPNHuDn2G3rRT2B9J/JaOmjjQN64o9RqDYid87Zb0z03wK8cbJ/pEHhhDIBn6t2gMWcdwrQ==
   dependencies:
     "@metamask/controller-utils" "^1.0.0"
+    immer "^9.0.6"
+
+"@metamask/base-controller@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/base-controller/-/base-controller-2.0.0.tgz#8f9130df3edaa270ade00378cf57917545d44617"
+  integrity sha512-DppA4/HCabsphVucNRpWA3/mp6m2KhZr/8gidSlpUNLMFqljOKA81GW9nemN3HDqH1RoZdXusI82/4SPEbdbaA==
+  dependencies:
+    "@metamask/controller-utils" "^3.0.0"
     immer "^9.0.6"
 
 "@metamask/controller-utils@^1.0.0":
@@ -850,6 +858,17 @@
     ethjs-unit "^0.1.6"
     fast-deep-equal "^3.1.3"
     isomorphic-fetch "^3.0.0"
+
+"@metamask/controller-utils@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/controller-utils/-/controller-utils-3.0.0.tgz#e0984cdab14280409297671b5858891527c5e4ee"
+  integrity sha512-JjFWBZnnh5DSX2tRsw5xtXxaqVkTzaW7mkSZ+lL3LoCAw47Cf8zGP1kGR6VKxcceKi+MpEFvZr7gf1OFnOoEjw==
+  dependencies:
+    eth-ens-namehash "^2.0.8"
+    eth-rpc-errors "^4.0.0"
+    ethereumjs-util "^7.0.10"
+    ethjs-unit "^0.1.6"
+    fast-deep-equal "^3.1.3"
 
 "@metamask/eslint-config-jest@^8.0.0":
   version "8.0.0"
@@ -871,13 +890,13 @@
   resolved "https://registry.yarnpkg.com/@metamask/eslint-config/-/eslint-config-8.0.0.tgz#f4e3bcd6b37ec135b5a72902b0526cba2a6b5a4d"
   integrity sha512-ZO9B3ohNhjomrufNAkxnDXV46Kut7NKzri7itDxUzHJncNtI1of7ewWh6fKPl/hr6Al6Gd7WgjPdJZGFpzKPQw==
 
-"@metamask/network-controller@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@metamask/network-controller/-/network-controller-2.0.0.tgz#ccc90b42c298e93ef42995e16b3e0d5858cffdeb"
-  integrity sha512-R5fWgDpitCJqyqXEno1d9fl4CpxQZdATORxk+VBoQk88IfmMqKRY/4fPlD3VP9uZl+UnHVqKCZfJEbski3VuMw==
+"@metamask/network-controller@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/network-controller/-/network-controller-5.0.0.tgz#7f14a06f9ebec738888d6e2bf10ae05a4caabcb6"
+  integrity sha512-rYZl/geh3+M03umPJrWkkMhy+hJL6L0P7rV+KwzFwgfE8jL3EdB+Z9PtIVkGj0qj/8QIswhP3j/xAFWzyRlsZw==
   dependencies:
-    "@metamask/base-controller" "^1.1.1"
-    "@metamask/controller-utils" "^1.0.0"
+    "@metamask/base-controller" "^2.0.0"
+    "@metamask/controller-utils" "^3.0.0"
     async-mutex "^0.2.6"
     babel-runtime "^6.26.0"
     eth-json-rpc-infura "^5.1.0"
