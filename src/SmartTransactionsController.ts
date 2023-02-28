@@ -570,7 +570,7 @@ export default class SmartTransactionsController extends BaseController<
       this.updateSmartTransaction({
         chainId,
         nonceDetails,
-        metamaskNetworkId: chainId.replace(/^0x/u, ''),
+        metamaskNetworkId: new BigNumber(chainId, 16).toString(10),
         preTxBalance,
         status: SmartTransactionStatuses.PENDING,
         time,

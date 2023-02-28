@@ -6,8 +6,6 @@ import SmartTransactionsController, {
 import { API_BASE_URL, CHAIN_IDS } from './constants';
 import { SmartTransaction, SmartTransactionStatuses } from './types';
 
-const confirmExternalMock = jest.fn();
-
 jest.mock('@ethersproject/bytes', () => ({
   ...jest.requireActual('@ethersproject/bytes'),
   hexlify: (str: string) => `0x${str}`,
@@ -27,6 +25,65 @@ jest.mock('@ethersproject/providers', () => ({
     getBlock = jest.fn();
   },
 }));
+
+/**
+ * The object that the callback to `withController` will be called with.
+ */
+interface WithControllerCallbackArgs {
+  /**
+   * The constructed instance of SmartTransactionsController.
+   */
+  controller: SmartTransactionsController;
+  /**
+   * The function that will effectively be called when the network changes.
+   * You'll want to call this yourself in tests.
+   */
+  networkStateChangeListener: (networkState: NetworkState) => void;
+  /**
+   * The current date, as stubbed via `jest.useFakeTimers()`.
+   */
+  now: Date;
+}
+
+/**
+ * The callback for `withController`.
+ */
+type WithControllerCallback<ReturnValue> = (
+  args: WithControllerCallbackArgs,
+) => Promise<ReturnValue> | ReturnValue;
+
+/**
+ * The options bag that `withController` takes.
+ */
+interface WithControllerOptions {
+  /**
+   * Will be turned into the first argument that the controller constructor
+   * takes.
+   */
+  options?: Partial<
+    ConstructorParameters<typeof SmartTransactionsController>[0]
+  >;
+  /**
+   * Will be turned into the second argument that the controller constructor
+   * takes.
+   */
+  config?:
+    | ConstructorParameters<typeof SmartTransactionsController>[1]
+    | undefined;
+  /**
+   * Will be turned into the third argument that the controller constructor
+   * takes.
+   */
+  state?:
+    | ConstructorParameters<typeof SmartTransactionsController>[2]
+    | undefined;
+}
+
+type WithControllerArgs<ReturnValue> =
+  | [WithControllerCallback<ReturnValue>]
+  | [WithControllerOptions, WithControllerCallback<ReturnValue>];
+
+const confirmExternalMock = jest.fn();
 
 const addressFrom = '0x268392a24B6b093127E8581eAfbD1DA228bAdAe3';
 
@@ -143,10 +200,6 @@ const createGetFeesApiResponse = () => {
       },
     ],
   };
-};
-
-const createSubmitTransactionsApiResponse = () => {
-  return { uuid: 'dP23W7c2kt4FK9TmXOkz1UM2F20' };
 };
 
 // TODO: How exactly a signed transaction should look like?
@@ -449,29 +502,53 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('submitSignedTransactions', () => {
-    beforeEach(() => {
-      // eslint-disable-next-line jest/prefer-spy-on
-      smartTransactionsController.checkPoll = jest.fn(() => ({}));
-    });
-
     it('submits a smart transaction with signed transactions', async () => {
-      const signedTransaction = createSignedTransaction();
-      const signedCanceledTransaction = createSignedCanceledTransaction();
-      const submitTransactionsApiResponse = createSubmitTransactionsApiResponse(); // It has uuid.
-      nock(API_BASE_URL)
-        .post(`/networks/${ethereumChainIdDec}/submitTransactions`)
-        .reply(200, submitTransactionsApiResponse);
+      const chainIdHex = '0x64';
+      const chainIdDec = 100;
+      const uuid = 'abc123';
 
-      await smartTransactionsController.submitSignedTransactions({
-        signedTransactions: [signedTransaction],
-        signedCanceledTransactions: [signedCanceledTransaction],
-        txParams: signedTransaction,
-      });
+      await withController(
+        {
+          config: {
+            chainId: chainIdHex,
+            supportedChainIds: [chainIdHex],
+          },
+        },
+        async ({ controller }) => {
+          const signedTransaction = createSignedTransaction();
+          const signedCanceledTransaction = createSignedCanceledTransaction();
+          nock(API_BASE_URL)
+            .post(`/networks/${chainIdDec}/submitTransactions`)
+            .reply(200, { uuid });
 
-      expect(
-        smartTransactionsController.state.smartTransactionsState
-          .smartTransactions[CHAIN_IDS.ETHEREUM][0].uuid,
-      ).toStrictEqual('dP23W7c2kt4FK9TmXOkz1UM2F20');
+          const promise = controller.submitSignedTransactions({
+            signedTransactions: [signedTransaction],
+            signedCanceledTransactions: [signedCanceledTransaction],
+            txParams: signedTransaction,
+          });
+          jest.runOnlyPendingTimers();
+          await promise;
+
+          expect(
+            controller.state.smartTransactionsState.smartTransactions,
+          ).toStrictEqual({
+            [chainIdHex]: [
+              expect.objectContaining({
+                chainId: chainIdHex,
+                metamaskNetworkId: chainIdDec.toString(),
+                uuid,
+                history: [
+                  expect.objectContaining({
+                    chainId: chainIdHex,
+                    metamaskNetworkId: chainIdDec.toString(),
+                    uuid,
+                  }),
+                ],
+              }),
+            ],
+          });
+        },
+      );
     });
   });
 
@@ -732,3 +809,54 @@ describe('SmartTransactionsController', () => {
     });
   });
 });
+
+/**
+ * Builds a controller based on the given options, calls the given function
+ * with that controller, then ensures the controller is properly torn down.
+ *
+ * @param args - Either a function, or an options bag + a function. The options
+ * bag will be used to construct a SmartTransactionController (see {@link
+ * WithControllerOptions}); the function will be called with the built
+ * controller.
+ * @returns Whatever the callback returns.
+ */
+async function withController<ReturnValue>(
+  ...args: WithControllerArgs<ReturnValue>
+): Promise<ReturnValue> {
+  // We know that this variable will get assigned in the controller constructor.
+  let networkStateChangeListener!: (networkState: NetworkState) => void;
+  const defaultOptions = {
+    onNetworkStateChange: (listener: (networkState: NetworkState) => void) => {
+      networkStateChangeListener = listener;
+    },
+    getNonceLock: jest.fn(() => {
+      return {
+        nextNonce: 'nextNonce',
+        releaseLock: jest.fn(),
+      };
+    }),
+    provider: jest.fn(),
+    confirmExternalTransaction: confirmExternalMock,
+    trackMetaMetricsEvent: trackMetaMetricsEventSpy,
+  };
+  const [{ options = {}, config = {}, state = {} }, fn] =
+    args.length === 2 ? args : [{}, args[0]];
+  const constructorArgs: ConstructorParameters<
+    typeof SmartTransactionsController
+  > = [{ ...defaultOptions, ...options }, config, state];
+
+  const now = new Date(2023, 0, 1);
+
+  jest.useFakeTimers('modern');
+  jest.setSystemTime(now);
+  const controller = new SmartTransactionsController(...constructorArgs);
+  // eslint-disable-next-line jest/prefer-spy-on
+  controller.subscribe = jest.fn();
+
+  try {
+    return await fn({ controller, networkStateChangeListener, now });
+  } finally {
+    await controller.stop();
+    jest.useRealTimers();
+  }
+}
