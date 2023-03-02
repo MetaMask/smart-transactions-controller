@@ -540,7 +540,7 @@ describe('SmartTransactionsController', () => {
                 history: [
                   expect.objectContaining({
                     chainId: chainIdHex,
-                    metamaskNetworkId: chainIdDec.toString(),
+                    metamaskNetworkId: chainIdDec,
                     uuid,
                   }),
                 ],
