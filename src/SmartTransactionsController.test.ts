@@ -503,8 +503,8 @@ describe('SmartTransactionsController', () => {
 
   describe('submitSignedTransactions', () => {
     it('submits a smart transaction with signed transactions', async () => {
+      const chainIdDec = '100';
       const chainIdHex = '0x64';
-      const chainIdDec = 100;
       const uuid = 'abc123';
 
       await withController(
