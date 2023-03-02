@@ -535,7 +535,7 @@ describe('SmartTransactionsController', () => {
             [chainIdHex]: [
               expect.objectContaining({
                 chainId: chainIdHex,
-                metamaskNetworkId: chainIdDec.toString(),
+                metamaskNetworkId: chainIdDec,
                 uuid,
                 history: [
                   expect.objectContaining({
