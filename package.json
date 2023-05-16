@@ -13,17 +13,17 @@
     "dist/"
   ],
   "scripts": {
+    "build": "tsc --project .",
+    "build:clean": "rimraf dist && yarn build",
+    "build:link": "yarn build && cd dist && yarn link && rm -rf node_modules && cd ..",
+    "lint": "yarn lint:eslint && yarn lint:misc --check",
+    "lint:eslint": "eslint . --cache --ext js,ts",
+    "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
+    "lint:misc": "prettier '**/*.json' '**/*.md' '!CHANGELOG.md' '**/*.yml' --ignore-path .gitignore",
+    "prepublishOnly": "yarn build:clean && yarn lint && yarn test",
     "setup": "yarn install && yarn allow-scripts",
     "test": "jest",
-    "test:watch": "jest --watchAll",
-    "prepublishOnly": "yarn build:clean && yarn lint && yarn test",
-    "lint:eslint": "eslint . --cache --ext js,ts",
-    "lint:misc": "prettier '**/*.json' '**/*.md' '!CHANGELOG.md' '**/*.yml' --ignore-path .gitignore",
-    "lint": "yarn lint:eslint && yarn lint:misc --check",
-    "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
-    "build:clean": "rimraf dist && yarn build",
-    "build": "tsc --project .",
-    "build:link": "yarn build && cd dist && yarn link && rm -rf node_modules && cd .."
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
