@@ -24,19 +24,14 @@ _Add examples here_
 
 - Install [Node.js](https://nodejs.org) version 14
   - If you are using [nvm](https://github.com/creationix/nvm#installation) (recommended) running `nvm use` will automatically choose the right node version for you.
-- Install [Yarn v1](https://yarnpkg.com/en/docs/install)
-- Run `yarn setup` to install dependencies and run any requried post-install scripts
-  - **Warning:** Do not use the `yarn` / `yarn install` command directly. Use `yarn setup` instead. The normal install command will skip required post-install scripts, leaving your development environment in an invalid state.
+- Install [Yarn v3](https://yarnpkg.com/getting-started/install)
+- Run `yarn install` to install dependencies and run any required post-install scripts
 
 ### Testing and Linting
 
 Run `yarn test` to run the tests once. To run tests on file changes, run `yarn test:watch`.
 
 Run `yarn lint` to run the linter, or run `yarn lint:fix` to run the linter and fix any automatically fixable issues.
-
-### Linking
-
-First, `yarn build:link` in this repository, then link it by running `yarn link` in the consumer repository.
 
 ### Release & Publishing
 
