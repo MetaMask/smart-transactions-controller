@@ -1,22 +1,14 @@
-# MetaMask Module Template
+# `@metamask/smart-transactions-controller`
 
-This TypeScript module is maintained in the style of the MetaMask team.
+MetaMask controller for Smart Transactions.
 
 ## Installation
 
-`yarn add @metamask/this-module`
+`yarn add @metamask/smart-transactions-controller`
 
 or
 
-`npm install @metamask/this-module`
-
-## Usage
-
-_Add examples here_
-
-## API
-
-_Add examples here_
+`npm install @metamask/smart-transactions-controller`
 
 ## Contributing
 
