@@ -15,6 +15,7 @@
   "scripts": {
     "build": "tsc --project .",
     "build:clean": "rm -rf dist && yarn build",
+    "build:link": "yarn build && cd dist && yarn link && rm -rf node_modules && cd ..",
     "lint": "yarn lint:eslint && yarn lint:misc --check",
     "lint:eslint": "eslint . --cache --ext js,ts",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
