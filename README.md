@@ -1,6 +1,6 @@
 # `@metamask/smart-transactions-controller`
 
-MetaMask controller for Smart Transactions.
+Improves success rates for swaps by trialing transactions privately and finding minimum fees.
 
 ## Installation
 
