@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0]
 ### Changed
 - **BREAKING**: Bump minimum Node.js version to v16 ([#161](https://github.com/MetaMask/smart-transactions-controller/pull/161))
+- **BREAKING:** Remove `isomorphic-fetch` ([#131](https://github.com/MetaMask/smart-transactions-controller/pull/131))
+  - Projects lacking `fetch` will now have to supply their own polyfill.
 - Update `metamask/*` dependencies ([#131](https://github.com/MetaMask/smart-transactions-controller/pull/131)), ([#172](https://github.com/MetaMask/smart-transactions-controller/pull/172))
 - Move `@types/lodash` to devDependencies ([#141](https://github.com/MetaMask/smart-transactions-controller/pull/141))
 
