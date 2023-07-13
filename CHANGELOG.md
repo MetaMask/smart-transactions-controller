@@ -7,29 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [4.0.0]
-### Uncategorized
-- deps: update metamask controllers ([#172](https://github.com/MetaMask/smart-transactions-controller/pull/172))
-- Bump minimum Node version to 16 ([#161](https://github.com/MetaMask/smart-transactions-controller/pull/161))
-- Replace placeholders in README ([#144](https://github.com/MetaMask/smart-transactions-controller/pull/144))
-- Sync GitHub workflow files with module template ([#138](https://github.com/MetaMask/smart-transactions-controller/pull/138))
-- Update CODEOWNERS ([#163](https://github.com/MetaMask/smart-transactions-controller/pull/163))
-- deps: jsprim@1.4.1->1.4.2 ([#152](https://github.com/MetaMask/smart-transactions-controller/pull/152))
-- chore(deps): bump minimatch from 3.0.4 to 3.1.2 ([#151](https://github.com/MetaMask/smart-transactions-controller/pull/151))
-- chore(deps): bump qs from 6.5.2 to 6.5.3 ([#146](https://github.com/MetaMask/smart-transactions-controller/pull/146))
-- chore(deps): bump decode-uri-component from 0.2.0 to 0.2.2 ([#147](https://github.com/MetaMask/smart-transactions-controller/pull/147))
-- chore(deps): bump ansi-regex from 5.0.0 to 5.0.1 ([#148](https://github.com/MetaMask/smart-transactions-controller/pull/148))
-- chore(deps): bump node-fetch from 2.6.1 to 2.6.11 ([#149](https://github.com/MetaMask/smart-transactions-controller/pull/149))
-- chore(deps): bump tmpl from 1.0.4 to 1.0.5 ([#150](https://github.com/MetaMask/smart-transactions-controller/pull/150))
-- Upgrade from Yarn v1 to v3 ([#137](https://github.com/MetaMask/smart-transactions-controller/pull/137))
-- bump devDependencies ([#142](https://github.com/MetaMask/smart-transactions-controller/pull/142))
-- devDeps: @lavamoat/allow-scripts@^1.0.5->^2.3.1 ([#140](https://github.com/MetaMask/smart-transactions-controller/pull/140))
-- deps: move @types/lodash to devDeps ([#141](https://github.com/MetaMask/smart-transactions-controller/pull/141))
-- ci: remove require-additional-reviewer workflow ([#143](https://github.com/MetaMask/smart-transactions-controller/pull/143))
-- chore(deps): bump @metamask/utils from 5.0.1 to 5.0.2 ([#139](https://github.com/MetaMask/smart-transactions-controller/pull/139))
-- chore(deps): bump @metamask/network-controller from 7.0.0 to 8.0.0 ([#135](https://github.com/MetaMask/smart-transactions-controller/pull/135))
-- chore(deps): bump minimist from 1.2.5 to 1.2.8 ([#133](https://github.com/MetaMask/smart-transactions-controller/pull/133))
-- deps: @metamask/* updates ([#131](https://github.com/MetaMask/smart-transactions-controller/pull/131))
-- deps: web3-provider-engine@16.0.4->16.0.5 ([#132](https://github.com/MetaMask/smart-transactions-controller/pull/132))
+### Changed
+- **BREAKING**: Bump minimum Node.js version to v16 ([#161](https://github.com/MetaMask/smart-transactions-controller/pull/161))
+- Update `metamask/*` dependencies ([#131](https://github.com/MetaMask/smart-transactions-controller/pull/131)), ([#172](https://github.com/MetaMask/smart-transactions-controller/pull/172))
+- Move `@types/lodash` to devDependencies ([#141](https://github.com/MetaMask/smart-transactions-controller/pull/141))
 
 ## [3.1.0]
 ### Changed
