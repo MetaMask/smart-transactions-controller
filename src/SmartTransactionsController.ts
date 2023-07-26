@@ -11,6 +11,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { hexlify } from '@ethersproject/bytes';
 import mapValues from 'lodash/mapValues';
 import cloneDeep from 'lodash/cloneDeep';
+import { CaipChainId } from '@metamask/utils';
 import {
   APIType,
   SmartTransaction,
@@ -34,7 +35,7 @@ import {
   isSmartTransactionCancellable,
   incrementNonceInHex,
 } from './utils';
-import { CHAIN_IDS } from './constants';
+import { CAIP_CHAIN_IDS } from './constants';
 
 const SECOND = 1000;
 export const DEFAULT_INTERVAL = SECOND * 5;
@@ -42,8 +43,8 @@ export const DEFAULT_INTERVAL = SECOND * 5;
 export type SmartTransactionsControllerConfig = BaseConfig & {
   interval: number;
   clientId: string;
-  chainId: string;
-  supportedChainIds: string[];
+  caipChainId: CaipChainId;
+  supportedCaipChainIds: string[];
 };
 
 export type SmartTransactionsControllerState = BaseState & {
@@ -113,9 +114,9 @@ export default class SmartTransactionsController extends BaseController<
 
     this.defaultConfig = {
       interval: DEFAULT_INTERVAL,
-      chainId: CHAIN_IDS.ETHEREUM,
+      caipChainId: CAIP_CHAIN_IDS.ETHEREUM,
       clientId: 'default',
-      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.RINKEBY],
+      supportedCaipChainIds: [CAIP_CHAIN_IDS.ETHEREUM, CAIP_CHAIN_IDS.RINKEBY],
     };
 
     this.defaultState = {
@@ -140,8 +141,8 @@ export default class SmartTransactionsController extends BaseController<
     this.initializeSmartTransactionsForChainId();
 
     onNetworkStateChange(({ providerConfig: newProvider }) => {
-      const { chainId } = newProvider;
-      this.configure({ chainId });
+      const { caipChainId } = newProvider;
+      this.configure({ caipChainId });
       this.initializeSmartTransactionsForChainId();
       this.checkPoll(this.state);
       this.ethersProvider = new Web3Provider(provider);
@@ -152,7 +153,7 @@ export default class SmartTransactionsController extends BaseController<
 
   checkPoll(state: any) {
     const { smartTransactions } = state.smartTransactionsState;
-    const currentSmartTransactions = smartTransactions[this.config.chainId];
+    const currentSmartTransactions = smartTransactions[this.config.caipChainId];
     const pendingTransactions = currentSmartTransactions?.filter(
       isSmartTransactionPending,
     );
@@ -164,16 +165,17 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   initializeSmartTransactionsForChainId() {
-    if (this.config.supportedChainIds.includes(this.config.chainId)) {
+    if (this.config.supportedCaipChainIds.includes(this.config.caipChainId)) {
       const { smartTransactionsState } = this.state;
       this.update({
         smartTransactionsState: {
           ...smartTransactionsState,
           smartTransactions: {
             ...smartTransactionsState.smartTransactions,
-            [this.config.chainId]:
-              smartTransactionsState.smartTransactions[this.config.chainId] ??
-              [],
+            [this.config.caipChainId]:
+              smartTransactionsState.smartTransactions[
+                this.config.caipChainId
+              ] ?? [],
           },
         },
       });
@@ -181,10 +183,10 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   async poll(interval?: number): Promise<void> {
-    const { chainId, supportedChainIds } = this.config;
+    const { caipChainId, supportedCaipChainIds } = this.config;
     interval && this.configure({ interval }, false, false);
     this.timeoutHandle && clearInterval(this.timeoutHandle);
-    if (!supportedChainIds.includes(chainId)) {
+    if (!supportedCaipChainIds.includes(caipChainId)) {
       return;
     }
     await safelyExecute(() => this.updateSmartTransactions());
@@ -247,10 +249,10 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   isNewSmartTransaction(smartTransactionUuid: string): boolean {
-    const { chainId } = this.config;
+    const { caipChainId } = this.config;
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
-    const currentSmartTransactions = smartTransactions[chainId];
+    const currentSmartTransactions = smartTransactions[caipChainId];
     const currentIndex = currentSmartTransactions?.findIndex(
       (stx) => stx.uuid === smartTransactionUuid,
     );
@@ -258,10 +260,10 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   updateSmartTransaction(smartTransaction: SmartTransaction): void {
-    const { chainId } = this.config;
+    const { caipChainId } = this.config;
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
-    const currentSmartTransactions = smartTransactions[chainId];
+    const currentSmartTransactions = smartTransactions[caipChainId];
     const currentIndex = currentSmartTransactions?.findIndex(
       (stx) => stx.uuid === smartTransaction.uuid,
     );
@@ -297,7 +299,7 @@ export default class SmartTransactionsController extends BaseController<
           ...smartTransactionsState,
           smartTransactions: {
             ...smartTransactionsState.smartTransactions,
-            [chainId]: nextSmartTransactions,
+            [caipChainId]: nextSmartTransactions,
           },
         },
       });
@@ -323,13 +325,13 @@ export default class SmartTransactionsController extends BaseController<
         ...smartTransactionsState,
         smartTransactions: {
           ...smartTransactionsState.smartTransactions,
-          [chainId]: smartTransactionsState.smartTransactions[chainId].map(
-            (item, index) => {
-              return index === currentIndex
-                ? { ...item, ...smartTransaction }
-                : item;
-            },
-          ),
+          [caipChainId]: smartTransactionsState.smartTransactions[
+            caipChainId
+          ].map((item, index) => {
+            return index === currentIndex
+              ? { ...item, ...smartTransaction }
+              : item;
+          }),
         },
       },
     });
@@ -337,9 +339,9 @@ export default class SmartTransactionsController extends BaseController<
 
   async updateSmartTransactions() {
     const { smartTransactions } = this.state.smartTransactionsState;
-    const { chainId } = this.config;
+    const { caipChainId } = this.config;
 
-    const currentSmartTransactions = smartTransactions?.[chainId];
+    const currentSmartTransactions = smartTransactions?.[caipChainId];
 
     const transactionsToUpdate: string[] = currentSmartTransactions
       .filter(isSmartTransactionPending)
@@ -426,7 +428,7 @@ export default class SmartTransactionsController extends BaseController<
   async fetchSmartTransactionsStatus(
     uuids: string[],
   ): Promise<SmartTransaction[]> {
-    const { chainId } = this.config;
+    const { caipChainId } = this.config;
 
     const params = new URLSearchParams({
       uuids: uuids.join(','),
@@ -434,7 +436,7 @@ export default class SmartTransactionsController extends BaseController<
 
     const url = `${getAPIRequestURL(
       APIType.BATCH_STATUS,
-      chainId,
+      caipChainId,
     )}?${params.toString()}`;
 
     const data = await this.fetch(url);
@@ -483,7 +485,7 @@ export default class SmartTransactionsController extends BaseController<
     tradeTx: UnsignedTransaction,
     approvalTx: UnsignedTransaction,
   ): Promise<Fees> {
-    const { chainId } = this.config;
+    const { caipChainId } = this.config;
     const transactions = [];
     let unsignedTradeTransactionWithNonce;
     if (approvalTx) {
@@ -501,12 +503,15 @@ export default class SmartTransactionsController extends BaseController<
       );
     }
     transactions.push(unsignedTradeTransactionWithNonce);
-    const data = await this.fetch(getAPIRequestURL(APIType.GET_FEES, chainId), {
-      method: 'POST',
-      body: JSON.stringify({
-        txs: transactions,
-      }),
-    });
+    const data = await this.fetch(
+      getAPIRequestURL(APIType.GET_FEES, caipChainId),
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          txs: transactions,
+        }),
+      },
+    );
     let approvalTxFees;
     let tradeTxFees;
     if (approvalTx) {
@@ -542,9 +547,9 @@ export default class SmartTransactionsController extends BaseController<
     signedCanceledTransactions: SignedCanceledTransaction[];
     txParams?: any;
   }) {
-    const { chainId } = this.config;
+    const { caipChainId } = this.config;
     const data = await this.fetch(
-      getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
+      getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, caipChainId),
       {
         method: 'POST',
         body: JSON.stringify({
@@ -573,7 +578,7 @@ export default class SmartTransactionsController extends BaseController<
       const { nonceDetails } = nonceLock;
 
       this.updateSmartTransaction({
-        chainId,
+        caipChainId,
         nonceDetails,
         metamaskNetworkId,
         preTxBalance,
@@ -594,19 +599,19 @@ export default class SmartTransactionsController extends BaseController<
   // After this successful call client must update nonce representative
   // in transaction controller external transactions list
   async cancelSmartTransaction(uuid: string): Promise<void> {
-    const { chainId } = this.config;
-    await this.fetch(getAPIRequestURL(APIType.CANCEL, chainId), {
+    const { caipChainId } = this.config;
+    await this.fetch(getAPIRequestURL(APIType.CANCEL, caipChainId), {
       method: 'POST',
       body: JSON.stringify({ uuid }),
     });
   }
 
   async fetchLiveness(): Promise<boolean> {
-    const { chainId } = this.config;
+    const { caipChainId } = this.config;
     let liveness = false;
     try {
       const response = await this.fetch(
-        getAPIRequestURL(APIType.LIVENESS, chainId),
+        getAPIRequestURL(APIType.LIVENESS, caipChainId),
       );
       liveness = Boolean(response.lastBlock);
     } catch (e) {
@@ -636,8 +641,8 @@ export default class SmartTransactionsController extends BaseController<
     status: SmartTransactionStatuses;
   }): SmartTransaction[] {
     const { smartTransactions } = this.state.smartTransactionsState;
-    const { chainId } = this.config;
-    const currentSmartTransactions = smartTransactions?.[chainId];
+    const { caipChainId } = this.config;
+    const currentSmartTransactions = smartTransactions?.[caipChainId];
     if (!currentSmartTransactions || currentSmartTransactions.length === 0) {
       return [];
     }

@@ -1,9 +1,10 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
+import { getEthChainIdIntFromCaipChainId } from '@metamask/controller-utils';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
-import { API_BASE_URL, CHAIN_IDS } from './constants';
+import { API_BASE_URL, CAIP_CHAIN_IDS } from './constants';
 import { SmartTransaction, SmartTransactionStatuses } from './types';
 
 const confirmExternalMock = jest.fn();
@@ -247,7 +248,9 @@ const testHistory = [
   },
 ];
 
-const ethereumChainIdDec = parseInt(CHAIN_IDS.ETHEREUM, 16);
+const ethereumChainIdDec = getEthChainIdIntFromCaipChainId(
+  CAIP_CHAIN_IDS.ETHEREUM,
+);
 
 const trackMetaMetricsEventSpy = jest.fn();
 
@@ -284,8 +287,8 @@ describe('SmartTransactionsController', () => {
   it('initializes with default config', () => {
     expect(smartTransactionsController.config).toStrictEqual({
       interval: DEFAULT_INTERVAL,
-      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.RINKEBY],
-      chainId: CHAIN_IDS.ETHEREUM,
+      supportedCaipChainIds: [CAIP_CHAIN_IDS.ETHEREUM, CAIP_CHAIN_IDS.RINKEBY],
+      caipChainId: CAIP_CHAIN_IDS.ETHEREUM,
       clientId: 'default',
     });
   });
@@ -294,7 +297,7 @@ describe('SmartTransactionsController', () => {
     expect(smartTransactionsController.state).toStrictEqual({
       smartTransactionsState: {
         smartTransactions: {
-          [CHAIN_IDS.ETHEREUM]: [],
+          [CAIP_CHAIN_IDS.ETHEREUM]: [],
         },
         userOptIn: undefined,
         fees: {
@@ -308,13 +311,17 @@ describe('SmartTransactionsController', () => {
 
   describe('onNetworkChange', () => {
     it('is triggered', () => {
-      networkListener({ providerConfig: { chainId: '52' } } as NetworkState);
-      expect(smartTransactionsController.config.chainId).toBe('52');
+      networkListener({
+        providerConfig: { caipChainId: 'eip155:52' },
+      } as NetworkState);
+      expect(smartTransactionsController.config.caipChainId).toBe('eip155:52');
     });
 
     it('calls poll', () => {
       const checkPollSpy = jest.spyOn(smartTransactionsController, 'checkPoll');
-      networkListener({ providerConfig: { chainId: '2' } } as NetworkState);
+      networkListener({
+        providerConfig: { caipChainId: 'eip155:2' },
+      } as NetworkState);
       expect(checkPollSpy).toHaveBeenCalled();
     });
   });
@@ -332,7 +339,7 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...smartTransactionsState,
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]: pendingStx as SmartTransaction[],
+            [CAIP_CHAIN_IDS.ETHEREUM]: pendingStx as SmartTransaction[],
           },
         },
       });
@@ -355,7 +362,9 @@ describe('SmartTransactionsController', () => {
         'updateSmartTransactions',
       );
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
-      networkListener({ providerConfig: { chainId: '56' } } as NetworkState);
+      networkListener({
+        providerConfig: { caipChainId: 'eip155:56' },
+      } as NetworkState);
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
     });
   });
@@ -373,7 +382,7 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...smartTransactionsState,
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]: pendingStx as SmartTransaction[],
+            [CAIP_CHAIN_IDS.ETHEREUM]: pendingStx as SmartTransaction[],
           },
         },
       });
@@ -472,7 +481,7 @@ describe('SmartTransactionsController', () => {
 
       expect(
         smartTransactionsController.state.smartTransactionsState
-          .smartTransactions[CHAIN_IDS.ETHEREUM][0].uuid,
+          .smartTransactions[CAIP_CHAIN_IDS.ETHEREUM][0].uuid,
       ).toBe('dP23W7c2kt4FK9TmXOkz1UM2F20');
     });
   });
@@ -496,7 +505,7 @@ describe('SmartTransactionsController', () => {
       expect(smartTransactionsController.state).toStrictEqual({
         smartTransactionsState: {
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]: [pendingTransaction],
+            [CAIP_CHAIN_IDS.ETHEREUM]: [pendingTransaction],
           },
           userOptIn: undefined,
           fees: {
@@ -516,7 +525,7 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...smartTransactionsController.state.smartTransactionsState,
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]:
+            [CAIP_CHAIN_IDS.ETHEREUM]:
               createStateAfterPending() as SmartTransaction[],
           },
         },
@@ -531,7 +540,7 @@ describe('SmartTransactionsController', () => {
       expect(smartTransactionsController.state).toStrictEqual({
         smartTransactionsState: {
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]: [
+            [CAIP_CHAIN_IDS.ETHEREUM]: [
               ...createStateAfterPending(),
               ...[successTransaction],
             ],
@@ -574,7 +583,7 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...smartTransactionsState,
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
+            [CAIP_CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
           },
         },
       });
@@ -588,7 +597,7 @@ describe('SmartTransactionsController', () => {
 
       expect(
         smartTransactionsController.state.smartTransactionsState
-          .smartTransactions[CHAIN_IDS.ETHEREUM][0].status,
+          .smartTransactions[CAIP_CHAIN_IDS.ETHEREUM][0].status,
       ).toBe('test');
     });
 
@@ -606,7 +615,7 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...smartTransactionsState,
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
+            [CAIP_CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
           },
         },
       });
@@ -695,7 +704,7 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...smartTransactionsState,
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
+            [CAIP_CHAIN_IDS.ETHEREUM]: [pendingStx] as SmartTransaction[],
           },
         },
       });
@@ -727,7 +736,7 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...smartTransactionsController.state.smartTransactionsState,
           smartTransactions: {
-            [CHAIN_IDS.ETHEREUM]:
+            [CAIP_CHAIN_IDS.ETHEREUM]:
               createStateAfterPending() as SmartTransaction[],
           },
         },

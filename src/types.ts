@@ -1,3 +1,4 @@
+import { CaipChainId } from '@metamask/utils';
 /** API */
 
 export enum APIType {
@@ -71,7 +72,7 @@ export type SmartTransactionsStatus = {
 
 export type SmartTransaction = {
   uuid: string;
-  chainId?: string;
+  caipChainId?: CaipChainId;
   destinationTokenAddress?: string;
   destinationTokenDecimals?: string;
   destinationTokenSymbol?: string;

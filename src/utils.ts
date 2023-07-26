@@ -2,6 +2,8 @@ import jsonDiffer from 'fast-json-patch';
 import _ from 'lodash';
 import { BigNumber } from 'bignumber.js';
 import { hexlify } from '@ethersproject/bytes';
+import { CaipChainId } from '@metamask/utils';
+import { getEthChainIdIntFromCaipChainId } from '@metamask/controller-utils';
 import {
   APIType,
   SmartTransaction,
@@ -22,8 +24,11 @@ export const isSmartTransactionStatusResolved = (
 ) => stxStatus === 'uuid_not_found';
 
 // TODO use actual url once API is defined
-export function getAPIRequestURL(apiType: APIType, chainId: string): string {
-  const chainIdDec = parseInt(chainId, 16);
+export function getAPIRequestURL(
+  apiType: APIType,
+  caipChainId: CaipChainId,
+): string {
+  const chainIdDec = getEthChainIdIntFromCaipChainId(caipChainId);
   switch (apiType) {
     case APIType.GET_FEES: {
       return `${API_BASE_URL}/networks/${chainIdDec}/getFees`;

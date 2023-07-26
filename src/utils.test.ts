@@ -1,3 +1,4 @@
+import { getEthChainIdIntFromCaipChainId } from '@metamask/controller-utils';
 import * as utils from './utils';
 import {
   SmartTransactionMinedTx,
@@ -5,7 +6,7 @@ import {
   SmartTransactionStatuses,
   SmartTransactionCancellationReason,
 } from './types';
-import { API_BASE_URL, CHAIN_IDS } from './constants';
+import { API_BASE_URL, CAIP_CHAIN_IDS } from './constants';
 
 describe('src/utils.js', () => {
   describe('isSmartTransactionPending', () => {
@@ -31,43 +32,48 @@ describe('src/utils.js', () => {
   });
 
   describe('getAPIRequestURL', () => {
-    const ethereumChainIdDec = parseInt(CHAIN_IDS.ETHEREUM, 16);
+    const ethereumChainIdDec = getEthChainIdIntFromCaipChainId(
+      CAIP_CHAIN_IDS.ETHEREUM,
+    );
 
     it('returns a URL for getting transactions', () => {
-      expect(utils.getAPIRequestURL(APIType.GET_FEES, CHAIN_IDS.ETHEREUM)).toBe(
-        `${API_BASE_URL}/networks/${ethereumChainIdDec}/getFees`,
-      );
+      expect(
+        utils.getAPIRequestURL(APIType.GET_FEES, CAIP_CHAIN_IDS.ETHEREUM),
+      ).toBe(`${API_BASE_URL}/networks/${ethereumChainIdDec}/getFees`);
     });
 
     it('returns a URL for submitting transactions', () => {
       expect(
-        utils.getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, CHAIN_IDS.ETHEREUM),
+        utils.getAPIRequestURL(
+          APIType.SUBMIT_TRANSACTIONS,
+          CAIP_CHAIN_IDS.ETHEREUM,
+        ),
       ).toBe(
         `${API_BASE_URL}/networks/${ethereumChainIdDec}/submitTransactions`,
       );
     });
 
     it('returns a URL for transaction cancelation', () => {
-      expect(utils.getAPIRequestURL(APIType.CANCEL, CHAIN_IDS.ETHEREUM)).toBe(
-        `${API_BASE_URL}/networks/${ethereumChainIdDec}/cancel`,
-      );
+      expect(
+        utils.getAPIRequestURL(APIType.CANCEL, CAIP_CHAIN_IDS.ETHEREUM),
+      ).toBe(`${API_BASE_URL}/networks/${ethereumChainIdDec}/cancel`);
     });
 
     it('returns a URL for checking a smart transactions status', () => {
       expect(
-        utils.getAPIRequestURL(APIType.BATCH_STATUS, CHAIN_IDS.ETHEREUM),
+        utils.getAPIRequestURL(APIType.BATCH_STATUS, CAIP_CHAIN_IDS.ETHEREUM),
       ).toBe(`${API_BASE_URL}/networks/${ethereumChainIdDec}/batchStatus`);
     });
 
     it('returns a URL for smart transactions API liveness', () => {
-      expect(utils.getAPIRequestURL(APIType.LIVENESS, CHAIN_IDS.ETHEREUM)).toBe(
-        `${API_BASE_URL}/networks/${ethereumChainIdDec}/health`,
-      );
+      expect(
+        utils.getAPIRequestURL(APIType.LIVENESS, CAIP_CHAIN_IDS.ETHEREUM),
+      ).toBe(`${API_BASE_URL}/networks/${ethereumChainIdDec}/health`);
     });
 
-    it('returns a URL for smart transactions API liveness for the BSC chainId', () => {
-      const bscChainIdDec = parseInt(CHAIN_IDS.BSC, 16);
-      expect(utils.getAPIRequestURL(APIType.LIVENESS, CHAIN_IDS.BSC)).toBe(
+    it('returns a URL for smart transactions API liveness for the BSC caipChainId', () => {
+      const bscChainIdDec = getEthChainIdIntFromCaipChainId(CAIP_CHAIN_IDS.BSC);
+      expect(utils.getAPIRequestURL(APIType.LIVENESS, CAIP_CHAIN_IDS.BSC)).toBe(
         `${API_BASE_URL}/networks/${bscChainIdDec}/health`,
       );
     });
