@@ -1,4 +1,4 @@
-import { getEthChainIdIntFromCaipChainId } from '@metamask/controller-utils';
+import { parseEthCaipChainIdInt } from '@metamask/controller-utils';
 import * as utils from './utils';
 import {
   SmartTransactionMinedTx,
@@ -32,7 +32,7 @@ describe('src/utils.js', () => {
   });
 
   describe('getAPIRequestURL', () => {
-    const ethereumChainIdDec = getEthChainIdIntFromCaipChainId(
+    const ethereumChainIdDec = parseEthCaipChainIdInt(
       CAIP_CHAIN_IDS.ETHEREUM,
     );
 
@@ -72,7 +72,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns a URL for smart transactions API liveness for the BSC caipChainId', () => {
-      const bscChainIdDec = getEthChainIdIntFromCaipChainId(CAIP_CHAIN_IDS.BSC);
+      const bscChainIdDec = parseEthCaipChainIdInt(CAIP_CHAIN_IDS.BSC);
       expect(utils.getAPIRequestURL(APIType.LIVENESS, CAIP_CHAIN_IDS.BSC)).toBe(
         `${API_BASE_URL}/networks/${bscChainIdDec}/health`,
       );

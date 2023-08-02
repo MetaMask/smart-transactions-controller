@@ -1,6 +1,6 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
-import { getEthChainIdIntFromCaipChainId } from '@metamask/controller-utils';
+import { parseEthCaipChainIdInt } from '@metamask/controller-utils';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
@@ -248,7 +248,7 @@ const testHistory = [
   },
 ];
 
-const ethereumChainIdDec = getEthChainIdIntFromCaipChainId(
+const ethereumChainIdDec = parseEthCaipChainIdInt(
   CAIP_CHAIN_IDS.ETHEREUM,
 );
 
