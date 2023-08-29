@@ -554,7 +554,6 @@ export default class SmartTransactionsController extends BaseController<
       },
     );
     const time = Date.now();
-    const metamaskNetworkId = this.getNetwork();
     let preTxBalance;
     try {
       const preTxBalanceBN = await this.ethersProvider.getBalance(
@@ -575,7 +574,6 @@ export default class SmartTransactionsController extends BaseController<
       this.updateSmartTransaction({
         chainId,
         nonceDetails,
-        metamaskNetworkId,
         preTxBalance,
         status: SmartTransactionStatuses.PENDING,
         time,
