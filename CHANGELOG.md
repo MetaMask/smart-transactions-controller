@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - **BREAKING:** Remove  `metamaskNetworkId` from smart transaction state ([#191](https://github.com/MetaMask/smart-transactions-controller/pull/191))
+  - To migrate, remove references to `TransactionMeta.metamaskNetworkId` and `TransactionMeta.history.metamaskNetworkId`
 - Remove `getNetwork` from constructor options ([#191](https://github.com/MetaMask/smart-transactions-controller/pull/191))
 
 ## [4.0.0]
