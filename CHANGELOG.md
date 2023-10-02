@@ -7,16 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [5.0.0]
-### Uncategorized
-- chore(deps): bump @metamask/eth-sig-util from 6.0.0 to 6.0.1 ([#197](https://github.com/MetaMask/smart-transactions-controller/pull/197))
-- chore(deps): bump @metamask/eth-json-rpc-middleware ([#196](https://github.com/MetaMask/smart-transactions-controller/pull/196))
-- chore(deps): bump semver from 5.7.1 to 5.7.2 ([#194](https://github.com/MetaMask/smart-transactions-controller/pull/194))
-- chore(deps): bump word-wrap from 1.2.3 to 1.2.5 ([#193](https://github.com/MetaMask/smart-transactions-controller/pull/193))
-- chore(deps): bump @metamask/base-controller from 3.2.0 to 3.2.1 ([#190](https://github.com/MetaMask/smart-transactions-controller/pull/190))
-- chore(deps): bump @metamask/base-controller from 3.1.0 to 3.2.0 ([#181](https://github.com/MetaMask/smart-transactions-controller/pull/181))
-- chore(deps-dev): bump @metamask/auto-changelog from 3.1.0 to 3.2.0 ([#180](https://github.com/MetaMask/smart-transactions-controller/pull/180))
-- chore(deps): bump @metamask/controller-utils from 4.1.0 to 4.2.0 ([#177](https://github.com/MetaMask/smart-transactions-controller/pull/177))
-
 ### Changed
 - Bump dependency on `@metamask/network-controller` to ^13.0.0 ([#191](https://github.com/MetaMask/smart-transactions-controller/pull/191))
 - Bump dependency on `@metamask/base-controller` to ^3.2.1 ([#191](https://github.com/MetaMask/smart-transactions-controller/pull/191))
