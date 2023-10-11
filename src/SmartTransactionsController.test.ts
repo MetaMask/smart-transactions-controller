@@ -195,6 +195,7 @@ const createStateAfterPending = () => {
       uuid: 'uuid1',
       status: 'pending',
       cancellable: true,
+      chainId: '0x1',
       statusMetadata: {
         cancellationFeeWei: 0,
         cancellationReason: 'not_cancelled',
@@ -223,6 +224,7 @@ const createStateAfterSuccess = () => {
       uuid: 'uuid2',
       status: 'success',
       cancellable: false,
+      chainId: '0x1',
       statusMetadata: {
         cancellationFeeWei: 36777567771000,
         cancellationReason: 'not_cancelled',
@@ -269,6 +271,7 @@ describe('SmartTransactionsController', () => {
       provider: jest.fn(),
       confirmExternalTransaction: confirmExternalMock,
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
+      getNetworkClientById: jest.fn(),
     });
     // eslint-disable-next-line jest/prefer-spy-on
     smartTransactionsController.subscribe = jest.fn();
@@ -283,7 +286,7 @@ describe('SmartTransactionsController', () => {
   it('initializes with default config', () => {
     expect(smartTransactionsController.config).toStrictEqual({
       interval: DEFAULT_INTERVAL,
-      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.RINKEBY],
+      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.GOERLI],
       chainId: CHAIN_IDS.ETHEREUM,
       clientId: 'default',
     });
@@ -300,20 +303,44 @@ describe('SmartTransactionsController', () => {
           approvalTxFees: undefined,
           tradeTxFees: undefined,
         },
+        feesByChainId: {
+          [CHAIN_IDS.ETHEREUM]: {
+            approvalTxFees: undefined,
+            tradeTxFees: undefined,
+          },
+          [CHAIN_IDS.GOERLI]: {
+            approvalTxFees: undefined,
+            tradeTxFees: undefined,
+          },
+        },
         liveness: true,
+        livenessByChainId: {
+          [CHAIN_IDS.ETHEREUM]: true,
+          [CHAIN_IDS.GOERLI]: true,
+        },
       },
     });
   });
 
   describe('onNetworkChange', () => {
     it('is triggered', () => {
-      networkListener({ providerConfig: { chainId: '52' } } as NetworkState);
-      expect(smartTransactionsController.config.chainId).toBe('52');
+      networkListener({
+        providerConfig: { chainId: '0x32', type: 'rpc', ticker: 'CET' },
+        selectedNetworkClientId: 'networkClientId',
+        networkConfigurations: {},
+        networksMetadata: {},
+      } as NetworkState);
+      expect(smartTransactionsController.config.chainId).toBe('0x32');
     });
 
     it('calls poll', () => {
       const checkPollSpy = jest.spyOn(smartTransactionsController, 'checkPoll');
-      networkListener({ providerConfig: { chainId: '2' } } as NetworkState);
+      networkListener({
+        providerConfig: { chainId: '0x32', type: 'rpc', ticker: 'CET' },
+        selectedNetworkClientId: 'networkClientId',
+        networkConfigurations: {},
+        networksMetadata: {},
+      } as NetworkState);
       expect(checkPollSpy).toHaveBeenCalled();
     });
   });
@@ -354,7 +381,12 @@ describe('SmartTransactionsController', () => {
         'updateSmartTransactions',
       );
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
-      networkListener({ providerConfig: { chainId: '56' } } as NetworkState);
+      networkListener({
+        providerConfig: { chainId: '0x32', type: 'rpc', ticker: 'CET' },
+        selectedNetworkClientId: 'networkClientId',
+        networkConfigurations: {},
+        networksMetadata: {},
+      } as NetworkState);
       expect(updateSmartTransactionsSpy).not.toHaveBeenCalled();
     });
   });
@@ -489,7 +521,11 @@ describe('SmartTransactionsController', () => {
       nock(API_BASE_URL)
         .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid1`)
         .reply(200, pendingBatchStatusApiResponse);
-      await smartTransactionsController.fetchSmartTransactionsStatus(uuids);
+
+      await smartTransactionsController.fetchSmartTransactionsStatus(
+        uuids,
+        CHAIN_IDS.ETHEREUM,
+      );
       const pendingState = createStateAfterPending()[0];
       const pendingTransaction = { ...pendingState, history: [pendingState] };
       expect(smartTransactionsController.state).toStrictEqual({
@@ -502,7 +538,21 @@ describe('SmartTransactionsController', () => {
             approvalTxFees: undefined,
             tradeTxFees: undefined,
           },
+          feesByChainId: {
+            [CHAIN_IDS.ETHEREUM]: {
+              approvalTxFees: undefined,
+              tradeTxFees: undefined,
+            },
+            [CHAIN_IDS.GOERLI]: {
+              approvalTxFees: undefined,
+              tradeTxFees: undefined,
+            },
+          },
           liveness: true,
+          livenessByChainId: {
+            [CHAIN_IDS.ETHEREUM]: true,
+            [CHAIN_IDS.GOERLI]: true,
+          },
         },
       });
     });
@@ -524,7 +574,11 @@ describe('SmartTransactionsController', () => {
       nock(API_BASE_URL)
         .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid2`)
         .reply(200, successBatchStatusApiResponse);
-      await smartTransactionsController.fetchSmartTransactionsStatus(uuids);
+
+      await smartTransactionsController.fetchSmartTransactionsStatus(
+        uuids,
+        CHAIN_IDS.ETHEREUM,
+      );
       const successState = createStateAfterSuccess()[0];
       const successTransaction = { ...successState, history: [successState] };
       expect(smartTransactionsController.state).toStrictEqual({
@@ -541,6 +595,20 @@ describe('SmartTransactionsController', () => {
             tradeTxFees: undefined,
           },
           liveness: true,
+          feesByChainId: {
+            '0x1': {
+              approvalTxFees: undefined,
+              tradeTxFees: undefined,
+            },
+            '0x5': {
+              approvalTxFees: undefined,
+              tradeTxFees: undefined,
+            },
+          },
+          livenessByChainId: {
+            '0x1': true,
+            '0x5': true,
+          },
         },
       });
     });

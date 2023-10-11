@@ -1,10 +1,11 @@
-import {
-  BaseConfig,
-  BaseController,
-  BaseState,
-} from '@metamask/base-controller';
+import { BaseConfig, BaseState } from '@metamask/base-controller';
 import { safelyExecute } from '@metamask/controller-utils';
-import { NetworkState } from '@metamask/network-controller';
+import {
+  NetworkState,
+  NetworkController,
+  NetworkClientId,
+} from '@metamask/network-controller';
+import { PollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
 import { BigNumber as ethersBigNumber } from '@ethersproject/bignumber';
 import { Web3Provider } from '@ethersproject/providers';
@@ -46,19 +47,23 @@ export type SmartTransactionsControllerConfig = BaseConfig & {
   supportedChainIds: string[];
 };
 
+type FeeEstimates = {
+  approvalTxFees: IndividualTxFees | undefined;
+  tradeTxFees: IndividualTxFees | undefined;
+};
+
 export type SmartTransactionsControllerState = BaseState & {
   smartTransactionsState: {
     smartTransactions: Record<string, SmartTransaction[]>;
     userOptIn: boolean | undefined;
     liveness: boolean | undefined;
-    fees: {
-      approvalTxFees: IndividualTxFees | undefined;
-      tradeTxFees: IndividualTxFees | undefined;
-    };
+    fees: FeeEstimates;
+    feesByChainId: Record<string, FeeEstimates>;
+    livenessByChainId: Record<string, boolean | undefined>;
   };
 };
 
-export default class SmartTransactionsController extends BaseController<
+export default class SmartTransactionsController extends PollingControllerV1<
   SmartTransactionsControllerConfig,
   SmartTransactionsControllerState
 > {
@@ -71,6 +76,8 @@ export default class SmartTransactionsController extends BaseController<
   public confirmExternalTransaction: any;
 
   private trackMetaMetricsEvent: any;
+
+  private getNetworkClientById: NetworkController['getNetworkClientById'];
 
   /* istanbul ignore next */
   private async fetch(request: string, options?: RequestInit) {
@@ -93,6 +100,7 @@ export default class SmartTransactionsController extends BaseController<
       provider,
       confirmExternalTransaction,
       trackMetaMetricsEvent,
+      getNetworkClientById,
     }: {
       onNetworkStateChange: (
         listener: (networkState: NetworkState) => void,
@@ -101,6 +109,7 @@ export default class SmartTransactionsController extends BaseController<
       provider: any;
       confirmExternalTransaction: any;
       trackMetaMetricsEvent: any;
+      getNetworkClientById: NetworkController['getNetworkClientById'];
     },
     config?: Partial<SmartTransactionsControllerConfig>,
     state?: Partial<SmartTransactionsControllerState>,
@@ -111,7 +120,7 @@ export default class SmartTransactionsController extends BaseController<
       interval: DEFAULT_INTERVAL,
       chainId: CHAIN_IDS.ETHEREUM,
       clientId: 'default',
-      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.RINKEBY],
+      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.GOERLI],
     };
 
     this.defaultState = {
@@ -123,6 +132,20 @@ export default class SmartTransactionsController extends BaseController<
           tradeTxFees: undefined,
         },
         liveness: true,
+        livenessByChainId: {
+          [CHAIN_IDS.ETHEREUM]: true,
+          [CHAIN_IDS.GOERLI]: true,
+        },
+        feesByChainId: {
+          [CHAIN_IDS.ETHEREUM]: {
+            approvalTxFees: undefined,
+            tradeTxFees: undefined,
+          },
+          [CHAIN_IDS.GOERLI]: {
+            approvalTxFees: undefined,
+            tradeTxFees: undefined,
+          },
+        },
       },
     };
 
@@ -130,6 +153,7 @@ export default class SmartTransactionsController extends BaseController<
     this.ethersProvider = new Web3Provider(provider);
     this.confirmExternalTransaction = confirmExternalTransaction;
     this.trackMetaMetricsEvent = trackMetaMetricsEvent;
+    this.getNetworkClientById = getNetworkClientById;
 
     this.initialize();
     this.initializeSmartTransactionsForChainId();
@@ -143,6 +167,19 @@ export default class SmartTransactionsController extends BaseController<
     });
 
     this.subscribe((currentState: any) => this.checkPoll(currentState));
+  }
+
+  executePoll(networkClientId: string): Promise<void> {
+    // if this is going to be truly UI driven polling we shouldn't really reach here
+    // with a networkClientId that is not supported, but for now I'll add a check in case
+    // wondering if we should add some kind of predicate to the polling controller to check whether
+    // we should poll or not
+    const chainId = this.getChainId(networkClientId);
+    if (!this.config.supportedChainIds.includes(chainId)) {
+      return Promise.resolve();
+    }
+
+    return this.updateSmartTransactions(networkClientId);
   }
 
   checkPoll(state: any) {
@@ -253,6 +290,7 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   updateSmartTransaction(smartTransaction: SmartTransaction): void {
+    // todo add networkClientId logic here
     const { chainId } = this.config;
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
@@ -330,9 +368,11 @@ export default class SmartTransactionsController extends BaseController<
     });
   }
 
-  async updateSmartTransactions() {
+  async updateSmartTransactions(
+    networkClientId?: NetworkClientId,
+  ): Promise<void> {
+    const chainId = this.getChainId(networkClientId);
     const { smartTransactions } = this.state.smartTransactionsState;
-    const { chainId } = this.config;
 
     const currentSmartTransactions = smartTransactions?.[chainId];
 
@@ -341,7 +381,7 @@ export default class SmartTransactionsController extends BaseController<
       .map((smartTransaction) => smartTransaction.uuid);
 
     if (transactionsToUpdate.length > 0) {
-      this.fetchSmartTransactionsStatus(transactionsToUpdate);
+      this.fetchSmartTransactionsStatus(transactionsToUpdate, chainId);
     }
   }
 
@@ -420,9 +460,8 @@ export default class SmartTransactionsController extends BaseController<
   // ! Ask backend API to accept list of uuids as params
   async fetchSmartTransactionsStatus(
     uuids: string[],
+    chainId: string,
   ): Promise<SmartTransaction[]> {
-    const { chainId } = this.config;
-
     const params = new URLSearchParams({
       uuids: uuids.join(','),
     });
@@ -436,6 +475,7 @@ export default class SmartTransactionsController extends BaseController<
 
     Object.entries(data).forEach(([uuid, stxStatus]) => {
       this.updateSmartTransaction({
+        chainId,
         statusMetadata: stxStatus as SmartTransactionsStatus,
         status: calculateStatus(stxStatus as SmartTransactionsStatus),
         cancellable: isSmartTransactionCancellable(
@@ -477,8 +517,9 @@ export default class SmartTransactionsController extends BaseController<
   async getFees(
     tradeTx: UnsignedTransaction,
     approvalTx: UnsignedTransaction,
+    networkClientId?: NetworkClientId,
   ): Promise<Fees> {
-    const { chainId } = this.config;
+    const chainId = this.getChainId(networkClientId);
     const transactions = [];
     let unsignedTradeTransactionWithNonce;
     if (approvalTx) {
@@ -520,6 +561,22 @@ export default class SmartTransactionsController extends BaseController<
         },
       },
     });
+
+    if (networkClientId) {
+      this.update({
+        smartTransactionsState: {
+          ...this.state.smartTransactionsState,
+          feesByChainId: {
+            ...this.state.smartTransactionsState.feesByChainId,
+            [chainId]: {
+              approvalTxFees,
+              tradeTxFees,
+            },
+          },
+        },
+      });
+    }
+
     return {
       approvalTxFees,
       tradeTxFees,
@@ -532,12 +589,14 @@ export default class SmartTransactionsController extends BaseController<
     txParams,
     signedTransactions,
     signedCanceledTransactions,
+    networkClientId,
   }: {
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions: SignedCanceledTransaction[];
     txParams?: any;
+    networkClientId?: NetworkClientId;
   }) {
-    const { chainId } = this.config;
+    const chainId = this.getChainId(networkClientId);
     const data = await this.fetch(
       getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
       {
@@ -583,19 +642,29 @@ export default class SmartTransactionsController extends BaseController<
     return data;
   }
 
+  getChainId(networkClientId?: NetworkClientId): string {
+    if (!networkClientId) {
+      return this.config.chainId;
+    }
+    return this.getNetworkClientById(networkClientId).configuration.chainId;
+  }
+
   // TODO: This should return if the cancellation was on chain or not (for nonce management)
   // After this successful call client must update nonce representative
   // in transaction controller external transactions list
-  async cancelSmartTransaction(uuid: string): Promise<void> {
-    const { chainId } = this.config;
+  async cancelSmartTransaction(
+    uuid: string,
+    networkClientId?: NetworkClientId,
+  ): Promise<void> {
+    const chainId = this.getChainId(networkClientId);
     await this.fetch(getAPIRequestURL(APIType.CANCEL, chainId), {
       method: 'POST',
       body: JSON.stringify({ uuid }),
     });
   }
 
-  async fetchLiveness(): Promise<boolean> {
-    const { chainId } = this.config;
+  async fetchLiveness(networkClientId?: NetworkClientId): Promise<boolean> {
+    const chainId = this.getChainId(networkClientId);
     let liveness = false;
     try {
       const response = await this.fetch(
@@ -612,6 +681,19 @@ export default class SmartTransactionsController extends BaseController<
         liveness,
       },
     });
+
+    if (networkClientId) {
+      this.update({
+        smartTransactionsState: {
+          ...this.state.smartTransactionsState,
+          livenessByChainId: {
+            ...this.state.smartTransactionsState.livenessByChainId,
+            [chainId]: liveness,
+          },
+        },
+      });
+    }
+
     return liveness;
   }
 
