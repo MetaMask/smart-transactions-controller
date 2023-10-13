@@ -961,40 +961,6 @@ describe('SmartTransactionsController', () => {
         ]),
       );
 
-      // TODO figure this out:
-      // having trouble getting the state to update in this test
-      // await jest.runOnlyPendingTimers();
-      // const pendingState = createStateAfterPending()[0];
-      // const pendingTransaction = { ...pendingState, history: [pendingState] };
-      // await Promise.all([jest.runOnlyPendingTimers(), flushPromises()]);
-      // expect(smartTransactionsController.state).toStrictEqual({
-      //   smartTransactionsState: {
-      //     smartTransactions: {
-      //       [CHAIN_IDS.ETHEREUM]: [pendingTransaction],
-      //     },
-      //     userOptIn: undefined,
-      //     fees: {
-      //       approvalTxFees: undefined,
-      //       tradeTxFees: undefined,
-      //     },
-      //     feesByChainId: {
-      //       [CHAIN_IDS.ETHEREUM]: {
-      //         approvalTxFees: undefined,
-      //         tradeTxFees: undefined,
-      //       },
-      //       [CHAIN_IDS.GOERLI]: {
-      //         approvalTxFees: undefined,
-      //         tradeTxFees: undefined,
-      //       },
-      //     },
-      //     liveness: true,
-      //     livenessByChainId: {
-      //       [CHAIN_IDS.ETHEREUM]: true,
-      //       [CHAIN_IDS.GOERLI]: true,
-      //     },
-      //   },
-      // });
-
       // cleanup
       smartTransactionsController.update({
         smartTransactionsState: {
