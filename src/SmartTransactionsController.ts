@@ -292,10 +292,9 @@ export default class SmartTransactionsController extends PollingControllerV1<
     smartTransaction: SmartTransaction,
     chainId: string,
   ): void {
-    const currentChainId = chainId || this.config.chainId;
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
-    const currentSmartTransactions = smartTransactions[currentChainId];
+    const currentSmartTransactions = smartTransactions[chainId];
     const currentIndex = currentSmartTransactions?.findIndex(
       (stx) => stx.uuid === smartTransaction.uuid,
     );
@@ -331,7 +330,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
           ...smartTransactionsState,
           smartTransactions: {
             ...smartTransactionsState.smartTransactions,
-            [currentChainId]: nextSmartTransactions,
+            [chainId]: nextSmartTransactions,
           },
         },
       });
@@ -349,7 +348,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
         ...currentSmartTransaction,
         ...smartTransaction,
       };
-      this.confirmSmartTransaction(nextSmartTransaction, currentChainId);
+      this.confirmSmartTransaction(nextSmartTransaction, chainId);
     }
 
     this.update({
@@ -357,13 +356,13 @@ export default class SmartTransactionsController extends PollingControllerV1<
         ...smartTransactionsState,
         smartTransactions: {
           ...smartTransactionsState.smartTransactions,
-          [currentChainId]: smartTransactionsState.smartTransactions[
-            currentChainId
-          ].map((item, index) => {
-            return index === currentIndex
-              ? { ...item, ...smartTransaction }
-              : item;
-          }),
+          [chainId]: smartTransactionsState.smartTransactions[chainId].map(
+            (item, index) => {
+              return index === currentIndex
+                ? { ...item, ...smartTransaction }
+                : item;
+            },
+          ),
         },
       },
     });
