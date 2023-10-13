@@ -724,7 +724,7 @@ describe('SmartTransactionsController', () => {
         history: testHistory,
       };
       await smartTransactionsController.confirmSmartTransaction(
-        successfulStx as SmartTransaction,
+        successfulStx as SmartTransaction, 
       );
       expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
     });

@@ -288,12 +288,14 @@ export default class SmartTransactionsController extends PollingControllerV1<
     return currentIndex === -1 || currentIndex === undefined;
   }
 
-  updateSmartTransaction(smartTransaction: SmartTransaction): void {
-    // todo add networkClientId logic here
-    const { chainId } = this.config;
+  updateSmartTransaction(
+    smartTransaction: SmartTransaction,
+    chainId: string,
+  ): void {
+    const currentChainId = chainId || this.config.chainId;
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
-    const currentSmartTransactions = smartTransactions[chainId];
+    const currentSmartTransactions = smartTransactions[currentChainId];
     const currentIndex = currentSmartTransactions?.findIndex(
       (stx) => stx.uuid === smartTransaction.uuid,
     );
@@ -329,7 +331,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
           ...smartTransactionsState,
           smartTransactions: {
             ...smartTransactionsState.smartTransactions,
-            [chainId]: nextSmartTransactions,
+            [currentChainId]: nextSmartTransactions,
           },
         },
       });
@@ -347,7 +349,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
         ...currentSmartTransaction,
         ...smartTransaction,
       };
-      this.confirmSmartTransaction(nextSmartTransaction);
+      this.#confirmSmartTransaction(nextSmartTransaction, currentChainId);
     }
 
     this.update({
@@ -355,13 +357,13 @@ export default class SmartTransactionsController extends PollingControllerV1<
         ...smartTransactionsState,
         smartTransactions: {
           ...smartTransactionsState.smartTransactions,
-          [chainId]: smartTransactionsState.smartTransactions[chainId].map(
-            (item, index) => {
-              return index === currentIndex
-                ? { ...item, ...smartTransaction }
-                : item;
-            },
-          ),
+          [currentChainId]: smartTransactionsState.smartTransactions[
+            currentChainId
+          ].map((item, index) => {
+            return index === currentIndex
+              ? { ...item, ...smartTransaction }
+              : item;
+          }),
         },
       },
     });
@@ -383,7 +385,10 @@ export default class SmartTransactionsController extends PollingControllerV1<
     }
   }
 
-  async confirmSmartTransaction(smartTransaction: SmartTransaction) {
+  async #confirmSmartTransaction(
+    smartTransaction: SmartTransaction,
+    chainId: string,
+  ) {
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
       const transactionReceipt =
@@ -441,10 +446,13 @@ export default class SmartTransactionsController extends PollingControllerV1<
           category: 'swaps',
         });
 
-        this.updateSmartTransaction({
-          ...smartTransaction,
-          confirmed: true,
-        });
+        this.updateSmartTransaction(
+          {
+            ...smartTransaction,
+            confirmed: true,
+          },
+          chainId,
+        );
       }
     } catch (e) {
       this.trackMetaMetricsEvent({
@@ -470,15 +478,17 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
     const data = await this.fetch(url);
     Object.entries(data).forEach(([uuid, stxStatus]) => {
-      this.updateSmartTransaction({
+      this.updateSmartTransaction(
+        {
+          statusMetadata: stxStatus as SmartTransactionsStatus,
+          status: calculateStatus(stxStatus as SmartTransactionsStatus),
+          cancellable: isSmartTransactionCancellable(
+            stxStatus as SmartTransactionsStatus,
+          ),
+          uuid,
+        },
         chainId,
-        statusMetadata: stxStatus as SmartTransactionsStatus,
-        status: calculateStatus(stxStatus as SmartTransactionsStatus),
-        cancellable: isSmartTransactionCancellable(
-          stxStatus as SmartTransactionsStatus,
-        ),
-        uuid,
-      });
+      );
     });
 
     return data;
@@ -621,16 +631,18 @@ export default class SmartTransactionsController extends PollingControllerV1<
       }
       const { nonceDetails } = nonceLock;
 
-      this.updateSmartTransaction({
+      this.updateSmartTransaction(
+        {
+          nonceDetails,
+          preTxBalance,
+          status: SmartTransactionStatuses.PENDING,
+          time,
+          txParams,
+          uuid: data.uuid,
+          cancellable: true,
+        },
         chainId,
-        nonceDetails,
-        preTxBalance,
-        status: SmartTransactionStatuses.PENDING,
-        time,
-        txParams,
-        uuid: data.uuid,
-        cancellable: true,
-      });
+      );
     } finally {
       nonceLock.releaseLock();
     }
