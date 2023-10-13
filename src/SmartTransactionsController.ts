@@ -310,7 +310,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
     if (isNewSmartTransaction) {
       // add smart transaction
-      const cancelledNonceIndex = currentSmartTransactions.findIndex(
+      const cancelledNonceIndex = currentSmartTransactions?.findIndex(
         (stx: SmartTransaction) =>
           stx.txParams?.nonce === smartTransaction.txParams?.nonce &&
           stx.status?.startsWith('cancelled'),
@@ -322,9 +322,9 @@ export default class SmartTransactionsController extends PollingControllerV1<
         cancelledNonceIndex > -1
           ? currentSmartTransactions
               .slice(0, cancelledNonceIndex)
-              .concat(currentSmartTransactions.slice(cancelledNonceIndex + 1))
-              .concat(historifiedSmartTransaction)
-          : currentSmartTransactions.concat(historifiedSmartTransaction);
+              ?.concat(currentSmartTransactions.slice(cancelledNonceIndex + 1))
+              ?.concat(historifiedSmartTransaction)
+          : currentSmartTransactions?.concat(historifiedSmartTransaction);
       this.update({
         smartTransactionsState: {
           ...smartTransactionsState,
