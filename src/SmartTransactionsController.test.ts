@@ -1,11 +1,21 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
+import { convertHexToDecimal } from '@metamask/controller-utils';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
 import { API_BASE_URL, CHAIN_IDS } from './constants';
 import { SmartTransaction, SmartTransactionStatuses } from './types';
+import * as utils from './utils';
 
+/**
+ * Resolve all pending promises.
+ * This method is used for async tests that use fake timers.
+ * See https://stackoverflow.com/a/58716087 and https://jestjs.io/docs/timer-mocks.
+ */
+function flushPromises(): Promise<unknown> {
+  return new Promise(jest.requireActual('timers').setImmediate);
+}
 const confirmExternalMock = jest.fn();
 
 jest.mock('@ethersproject/bytes', () => ({
@@ -252,11 +262,11 @@ const testHistory = [
 const ethereumChainIdDec = parseInt(CHAIN_IDS.ETHEREUM, 16);
 
 const trackMetaMetricsEventSpy = jest.fn();
+const getNetworkClientByIdSpy = jest.fn();
 
 describe('SmartTransactionsController', () => {
   let smartTransactionsController: SmartTransactionsController;
   let networkListener: (networkState: NetworkState) => void;
-
   beforeEach(() => {
     smartTransactionsController = new SmartTransactionsController({
       onNetworkStateChange: (listener) => {
@@ -271,7 +281,7 @@ describe('SmartTransactionsController', () => {
       provider: jest.fn(),
       confirmExternalTransaction: confirmExternalMock,
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
-      getNetworkClientById: jest.fn(),
+      getNetworkClientById: getNetworkClientByIdSpy,
     });
     // eslint-disable-next-line jest/prefer-spy-on
     smartTransactionsController.subscribe = jest.fn();
@@ -801,6 +811,199 @@ describe('SmartTransactionsController', () => {
       });
       const actual = smartTransactionsController.isNewSmartTransaction('uuid1');
       expect(actual).toBe(false);
+    });
+  });
+
+  describe('startPollingByNetworkClientId', () => {
+    it('starts and stops calling smart transactions batch status api endpoint with the correct chainId at the interval passed via the constructor', async () => {
+      // mock this to a noop because it causes an extra fetch call to the API upon state changes
+      jest
+        .spyOn(smartTransactionsController, 'checkPoll')
+        .mockImplementation(() => undefined);
+
+      const defaultState = {
+        smartTransactions: {
+          [CHAIN_IDS.ETHEREUM]: [],
+        },
+        userOptIn: undefined,
+        fees: {
+          approvalTxFees: undefined,
+          tradeTxFees: undefined,
+        },
+        feesByChainId: {
+          [CHAIN_IDS.ETHEREUM]: {
+            approvalTxFees: undefined,
+            tradeTxFees: undefined,
+          },
+          [CHAIN_IDS.GOERLI]: {
+            approvalTxFees: undefined,
+            tradeTxFees: undefined,
+          },
+        },
+        liveness: true,
+        livenessByChainId: {
+          [CHAIN_IDS.ETHEREUM]: true,
+          [CHAIN_IDS.GOERLI]: true,
+        },
+      };
+
+      // pending transactions in state are required to test polling
+      smartTransactionsController.update({
+        smartTransactionsState: {
+          ...defaultState,
+          smartTransactions: {
+            '0x1': [
+              {
+                uuid: 'uuid1',
+                status: 'pending',
+                cancellable: true,
+                chainId: '0x1',
+              },
+            ],
+            '0x5': [
+              {
+                uuid: 'uuid2',
+                status: 'pending',
+                cancellable: true,
+                chainId: '0x5',
+              },
+            ],
+          },
+        },
+      });
+
+      getNetworkClientByIdSpy.mockImplementation((networkClientId) => {
+        switch (networkClientId) {
+          case 'mainnet':
+            return {
+              configuration: {
+                chainId: CHAIN_IDS.ETHEREUM,
+              },
+            };
+          case 'goerli':
+            return {
+              configuration: {
+                chainId: CHAIN_IDS.GOERLI,
+              },
+            };
+          default:
+            throw new Error('Invalid network client id');
+        }
+      });
+
+      jest.useFakeTimers();
+      const handleFetchSpy = jest.spyOn(utils, 'handleFetch');
+
+      const mainnetPollingToken =
+        smartTransactionsController.startPollingByNetworkClientId('mainnet');
+
+      await Promise.all([
+        jest.advanceTimersByTime(DEFAULT_INTERVAL),
+        flushPromises(),
+      ]);
+
+      expect(handleFetchSpy.mock.calls[0]).toStrictEqual(
+        expect.arrayContaining([
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.ETHEREUM,
+          )}/batchStatus?uuids=uuid1`,
+        ]),
+      );
+
+      smartTransactionsController.startPollingByNetworkClientId('goerli');
+      await jest.advanceTimersByTime(DEFAULT_INTERVAL);
+
+      expect(
+        JSON.stringify(handleFetchSpy.mock.calls.map((arg) => arg[0])),
+      ).toStrictEqual(
+        JSON.stringify([
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.ETHEREUM,
+          )}/batchStatus?uuids=uuid1`,
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.ETHEREUM,
+          )}/batchStatus?uuids=uuid1`,
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.GOERLI,
+          )}/batchStatus?uuids=uuid2`,
+        ]),
+      );
+
+      // stop the mainnet polling
+      smartTransactionsController.stopPollingByPollingToken(
+        mainnetPollingToken,
+      );
+
+      // cycle two polling intervals
+      await jest.advanceTimersByTime(DEFAULT_INTERVAL);
+      await jest.advanceTimersByTime(DEFAULT_INTERVAL);
+
+      // check that the mainnet polling has stopped while the goerli polling continues
+      expect(
+        JSON.stringify(handleFetchSpy.mock.calls.map((arg) => arg[0])),
+      ).toStrictEqual(
+        JSON.stringify([
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.ETHEREUM,
+          )}/batchStatus?uuids=uuid1`,
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.ETHEREUM,
+          )}/batchStatus?uuids=uuid1`,
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.GOERLI,
+          )}/batchStatus?uuids=uuid2`,
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.GOERLI,
+          )}/batchStatus?uuids=uuid2`,
+          `${API_BASE_URL}/networks/${convertHexToDecimal(
+            CHAIN_IDS.GOERLI,
+          )}/batchStatus?uuids=uuid2`,
+        ]),
+      );
+
+      // TODO figure this out:
+      // having trouble getting the state to update in this test
+      // await jest.runOnlyPendingTimers();
+      // const pendingState = createStateAfterPending()[0];
+      // const pendingTransaction = { ...pendingState, history: [pendingState] };
+      // await Promise.all([jest.runOnlyPendingTimers(), flushPromises()]);
+      // expect(smartTransactionsController.state).toStrictEqual({
+      //   smartTransactionsState: {
+      //     smartTransactions: {
+      //       [CHAIN_IDS.ETHEREUM]: [pendingTransaction],
+      //     },
+      //     userOptIn: undefined,
+      //     fees: {
+      //       approvalTxFees: undefined,
+      //       tradeTxFees: undefined,
+      //     },
+      //     feesByChainId: {
+      //       [CHAIN_IDS.ETHEREUM]: {
+      //         approvalTxFees: undefined,
+      //         tradeTxFees: undefined,
+      //       },
+      //       [CHAIN_IDS.GOERLI]: {
+      //         approvalTxFees: undefined,
+      //         tradeTxFees: undefined,
+      //       },
+      //     },
+      //     liveness: true,
+      //     livenessByChainId: {
+      //       [CHAIN_IDS.ETHEREUM]: true,
+      //       [CHAIN_IDS.GOERLI]: true,
+      //     },
+      //   },
+      // });
+
+      // cleanup
+      smartTransactionsController.update({
+        smartTransactionsState: {
+          ...defaultState,
+        },
+      });
+
+      smartTransactionsController.stopAllPolling();
+      jest.clearAllTimers();
     });
   });
 });

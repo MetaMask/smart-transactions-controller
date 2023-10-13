@@ -148,7 +148,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
         },
       },
     };
-
+    this.setIntervalLength(this.config.interval || DEFAULT_INTERVAL);
     this.getNonceLock = getNonceLock;
     this.ethersProvider = new Web3Provider(provider);
     this.confirmExternalTransaction = confirmExternalTransaction;
@@ -169,7 +169,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
     this.subscribe((currentState: any) => this.checkPoll(currentState));
   }
 
-  executePoll(networkClientId: string): Promise<void> {
+  _executePoll(networkClientId: string): Promise<void> {
     // if this is going to be truly UI driven polling we shouldn't really reach here
     // with a networkClientId that is not supported, but for now I'll add a check in case
     // wondering if we should add some kind of predicate to the polling controller to check whether
@@ -178,7 +178,6 @@ export default class SmartTransactionsController extends PollingControllerV1<
     if (!this.config.supportedChainIds.includes(chainId)) {
       return Promise.resolve();
     }
-
     return this.updateSmartTransactions(networkClientId);
   }
 
@@ -375,7 +374,6 @@ export default class SmartTransactionsController extends PollingControllerV1<
     const { smartTransactions } = this.state.smartTransactionsState;
 
     const currentSmartTransactions = smartTransactions?.[chainId];
-
     const transactionsToUpdate: string[] = currentSmartTransactions
       .filter(isSmartTransactionPending)
       .map((smartTransaction) => smartTransaction.uuid);
@@ -465,14 +463,12 @@ export default class SmartTransactionsController extends PollingControllerV1<
     const params = new URLSearchParams({
       uuids: uuids.join(','),
     });
-
     const url = `${getAPIRequestURL(
       APIType.BATCH_STATUS,
       chainId,
     )}?${params.toString()}`;
 
     const data = await this.fetch(url);
-
     Object.entries(data).forEach(([uuid, stxStatus]) => {
       this.updateSmartTransaction({
         chainId,
