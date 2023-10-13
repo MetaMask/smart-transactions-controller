@@ -349,7 +349,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
         ...currentSmartTransaction,
         ...smartTransaction,
       };
-      this.#confirmSmartTransaction(nextSmartTransaction, currentChainId);
+      this.confirmSmartTransaction(nextSmartTransaction, currentChainId);
     }
 
     this.update({
@@ -385,7 +385,8 @@ export default class SmartTransactionsController extends PollingControllerV1<
     }
   }
 
-  async #confirmSmartTransaction(
+  // TODO make this a private method?
+  async confirmSmartTransaction(
     smartTransaction: SmartTransaction,
     chainId: string,
   ) {

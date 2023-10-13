@@ -205,7 +205,6 @@ const createStateAfterPending = () => {
       uuid: 'uuid1',
       status: 'pending',
       cancellable: true,
-      chainId: '0x1',
       statusMetadata: {
         cancellationFeeWei: 0,
         cancellationReason: 'not_cancelled',
@@ -234,7 +233,6 @@ const createStateAfterSuccess = () => {
       uuid: 'uuid2',
       status: 'success',
       cancellable: false,
-      chainId: '0x1',
       statusMetadata: {
         cancellationFeeWei: 36777567771000,
         cancellationReason: 'not_cancelled',
@@ -661,6 +659,7 @@ describe('SmartTransactionsController', () => {
       };
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
+        CHAIN_IDS.ETHEREUM,
       );
 
       expect(
@@ -693,6 +692,7 @@ describe('SmartTransactionsController', () => {
       };
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
+        CHAIN_IDS.ETHEREUM,
       );
       expect(confirmSpy).toHaveBeenCalled();
     });
@@ -711,6 +711,7 @@ describe('SmartTransactionsController', () => {
       };
       await smartTransactionsController.confirmSmartTransaction(
         successfulStx as SmartTransaction,
+        CHAIN_IDS.ETHEREUM,
       );
       expect(confirmExternalMock).toHaveBeenCalled();
     });
@@ -724,7 +725,8 @@ describe('SmartTransactionsController', () => {
         history: testHistory,
       };
       await smartTransactionsController.confirmSmartTransaction(
-        successfulStx as SmartTransaction, 
+        successfulStx as SmartTransaction,
+        CHAIN_IDS.ETHEREUM,
       );
       expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
     });
