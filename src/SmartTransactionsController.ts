@@ -1,5 +1,5 @@
 import { BaseConfig, BaseState } from '@metamask/base-controller';
-import { safelyExecute } from '@metamask/controller-utils';
+import { ChainId, safelyExecute } from '@metamask/controller-utils';
 import {
   NetworkState,
   NetworkController,
@@ -22,6 +22,7 @@ import {
   SmartTransactionStatuses,
   Fees,
   IndividualTxFees,
+  Hex,
 } from './types';
 import {
   getAPIRequestURL,
@@ -43,7 +44,7 @@ export const DEFAULT_INTERVAL = SECOND * 5;
 export type SmartTransactionsControllerConfig = BaseConfig & {
   interval: number;
   clientId: string;
-  chainId: string;
+  chainId: Hex;
   supportedChainIds: string[];
 };
 
@@ -54,12 +55,12 @@ type FeeEstimates = {
 
 export type SmartTransactionsControllerState = BaseState & {
   smartTransactionsState: {
-    smartTransactions: Record<string, SmartTransaction[]>;
+    smartTransactions: Record<Hex, SmartTransaction[]>;
     userOptIn: boolean | undefined;
     liveness: boolean | undefined;
     fees: FeeEstimates;
-    feesByChainId: Record<string, FeeEstimates>;
-    livenessByChainId: Record<string, boolean | undefined>;
+    feesByChainId: Record<Hex, FeeEstimates>;
+    livenessByChainId: Record<Hex, boolean | undefined>;
   };
 };
 
@@ -118,7 +119,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
     this.defaultConfig = {
       interval: DEFAULT_INTERVAL,
-      chainId: CHAIN_IDS.ETHEREUM,
+      chainId: ChainId.mainnet,
       clientId: 'default',
       supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.GOERLI],
     };
@@ -290,7 +291,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
   updateSmartTransaction(
     smartTransaction: SmartTransaction,
-    chainId: string,
+    chainId: Hex,
   ): void {
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
@@ -387,7 +388,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
   // TODO make this a private method?
   async confirmSmartTransaction(
     smartTransaction: SmartTransaction,
-    chainId: string,
+    chainId: Hex,
   ) {
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
@@ -466,7 +467,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
   // ! Ask backend API to accept list of uuids as params
   async fetchSmartTransactionsStatus(
     uuids: string[],
-    chainId: string,
+    chainId: Hex,
   ): Promise<SmartTransaction[]> {
     const params = new URLSearchParams({
       uuids: uuids.join(','),
@@ -650,7 +651,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
     return data;
   }
 
-  getChainId(networkClientId?: NetworkClientId): string {
+  getChainId(networkClientId?: NetworkClientId): Hex {
     if (!networkClientId) {
       return this.config.chainId;
     }
