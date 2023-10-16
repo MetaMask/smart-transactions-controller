@@ -322,8 +322,8 @@ export default class SmartTransactionsController extends PollingControllerV1<
         cancelledNonceIndex > -1
           ? currentSmartTransactions
               .slice(0, cancelledNonceIndex)
-              ?.concat(currentSmartTransactions.slice(cancelledNonceIndex + 1))
-              ?.concat(historifiedSmartTransaction)
+              .concat(currentSmartTransactions.slice(cancelledNonceIndex + 1))
+              .concat(historifiedSmartTransaction)
           : currentSmartTransactions?.concat(historifiedSmartTransaction);
       this.update({
         smartTransactionsState: {

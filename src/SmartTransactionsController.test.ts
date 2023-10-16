@@ -40,7 +40,7 @@ jest.mock('@ethersproject/providers', () => ({
 
 const addressFrom = '0x268392a24B6b093127E8581eAfbD1DA228bAdAe3';
 
-const createUnsignedTransaction = () => {
+const createUnsignedTransaction = (chainId: number) => {
   return {
     from: addressFrom,
     to: '0x0000000000000000000000000000000000000000',
@@ -48,7 +48,7 @@ const createUnsignedTransaction = () => {
     data: '0x',
     nonce: 0,
     type: 2,
-    chainId: 4,
+    chainId,
   };
 };
 
@@ -262,6 +262,34 @@ const ethereumChainIdDec = parseInt(CHAIN_IDS.ETHEREUM, 16);
 const trackMetaMetricsEventSpy = jest.fn();
 const getNetworkClientByIdSpy = jest.fn();
 
+const defaultState = {
+  smartTransactionsState: {
+    smartTransactions: {
+      [CHAIN_IDS.ETHEREUM]: [],
+    },
+    userOptIn: undefined,
+    fees: {
+      approvalTxFees: undefined,
+      tradeTxFees: undefined,
+    },
+    feesByChainId: {
+      [CHAIN_IDS.ETHEREUM]: {
+        approvalTxFees: undefined,
+        tradeTxFees: undefined,
+      },
+      [CHAIN_IDS.GOERLI]: {
+        approvalTxFees: undefined,
+        tradeTxFees: undefined,
+      },
+    },
+    liveness: true,
+    livenessByChainId: {
+      [CHAIN_IDS.ETHEREUM]: true,
+      [CHAIN_IDS.GOERLI]: true,
+    },
+  },
+};
+
 describe('SmartTransactionsController', () => {
   let smartTransactionsController: SmartTransactionsController;
   let networkListener: (networkState: NetworkState) => void;
@@ -301,33 +329,7 @@ describe('SmartTransactionsController', () => {
   });
 
   it('initializes with default state', () => {
-    expect(smartTransactionsController.state).toStrictEqual({
-      smartTransactionsState: {
-        smartTransactions: {
-          [CHAIN_IDS.ETHEREUM]: [],
-        },
-        userOptIn: undefined,
-        fees: {
-          approvalTxFees: undefined,
-          tradeTxFees: undefined,
-        },
-        feesByChainId: {
-          [CHAIN_IDS.ETHEREUM]: {
-            approvalTxFees: undefined,
-            tradeTxFees: undefined,
-          },
-          [CHAIN_IDS.GOERLI]: {
-            approvalTxFees: undefined,
-            tradeTxFees: undefined,
-          },
-        },
-        liveness: true,
-        livenessByChainId: {
-          [CHAIN_IDS.ETHEREUM]: true,
-          [CHAIN_IDS.GOERLI]: true,
-        },
-      },
-    });
+    expect(smartTransactionsController.state).toStrictEqual(defaultState);
   });
 
   describe('onNetworkChange', () => {
@@ -471,8 +473,8 @@ describe('SmartTransactionsController', () => {
 
   describe('getFees', () => {
     it('gets unsigned transactions and estimates based on an unsigned transaction', async () => {
-      const tradeTx = createUnsignedTransaction();
-      const approvalTx = createUnsignedTransaction();
+      const tradeTx = createUnsignedTransaction(ethereumChainIdDec);
+      const approvalTx = createUnsignedTransaction(ethereumChainIdDec);
       const getFeesApiResponse = createGetFeesApiResponse();
       nock(API_BASE_URL)
         .post(`/networks/${ethereumChainIdDec}/getFees`)
@@ -484,6 +486,54 @@ describe('SmartTransactionsController', () => {
       expect(fees).toMatchObject({
         approvalTxFees: getFeesApiResponse.txs[0],
         tradeTxFees: getFeesApiResponse.txs[1],
+      });
+    });
+
+    it('should add fee data to feesByChainId state using the networkClientId passed in to identify the appropriate chain', async () => {
+      const goerliChainIdDec = parseInt(CHAIN_IDS.GOERLI, 16);
+      getNetworkClientByIdSpy.mockImplementation((networkClientId) => {
+        switch (networkClientId) {
+          case 'mainnet':
+            return {
+              configuration: {
+                chainId: CHAIN_IDS.ETHEREUM,
+              },
+            };
+          case 'goerli':
+            return {
+              configuration: {
+                chainId: CHAIN_IDS.GOERLI,
+              },
+            };
+          default:
+            throw new Error('Invalid network client id');
+        }
+      });
+
+      const tradeTx = createUnsignedTransaction(goerliChainIdDec);
+      const approvalTx = createUnsignedTransaction(goerliChainIdDec);
+      const getFeesApiResponse = createGetFeesApiResponse();
+      nock(API_BASE_URL)
+        .post(`/networks/${goerliChainIdDec}/getFees`)
+        .reply(200, getFeesApiResponse);
+
+      expect(
+        smartTransactionsController.state.smartTransactionsState.feesByChainId,
+      ).toStrictEqual(defaultState.smartTransactionsState.feesByChainId);
+
+      await smartTransactionsController.getFees(tradeTx, approvalTx, 'goerli');
+
+      expect(
+        smartTransactionsController.state.smartTransactionsState.feesByChainId,
+      ).toMatchObject({
+        [CHAIN_IDS.ETHEREUM]: {
+          approvalTxFees: undefined,
+          tradeTxFees: undefined,
+        },
+        [CHAIN_IDS.GOERLI]: {
+          approvalTxFees: getFeesApiResponse.txs[0],
+          tradeTxFees: getFeesApiResponse.txs[1],
+        },
       });
     });
   });
@@ -823,36 +873,10 @@ describe('SmartTransactionsController', () => {
         .spyOn(smartTransactionsController, 'checkPoll')
         .mockImplementation(() => undefined);
 
-      const defaultState = {
-        smartTransactions: {
-          [CHAIN_IDS.ETHEREUM]: [],
-        },
-        userOptIn: undefined,
-        fees: {
-          approvalTxFees: undefined,
-          tradeTxFees: undefined,
-        },
-        feesByChainId: {
-          [CHAIN_IDS.ETHEREUM]: {
-            approvalTxFees: undefined,
-            tradeTxFees: undefined,
-          },
-          [CHAIN_IDS.GOERLI]: {
-            approvalTxFees: undefined,
-            tradeTxFees: undefined,
-          },
-        },
-        liveness: true,
-        livenessByChainId: {
-          [CHAIN_IDS.ETHEREUM]: true,
-          [CHAIN_IDS.GOERLI]: true,
-        },
-      };
-
       // pending transactions in state are required to test polling
       smartTransactionsController.update({
         smartTransactionsState: {
-          ...defaultState,
+          ...defaultState.smartTransactionsState,
           smartTransactions: {
             '0x1': [
               {
@@ -964,11 +988,7 @@ describe('SmartTransactionsController', () => {
       );
 
       // cleanup
-      smartTransactionsController.update({
-        smartTransactionsState: {
-          ...defaultState,
-        },
-      });
+      smartTransactionsController.update(defaultState);
 
       smartTransactionsController.stopAllPolling();
       jest.clearAllTimers();
