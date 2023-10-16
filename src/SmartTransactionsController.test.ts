@@ -258,10 +258,9 @@ const testHistory = [
 ];
 
 const ethereumChainIdDec = parseInt(CHAIN_IDS.ETHEREUM, 16);
+const goerliChainIdDec = parseInt(CHAIN_IDS.GOERLI, 16);
 
 const trackMetaMetricsEventSpy = jest.fn();
-const getNetworkClientByIdSpy = jest.fn();
-
 const defaultState = {
   smartTransactionsState: {
     smartTransactions: {
@@ -307,7 +306,24 @@ describe('SmartTransactionsController', () => {
       provider: jest.fn(),
       confirmExternalTransaction: confirmExternalMock,
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
-      getNetworkClientById: getNetworkClientByIdSpy,
+      getNetworkClientById: jest.fn().mockImplementation((networkClientId) => {
+        switch (networkClientId) {
+          case 'mainnet':
+            return {
+              configuration: {
+                chainId: CHAIN_IDS.ETHEREUM,
+              },
+            };
+          case 'goerli':
+            return {
+              configuration: {
+                chainId: CHAIN_IDS.GOERLI,
+              },
+            };
+          default:
+            throw new Error('Invalid network client id');
+        }
+      }),
     });
     // eslint-disable-next-line jest/prefer-spy-on
     smartTransactionsController.subscribe = jest.fn();
@@ -402,6 +418,8 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('updateSmartTransactions', () => {
+    // TODO rewrite this test... updateSmartTransactions is getting called via the checkPoll method which is called whenever state is updated.
+    // this test should be more isolated to the updateSmartTransactions method.
     it('calls fetchSmartTransactionsStatus if there are pending transactions', () => {
       const fetchSmartTransactionsStatusSpy = jest
         .spyOn(smartTransactionsController, 'fetchSmartTransactionsStatus')
@@ -490,25 +508,24 @@ describe('SmartTransactionsController', () => {
     });
 
     it('should add fee data to feesByChainId state using the networkClientId passed in to identify the appropriate chain', async () => {
-      const goerliChainIdDec = parseInt(CHAIN_IDS.GOERLI, 16);
-      getNetworkClientByIdSpy.mockImplementation((networkClientId) => {
-        switch (networkClientId) {
-          case 'mainnet':
-            return {
-              configuration: {
-                chainId: CHAIN_IDS.ETHEREUM,
-              },
-            };
-          case 'goerli':
-            return {
-              configuration: {
-                chainId: CHAIN_IDS.GOERLI,
-              },
-            };
-          default:
-            throw new Error('Invalid network client id');
-        }
-      });
+      // getNetworkClientByIdSpy.mockImplementation((networkClientId) => {
+      //   switch (networkClientId) {
+      //     case 'mainnet':
+      //       return {
+      //         configuration: {
+      //           chainId: CHAIN_IDS.ETHEREUM,
+      //         },
+      //       };
+      //     case 'goerli':
+      //       return {
+      //         configuration: {
+      //           chainId: CHAIN_IDS.GOERLI,
+      //         },
+      //       };
+      //     default:
+      //       throw new Error('Invalid network client id');
+      //   }
+      // });
 
       const tradeTx = createUnsignedTransaction(goerliChainIdDec);
       const approvalTx = createUnsignedTransaction(goerliChainIdDec);
@@ -680,6 +697,30 @@ describe('SmartTransactionsController', () => {
         .reply(200, successLivenessApiResponse);
       const liveness = await smartTransactionsController.fetchLiveness();
       expect(liveness).toBe(true);
+    });
+
+    it('fetches liveness and sets in feesByChainId state for the Smart Transactions API for the chainId of the networkClientId passed in', async () => {
+      nock(API_BASE_URL)
+        .get(`/networks/${goerliChainIdDec}/health`)
+        .replyWithError('random error');
+
+      expect(
+        smartTransactionsController.state.smartTransactionsState
+          .livenessByChainId,
+      ).toStrictEqual({
+        [CHAIN_IDS.ETHEREUM]: true,
+        [CHAIN_IDS.GOERLI]: true,
+      });
+
+      await smartTransactionsController.fetchLiveness('goerli');
+
+      expect(
+        smartTransactionsController.state.smartTransactionsState
+          .livenessByChainId,
+      ).toStrictEqual({
+        [CHAIN_IDS.ETHEREUM]: true,
+        [CHAIN_IDS.GOERLI]: false,
+      });
     });
   });
 
@@ -867,7 +908,7 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('startPollingByNetworkClientId', () => {
-    it('starts and stops calling smart transactions batch status api endpoint with the correct chainId at the interval passed via the constructor', async () => {
+    it('starts and stops calling smart transactions batch status api endpoint with the correct chainId at the polling interval', async () => {
       // mock this to a noop because it causes an extra fetch call to the API upon state changes
       jest
         .spyOn(smartTransactionsController, 'checkPoll')
@@ -896,25 +937,6 @@ describe('SmartTransactionsController', () => {
             ],
           },
         },
-      });
-
-      getNetworkClientByIdSpy.mockImplementation((networkClientId) => {
-        switch (networkClientId) {
-          case 'mainnet':
-            return {
-              configuration: {
-                chainId: CHAIN_IDS.ETHEREUM,
-              },
-            };
-          case 'goerli':
-            return {
-              configuration: {
-                chainId: CHAIN_IDS.GOERLI,
-              },
-            };
-          default:
-            throw new Error('Invalid network client id');
-        }
       });
 
       jest.useFakeTimers();
