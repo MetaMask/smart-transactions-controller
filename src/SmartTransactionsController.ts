@@ -290,6 +290,23 @@ export default class SmartTransactionsController extends PollingControllerV1<
   }
 
   updateSmartTransaction(
+    SmartTransaction: SmartTransaction,
+    { networkClientId }: { networkClientId?: NetworkClientId } = {},
+  ) {
+    let chainId = this.config.chainId;
+    let ethersProvider = this.ethersProvider;
+    if (networkClientId) {
+      const networkClient = this.getNetworkClientById(networkClientId);
+      chainId = networkClient.configuration.chainId;
+      ethersProvider = networkClient.provider;
+    }
+    this.#updateSmartTransaction(SmartTransaction, {
+      chainId,
+      ethersProvider,
+    });
+  }
+
+  #updateSmartTransaction(
     smartTransaction: SmartTransaction,
     {
       chainId = this.config.chainId,
@@ -467,7 +484,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
           category: 'swaps',
         });
 
-        this.updateSmartTransaction(
+        this.#updateSmartTransaction(
           {
             ...smartTransaction,
             confirmed: true,
@@ -501,7 +518,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
     const data = await this.fetch(url);
     Object.entries(data).forEach(([uuid, stxStatus]) => {
-      this.updateSmartTransaction(
+      this.#updateSmartTransaction(
         {
           statusMetadata: stxStatus as SmartTransactionsStatus,
           status: calculateStatus(stxStatus as SmartTransactionsStatus),
@@ -653,7 +670,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
       }
       const { nonceDetails } = nonceLock;
 
-      this.updateSmartTransaction(
+      this.#updateSmartTransaction(
         {
           nonceDetails,
           preTxBalance,

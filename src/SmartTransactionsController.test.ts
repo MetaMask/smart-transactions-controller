@@ -750,8 +750,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          chainId: CHAIN_IDS.ETHEREUM,
-          ethersProvider: new Web3Provider(jest.fn()),
+          networkClientId: 'mainnet',
         },
       );
 
@@ -786,8 +785,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          chainId: CHAIN_IDS.ETHEREUM,
-          ethersProvider: new Web3Provider(jest.fn()),
+          networkClientId: 'mainnet',
         },
       );
       expect(confirmSpy).toHaveBeenCalled();
