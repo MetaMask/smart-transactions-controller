@@ -1,6 +1,7 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
 import { convertHexToDecimal } from '@metamask/controller-utils';
+import { Web3Provider } from '@ethersproject/providers';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
@@ -24,7 +25,7 @@ jest.mock('@ethersproject/bytes', () => ({
 }));
 
 jest.mock('@ethersproject/providers', () => ({
-  Web3Provider: class Web3Provider {
+  Web3Provider: class FakeProvider {
     getBalance = () => ({ toHexString: () => '0x1000' });
 
     getTransactionReceipt = jest.fn(() => ({ blockNumber: '123' }));
@@ -597,10 +598,9 @@ describe('SmartTransactionsController', () => {
         .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid1`)
         .reply(200, pendingBatchStatusApiResponse);
 
-      await smartTransactionsController.fetchSmartTransactionsStatus(
-        uuids,
-        CHAIN_IDS.ETHEREUM,
-      );
+      await smartTransactionsController.fetchSmartTransactionsStatus(uuids, {
+        networkClientId: 'mainnet',
+      });
       const pendingState = createStateAfterPending()[0];
       const pendingTransaction = { ...pendingState, history: [pendingState] };
       expect(smartTransactionsController.state).toStrictEqual({
@@ -650,10 +650,9 @@ describe('SmartTransactionsController', () => {
         .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid2`)
         .reply(200, successBatchStatusApiResponse);
 
-      await smartTransactionsController.fetchSmartTransactionsStatus(
-        uuids,
-        CHAIN_IDS.ETHEREUM,
-      );
+      await smartTransactionsController.fetchSmartTransactionsStatus(uuids, {
+        networkClientId: 'mainnet',
+      });
       const successState = createStateAfterSuccess()[0];
       const successTransaction = { ...successState, history: [successState] };
       expect(smartTransactionsController.state).toStrictEqual({
@@ -750,7 +749,10 @@ describe('SmartTransactionsController', () => {
       };
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
-        CHAIN_IDS.ETHEREUM,
+        {
+          chainId: CHAIN_IDS.ETHEREUM,
+          ethersProvider: new Web3Provider(jest.fn()),
+        },
       );
 
       expect(
@@ -783,7 +785,10 @@ describe('SmartTransactionsController', () => {
       };
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
-        CHAIN_IDS.ETHEREUM,
+        {
+          chainId: CHAIN_IDS.ETHEREUM,
+          ethersProvider: new Web3Provider(jest.fn()),
+        },
       );
       expect(confirmSpy).toHaveBeenCalled();
     });
@@ -802,7 +807,10 @@ describe('SmartTransactionsController', () => {
       };
       await smartTransactionsController.confirmSmartTransaction(
         successfulStx as SmartTransaction,
-        CHAIN_IDS.ETHEREUM,
+        {
+          chainId: CHAIN_IDS.ETHEREUM,
+          ethersProvider: new Web3Provider(jest.fn()),
+        },
       );
       expect(confirmExternalMock).toHaveBeenCalled();
     });
@@ -817,7 +825,10 @@ describe('SmartTransactionsController', () => {
       };
       await smartTransactionsController.confirmSmartTransaction(
         successfulStx as SmartTransaction,
-        CHAIN_IDS.ETHEREUM,
+        {
+          chainId: CHAIN_IDS.ETHEREUM,
+          ethersProvider: new Web3Provider(jest.fn()),
+        },
       );
       expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
     });

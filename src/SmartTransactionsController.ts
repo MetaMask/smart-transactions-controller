@@ -179,7 +179,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
     if (!this.config.supportedChainIds.includes(chainId)) {
       return Promise.resolve();
     }
-    return this.updateSmartTransactions(networkClientId);
+    return this.updateSmartTransactions({ networkClientId });
   }
 
   checkPoll(state: any) {
@@ -291,7 +291,13 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
   updateSmartTransaction(
     smartTransaction: SmartTransaction,
-    chainId: Hex,
+    {
+      chainId = this.config.chainId,
+      ethersProvider = this.ethersProvider,
+    }: {
+      chainId: Hex;
+      ethersProvider: Web3Provider;
+    },
   ): void {
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
@@ -349,7 +355,10 @@ export default class SmartTransactionsController extends PollingControllerV1<
         ...currentSmartTransaction,
         ...smartTransaction,
       };
-      this.confirmSmartTransaction(nextSmartTransaction, chainId);
+      this.confirmSmartTransaction(nextSmartTransaction, {
+        chainId,
+        ethersProvider,
+      });
     }
 
     this.update({
@@ -369,37 +378,48 @@ export default class SmartTransactionsController extends PollingControllerV1<
     });
   }
 
-  async updateSmartTransactions(
-    networkClientId?: NetworkClientId,
-  ): Promise<void> {
-    const chainId = this.getChainId(networkClientId);
+  async updateSmartTransactions({
+    networkClientId,
+  }: {
+    networkClientId?: NetworkClientId;
+  } = {}): Promise<void> {
     const { smartTransactions } = this.state.smartTransactionsState;
+    const chainId = this.getChainId(networkClientId);
+    const smartTransactionsForChainId = smartTransactions?.[chainId];
 
-    const currentSmartTransactions = smartTransactions?.[chainId];
-    const transactionsToUpdate: string[] = currentSmartTransactions
+    const transactionsToUpdate: string[] = smartTransactionsForChainId
       .filter(isSmartTransactionPending)
       .map((smartTransaction) => smartTransaction.uuid);
 
     if (transactionsToUpdate.length > 0) {
-      this.fetchSmartTransactionsStatus(transactionsToUpdate, chainId);
+      this.fetchSmartTransactionsStatus(transactionsToUpdate, {
+        networkClientId,
+      });
     }
   }
 
   // TODO make this a private method?
   async confirmSmartTransaction(
     smartTransaction: SmartTransaction,
-    chainId: Hex,
+    {
+      chainId,
+      ethersProvider,
+    }: {
+      chainId: Hex;
+      ethersProvider: any;
+    },
   ) {
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
-      const transactionReceipt =
-        await this.ethersProvider.getTransactionReceipt(txHash);
-      const transaction = await this.ethersProvider.getTransaction(txHash);
+      const transactionReceipt = await ethersProvider.getTransactionReceipt(
+        txHash,
+      );
+      const transaction = await ethersProvider.getTransaction(txHash);
       const maxFeePerGas = transaction.maxFeePerGas?.toHexString();
       const maxPriorityFeePerGas =
         transaction.maxPriorityFeePerGas?.toHexString();
       if (transactionReceipt?.blockNumber) {
-        const blockData = await this.ethersProvider.getBlock(
+        const blockData = await ethersProvider.getBlock(
           transactionReceipt?.blockNumber,
           false,
         );
@@ -452,7 +472,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
             ...smartTransaction,
             confirmed: true,
           },
-          chainId,
+          { chainId, ethersProvider },
         );
       }
     } catch (e) {
@@ -467,11 +487,13 @@ export default class SmartTransactionsController extends PollingControllerV1<
   // ! Ask backend API to accept list of uuids as params
   async fetchSmartTransactionsStatus(
     uuids: string[],
-    chainId: Hex,
+    { networkClientId }: { networkClientId?: NetworkClientId } = {},
   ): Promise<SmartTransaction[]> {
     const params = new URLSearchParams({
       uuids: uuids.join(','),
     });
+    const chainId = this.getChainId(networkClientId);
+    const ethersProvider = this.getProvider(networkClientId);
     const url = `${getAPIRequestURL(
       APIType.BATCH_STATUS,
       chainId,
@@ -488,7 +510,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
           ),
           uuid,
         },
-        chainId,
+        { chainId, ethersProvider },
       );
     });
 
@@ -604,6 +626,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
     networkClientId?: NetworkClientId;
   }) {
     const chainId = this.getChainId(networkClientId);
+    const ethersProvider = this.getProvider(networkClientId);
     const data = await this.fetch(
       getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
       {
@@ -617,9 +640,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
     const time = Date.now();
     let preTxBalance;
     try {
-      const preTxBalanceBN = await this.ethersProvider.getBalance(
-        txParams?.from,
-      );
+      const preTxBalanceBN = await ethersProvider.getBalance(txParams?.from);
       preTxBalance = new BigNumber(preTxBalanceBN.toHexString()).toString(16);
     } catch (e) {
       console.error('ethers error', e);
@@ -642,7 +663,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
           uuid: data.uuid,
           cancellable: true,
         },
-        chainId,
+        { chainId, ethersProvider },
       );
     } finally {
       nonceLock.releaseLock();
@@ -656,6 +677,13 @@ export default class SmartTransactionsController extends PollingControllerV1<
       return this.config.chainId;
     }
     return this.getNetworkClientById(networkClientId).configuration.chainId;
+  }
+
+  getProvider(networkClientId?: NetworkClientId): any {
+    if (!networkClientId) {
+      return this.ethersProvider;
+    }
+    return this.getNetworkClientById(networkClientId).provider;
   }
 
   // TODO: This should return if the cancellation was on chain or not (for nonce management)
