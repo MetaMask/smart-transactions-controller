@@ -290,17 +290,18 @@ export default class SmartTransactionsController extends PollingControllerV1<
   }
 
   updateSmartTransaction(
-    SmartTransaction: SmartTransaction,
+    smartTransaction: SmartTransaction,
     { networkClientId }: { networkClientId?: NetworkClientId } = {},
   ) {
-    let chainId = this.config.chainId;
-    let ethersProvider = this.ethersProvider;
+    let { chainId } = this.config;
+    let { ethersProvider } = this;
     if (networkClientId) {
       const networkClient = this.getNetworkClientById(networkClientId);
       chainId = networkClient.configuration.chainId;
       ethersProvider = networkClient.provider;
     }
-    this.#updateSmartTransaction(SmartTransaction, {
+
+    this.#updateSmartTransaction(smartTransaction, {
       chainId,
       ethersProvider,
     });
