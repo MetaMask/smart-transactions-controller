@@ -325,6 +325,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
     const isNewSmartTransaction = this.isNewSmartTransaction(
       smartTransaction.uuid,
     );
+
     this.trackStxStatusChange(
       smartTransaction,
       isNewSmartTransaction
@@ -372,7 +373,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
         ...currentSmartTransaction,
         ...smartTransaction,
       };
-      this.confirmSmartTransaction(nextSmartTransaction, {
+      this.#confirmSmartTransaction(nextSmartTransaction, {
         chainId,
         ethQuery,
       });
@@ -416,7 +417,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
   }
 
   // TODO make this a private method?
-  async confirmSmartTransaction(
+  async #confirmSmartTransaction(
     smartTransaction: SmartTransaction,
     {
       chainId,
@@ -566,7 +567,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
   async getFees(
     tradeTx: UnsignedTransaction,
     approvalTx: UnsignedTransaction,
-    networkClientId?: NetworkClientId,
+    { networkClientId }: { networkClientId?: NetworkClientId } = {},
   ): Promise<Fees> {
     const chainId = this.getChainId({ networkClientId });
     const transactions = [];
@@ -657,7 +658,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
       ]);
       preTxBalance = new BigNumber(preTxBalanceBN).toString(16);
     } catch (e) {
-      console.error('ethers error', e);
+      console.error('provider error', e);
     }
     const nonceLock = await this.getNonceLock(txParams?.from);
     try {

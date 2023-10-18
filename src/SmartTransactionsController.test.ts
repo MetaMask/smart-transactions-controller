@@ -1,7 +1,6 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
 import { convertHexToDecimal } from '@metamask/controller-utils';
-import EthQuery from '@metamask/eth-query';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
@@ -17,7 +16,7 @@ import * as utils from './utils';
 function flushPromises(): Promise<unknown> {
   return new Promise(jest.requireActual('timers').setImmediate);
 }
-const confirmExternalMock = jest.fn();
+// const confirmExternalMock = jest.fn();
 
 jest.mock('@ethersproject/bytes', () => ({
   ...jest.requireActual('@ethersproject/bytes'),
@@ -325,7 +324,7 @@ describe('SmartTransactionsController', () => {
         };
       }),
       provider: jest.fn(),
-      confirmExternalTransaction: confirmExternalMock,
+      confirmExternalTransaction: jest.fn(),
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
       getNetworkClientById: jest.fn().mockImplementation((networkClientId) => {
         switch (networkClientId) {
@@ -559,7 +558,9 @@ describe('SmartTransactionsController', () => {
         smartTransactionsController.state.smartTransactionsState.feesByChainId,
       ).toStrictEqual(defaultState.smartTransactionsState.feesByChainId);
 
-      await smartTransactionsController.getFees(tradeTx, approvalTx, 'goerli');
+      await smartTransactionsController.getFees(tradeTx, approvalTx, {
+        networkClientId: 'goerli',
+      });
 
       expect(
         smartTransactionsController.state.smartTransactionsState.feesByChainId,
@@ -784,10 +785,6 @@ describe('SmartTransactionsController', () => {
 
     it('confirms a smart transaction that has status success', async () => {
       const { smartTransactionsState } = smartTransactionsController.state;
-      const confirmSpy = jest.spyOn(
-        smartTransactionsController,
-        'confirmSmartTransaction',
-      );
       const pendingStx = {
         ...createStateAfterPending()[0],
         history: testHistory,
@@ -802,52 +799,27 @@ describe('SmartTransactionsController', () => {
       });
       const updateTransaction = {
         ...pendingStx,
-        status: 'success',
+        status: SmartTransactionStatuses.SUCCESS,
       };
+
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
           networkClientId: 'mainnet',
         },
       );
-      expect(confirmSpy).toHaveBeenCalled();
-    });
-  });
 
-  describe('confirmSmartTransaction', () => {
-    beforeEach(() => {
-      // eslint-disable-next-line jest/prefer-spy-on
-      smartTransactionsController.checkPoll = jest.fn(() => ({}));
-    });
+      await flushPromises();
 
-    it('calls confirm external transaction', async () => {
-      const successfulStx = {
-        ...createStateAfterSuccess()[0],
-        history: testHistory,
-      };
-      await smartTransactionsController.confirmSmartTransaction(
-        successfulStx as SmartTransaction,
+      expect(
+        smartTransactionsController.state.smartTransactionsState
+          .smartTransactions[CHAIN_IDS.ETHEREUM],
+      ).toStrictEqual([
         {
-          chainId: CHAIN_IDS.ETHEREUM,
-          ethQuery: new EthQuery({ sendAsync: jest.fn() }),
+          ...updateTransaction,
+          confirmed: true,
         },
-      );
-      expect(confirmExternalMock).toHaveBeenCalled();
-    });
-
-    it('throws an error if ethersProvider fails', async () => {
-      const successfulStx = {
-        ...createStateAfterSuccess()[0],
-        history: testHistory,
-      };
-      await smartTransactionsController.confirmSmartTransaction(
-        successfulStx as SmartTransaction,
-        {
-          chainId: CHAIN_IDS.ETHEREUM,
-          ethQuery: new EthQuery({ sendAsync: jest.fn() }),
-        },
-      );
-      expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
+      ]);
     });
   });
 
