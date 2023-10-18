@@ -60,7 +60,7 @@ export type SmartTransactionsControllerState = BaseState & {
     liveness: boolean | undefined;
     fees: FeeEstimates;
     feesByChainId: Record<Hex, FeeEstimates>;
-    livenessByChainId: Record<Hex, boolean | undefined>;
+    livenessByChainId: Record<Hex, boolean>;
   };
 };
 
@@ -606,23 +606,15 @@ export default class SmartTransactionsController extends PollingControllerV1<
           approvalTxFees,
           tradeTxFees,
         },
-      },
-    });
-
-    if (networkClientId) {
-      this.update({
-        smartTransactionsState: {
-          ...this.state.smartTransactionsState,
-          feesByChainId: {
-            ...this.state.smartTransactionsState.feesByChainId,
-            [chainId]: {
-              approvalTxFees,
-              tradeTxFees,
-            },
+        feesByChainId: {
+          ...this.state.smartTransactionsState.feesByChainId,
+          [chainId]: {
+            approvalTxFees,
+            tradeTxFees,
           },
         },
-      });
-    }
+      },
+    });
 
     return {
       approvalTxFees,
@@ -709,7 +701,11 @@ export default class SmartTransactionsController extends PollingControllerV1<
   // in transaction controller external transactions list
   async cancelSmartTransaction(
     uuid: string,
-    networkClientId?: NetworkClientId,
+    {
+      networkClientId,
+    }: {
+      networkClientId?: NetworkClientId;
+    } = {},
   ): Promise<void> {
     const chainId = this.getChainId(networkClientId);
     await this.fetch(getAPIRequestURL(APIType.CANCEL, chainId), {
@@ -734,20 +730,12 @@ export default class SmartTransactionsController extends PollingControllerV1<
       smartTransactionsState: {
         ...this.state.smartTransactionsState,
         liveness,
+        livenessByChainId: {
+          ...this.state.smartTransactionsState.livenessByChainId,
+          [chainId]: liveness,
+        },
       },
     });
-
-    if (networkClientId) {
-      this.update({
-        smartTransactionsState: {
-          ...this.state.smartTransactionsState,
-          livenessByChainId: {
-            ...this.state.smartTransactionsState.livenessByChainId,
-            [chainId]: liveness,
-          },
-        },
-      });
-    }
 
     return liveness;
   }
