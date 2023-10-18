@@ -7,10 +7,8 @@ import {
 } from '@metamask/network-controller';
 import { PollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
-import { BigNumber as ethersBigNumber } from '@ethersproject/bignumber';
 import EthQuery from '@metamask/eth-query';
 import { hexlify } from '@ethersproject/bytes';
-import mapValues from 'lodash/mapValues';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   APIType,
@@ -430,28 +428,27 @@ export default class SmartTransactionsController extends PollingControllerV1<
   ) {
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
-      const transactionReceipt = await query(
-        ethQuery,
-        'getTransactionReceipt',
-        [txHash],
-      );
-      const transaction = await query(ethQuery, 'getTransaction', [txHash]);
+      const transactionReceipt: {
+        maxFeePerGas?: string;
+        maxPriorityFeePerGas?: string;
+        blockNumber: string;
+      } | null = await query(ethQuery, 'getTransactionReceipt', [txHash]);
 
-      const maxFeePerGas = transaction.maxFeePerGas?.toHexString();
-      const maxPriorityFeePerGas =
-        transaction.maxPriorityFeePerGas?.toHexString();
+      const transaction: {
+        maxFeePerGas?: string;
+        maxPriorityFeePerGas?: string;
+      } = await query(ethQuery, 'getTransaction', [txHash]);
+
+      const maxFeePerGas = transaction?.maxFeePerGas;
+      const maxPriorityFeePerGas = transaction?.maxPriorityFeePerGas;
       if (transactionReceipt?.blockNumber) {
-        const blockData = await query(ethQuery, 'getBlock', [
-          transactionReceipt?.blockNumber,
-          false,
-        ]);
-        const baseFeePerGas = blockData?.baseFeePerGas.toHexString();
-        const txReceipt = mapValues(transactionReceipt, (value) => {
-          if (value instanceof ethersBigNumber) {
-            return value.toHexString();
-          }
-          return value;
-        });
+        const blockData: { baseFeePerGas?: string } | null = await query(
+          ethQuery,
+          'getBlockByNumber',
+          [transactionReceipt?.blockNumber, false],
+        );
+        const baseFeePerGas = blockData?.baseFeePerGas;
+        const txReceipt = Object.values(transactionReceipt);
         const updatedTxParams = {
           ...smartTransaction.txParams,
           maxFeePerGas,
@@ -658,7 +655,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
       const preTxBalanceBN = await query(ethQuery, 'getBalance', [
         txParams?.from,
       ]);
-      preTxBalance = new BigNumber(preTxBalanceBN.toHexString()).toString(16);
+      preTxBalance = new BigNumber(preTxBalanceBN).toString(16);
     } catch (e) {
       console.error('ethers error', e);
     }
@@ -726,7 +723,11 @@ export default class SmartTransactionsController extends PollingControllerV1<
     });
   }
 
-  async fetchLiveness(networkClientId?: NetworkClientId): Promise<boolean> {
+  async fetchLiveness({
+    networkClientId,
+  }: {
+    networkClientId?: NetworkClientId;
+  } = {}): Promise<boolean> {
     const chainId = this.getChainId({ networkClientId });
     let liveness = false;
     try {

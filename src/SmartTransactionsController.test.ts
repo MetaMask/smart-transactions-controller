@@ -29,7 +29,7 @@ jest.mock('@metamask/eth-query', () => {
     sendAsync = jest.fn(({ method }, callback) => {
       switch (method) {
         case 'getBalance': {
-          callback(null, { toHexString: () => '0x1000' });
+          callback(null, '0x1000');
           break;
         }
 
@@ -38,15 +38,15 @@ jest.mock('@metamask/eth-query', () => {
           break;
         }
 
-        case 'getBlock': {
-          callback(null, { baseFeePerGas: { toHexString: () => '0x123' } });
+        case 'getBlockByNumber': {
+          callback(null, { baseFeePerGas: '0x123' });
           break;
         }
 
         case 'getTransaction': {
           callback(null, {
-            maxFeePerGas: { toHexString: () => '0x123' },
-            maxPriorityFeePerGas: { toHexString: () => '0x123' },
+            maxFeePerGas: '0x123',
+            maxPriorityFeePerGas: '0x123',
           });
           break;
         }
@@ -731,7 +731,9 @@ describe('SmartTransactionsController', () => {
         [CHAIN_IDS.GOERLI]: true,
       });
 
-      await smartTransactionsController.fetchLiveness('goerli');
+      await smartTransactionsController.fetchLiveness({
+        networkClientId: 'goerli',
+      });
 
       expect(
         smartTransactionsController.state.smartTransactionsState
@@ -834,12 +836,6 @@ describe('SmartTransactionsController', () => {
     });
 
     it('throws an error if ethersProvider fails', async () => {
-      // smartTransactionsController.ethQuery.getTransactionReceipt.mockRejectedValueOnce(
-      //   'random error' as never,
-      // );
-      // jest.spyOn('@metmask/eth-query', 'sendAsync')(() => {
-      //   throw new Error('random error');
-      // });
       const successfulStx = {
         ...createStateAfterSuccess()[0],
         history: testHistory,
