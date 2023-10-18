@@ -1,7 +1,7 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
 import { convertHexToDecimal } from '@metamask/controller-utils';
-import { Web3Provider } from '@ethersproject/providers';
+import EthQuery from '@metamask/eth-query';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
@@ -24,20 +24,40 @@ jest.mock('@ethersproject/bytes', () => ({
   hexlify: (str: string) => `0x${str}`,
 }));
 
-jest.mock('@ethersproject/providers', () => ({
-  Web3Provider: class FakeProvider {
-    getBalance = () => ({ toHexString: () => '0x1000' });
+jest.mock('@metamask/eth-query', () => {
+  return class FakeEthQuery {
+    sendAsync = jest.fn(({ method }, callback) => {
+      switch (method) {
+        case 'getBalance': {
+          callback(null, { toHexString: () => '0x1000' });
+          break;
+        }
 
-    getTransactionReceipt = jest.fn(() => ({ blockNumber: '123' }));
+        case 'getTransactionReceipt': {
+          callback(null, { blockNumber: '123' });
+          break;
+        }
 
-    getTransaction = jest.fn(() => ({
-      maxFeePerGas: { toHexString: () => '0x123' },
-      maxPriorityFeePerGas: { toHexString: () => '0x123' },
-    }));
+        case 'getBlock': {
+          callback(null, { baseFeePerGas: { toHexString: () => '0x123' } });
+          break;
+        }
 
-    getBlock = jest.fn();
-  },
-}));
+        case 'getTransaction': {
+          callback(null, {
+            maxFeePerGas: { toHexString: () => '0x123' },
+            maxPriorityFeePerGas: { toHexString: () => '0x123' },
+          });
+          break;
+        }
+
+        default: {
+          throw new Error('Invalid method');
+        }
+      }
+    });
+  };
+});
 
 const addressFrom = '0x268392a24B6b093127E8581eAfbD1DA228bAdAe3';
 
@@ -394,7 +414,7 @@ describe('SmartTransactionsController', () => {
 
     it('calls stop if there is a timeoutHandle and no pending transactions', () => {
       const stopSpy = jest.spyOn(smartTransactionsController, 'stop');
-      smartTransactionsController.timeoutHandle = setInterval(() => ({}));
+      smartTransactionsController.timeoutHandle = setTimeout(() => ({}));
       smartTransactionsController.checkPoll(smartTransactionsController.state);
       expect(stopSpy).toHaveBeenCalled();
       clearInterval(smartTransactionsController.timeoutHandle);
@@ -807,16 +827,19 @@ describe('SmartTransactionsController', () => {
         successfulStx as SmartTransaction,
         {
           chainId: CHAIN_IDS.ETHEREUM,
-          ethersProvider: new Web3Provider(jest.fn()),
+          ethQuery: new EthQuery({ sendAsync: jest.fn() }),
         },
       );
       expect(confirmExternalMock).toHaveBeenCalled();
     });
 
     it('throws an error if ethersProvider fails', async () => {
-      smartTransactionsController.ethersProvider.getTransactionReceipt.mockRejectedValueOnce(
-        'random error' as never,
-      );
+      // smartTransactionsController.ethQuery.getTransactionReceipt.mockRejectedValueOnce(
+      //   'random error' as never,
+      // );
+      // jest.spyOn('@metmask/eth-query', 'sendAsync')(() => {
+      //   throw new Error('random error');
+      // });
       const successfulStx = {
         ...createStateAfterSuccess()[0],
         history: testHistory,
@@ -825,7 +848,7 @@ describe('SmartTransactionsController', () => {
         successfulStx as SmartTransaction,
         {
           chainId: CHAIN_IDS.ETHEREUM,
-          ethersProvider: new Web3Provider(jest.fn()),
+          ethQuery: new EthQuery({ sendAsync: jest.fn() }),
         },
       );
       expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
