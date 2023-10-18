@@ -25,7 +25,6 @@
     "test:watch": "jest --watchAll"
   },
   "dependencies": {
-    "@ethersproject/bignumber": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@metamask/base-controller": "^3.2.1",
     "@metamask/controller-utils": "^5.0.0",
