@@ -658,7 +658,6 @@ export default class SmartTransactionsController extends PollingControllerV1<
       const preTxBalanceBN = await query(ethQuery, 'getBalance', [
         txParams?.from,
       ]);
-      console.log('preTxBalanceBN', preTxBalanceBN);
       preTxBalance = new BigNumber(preTxBalanceBN.toHexString()).toString(16);
     } catch (e) {
       console.error('ethers error', e);
