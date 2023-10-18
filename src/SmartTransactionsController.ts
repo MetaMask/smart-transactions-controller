@@ -416,7 +416,6 @@ export default class SmartTransactionsController extends PollingControllerV1<
     }
   }
 
-  // TODO make this a private method?
   async #confirmSmartTransaction(
     smartTransaction: SmartTransaction,
     {
