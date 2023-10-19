@@ -437,7 +437,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
       const transaction: {
         maxFeePerGas?: string;
         maxPriorityFeePerGas?: string;
-      } = await query(ethQuery, 'getTransaction', [txHash]);
+      } | null = await query(ethQuery, 'getTransactionByHash', [txHash]);
 
       const maxFeePerGas = transaction?.maxFeePerGas;
       const maxPriorityFeePerGas = transaction?.maxPriorityFeePerGas;

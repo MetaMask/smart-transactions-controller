@@ -42,7 +42,7 @@ jest.mock('@metamask/eth-query', () => {
           break;
         }
 
-        case 'getTransaction': {
+        case 'getTransactionByHash': {
           callback(null, {
             maxFeePerGas: '0x123',
             maxPriorityFeePerGas: '0x123',
