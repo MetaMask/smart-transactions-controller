@@ -24,25 +24,26 @@ jest.mock('@ethersproject/bytes', () => ({
 }));
 
 jest.mock('@metamask/eth-query', () => {
-  return class FakeEthQuery {
+  const EthQuery = jest.requireActual('@metamask/eth-query');
+  return class FakeEthQuery extends EthQuery {
     sendAsync = jest.fn(({ method }, callback) => {
       switch (method) {
-        case 'getBalance': {
+        case 'eth_getBalance': {
           callback(null, '0x1000');
           break;
         }
 
-        case 'getTransactionReceipt': {
+        case 'eth_getTransactionReceipt': {
           callback(null, { blockNumber: '123' });
           break;
         }
 
-        case 'getBlockByNumber': {
+        case 'eth_getBlockByNumber': {
           callback(null, { baseFeePerGas: '0x123' });
           break;
         }
 
-        case 'getTransactionByHash': {
+        case 'eth_getTransactionByHash': {
           callback(null, {
             maxFeePerGas: '0x123',
             maxPriorityFeePerGas: '0x123',
