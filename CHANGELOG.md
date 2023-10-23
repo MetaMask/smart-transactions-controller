@@ -7,14 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.0.0]
-### Uncategorized
-- chore(deps): bump @metamask/utils from 8.1.0 to 8.2.0 ([#215](https://github.com/MetaMask/smart-transactions-controller/pull/215))
-- chore(deps): bump @metamask/json-rpc-engine from 7.1.1 to 7.2.0 ([#214](https://github.com/MetaMask/smart-transactions-controller/pull/214))
-- Parameterize SmartTransactionsController state by ChainId for MultiChain + Integrate PollingController Mixin ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
-- chore(deps): bump @babel/traverse from 7.21.5 to 7.23.2 ([#212](https://github.com/MetaMask/smart-transactions-controller/pull/212))
-- chore(deps): bump @metamask/network-controller from 13.0.1 to 15.0.0 ([#211](https://github.com/MetaMask/smart-transactions-controller/pull/211))
-- chore(deps): bump @metamask/controller-utils from 5.0.1 to 5.0.2 ([#207](https://github.com/MetaMask/smart-transactions-controller/pull/207))
-- chore(deps): bump @metamask/base-controller from 3.2.2 to 3.2.3 ([#209](https://github.com/MetaMask/smart-transactions-controller/pull/209))
+### Added
+- Integrate `PollingController` mixin into the `SmartTransactionsController` and implement the abstract `_executePoll` method ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
+
+### Changed
+- **BREAKING**: Bump `@metamask/network-controller` from ^13.0.1 to ^15.0.0 ([#211](https://github.com/MetaMask/smart-transactions-controller/pull/211))
+- **BREAKING**: Replace `@ethersproject/providers` with `@metamask/eth-query` ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
+- Remove `@ethersproject/bignumber` ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
+- Add optional options object containing a `networkClientId` argument to the `updateSmartTransaction` method ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
 
 ## [5.0.0]
 ### Changed
