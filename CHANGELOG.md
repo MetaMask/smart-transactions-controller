@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.0]
+### Uncategorized
+- chore(deps): bump @metamask/utils from 8.1.0 to 8.2.0 ([#215](https://github.com/MetaMask/smart-transactions-controller/pull/215))
+- chore(deps): bump @metamask/json-rpc-engine from 7.1.1 to 7.2.0 ([#214](https://github.com/MetaMask/smart-transactions-controller/pull/214))
+- Parameterize SmartTransactionsController state by ChainId for MultiChain + Integrate PollingController Mixin ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
+- chore(deps): bump @babel/traverse from 7.21.5 to 7.23.2 ([#212](https://github.com/MetaMask/smart-transactions-controller/pull/212))
+- chore(deps): bump @metamask/network-controller from 13.0.1 to 15.0.0 ([#211](https://github.com/MetaMask/smart-transactions-controller/pull/211))
+- chore(deps): bump @metamask/controller-utils from 5.0.1 to 5.0.2 ([#207](https://github.com/MetaMask/smart-transactions-controller/pull/207))
+- chore(deps): bump @metamask/base-controller from 3.2.2 to 3.2.3 ([#209](https://github.com/MetaMask/smart-transactions-controller/pull/209))
+
 ## [5.0.0]
 ### Changed
 - Bump dependency on `@metamask/network-controller` to ^13.0.0 ([#191](https://github.com/MetaMask/smart-transactions-controller/pull/191))
@@ -152,7 +162,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.0.0...HEAD
+[6.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v5.0.0...v6.0.0
 [5.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v4.0.0...v5.0.0
 [4.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v3.1.0...v4.0.0
 [3.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v3.0.0...v3.1.0
