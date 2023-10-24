@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [6.0.0]
 ### Added
-- Integrate `PollingController` mixin into the `SmartTransactionsController` and implement the abstract `_executePoll` method ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
+- **BREAKING:** `getNetworkClientById` is now required argument in constructor options object ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
+- Integrate `PollingController` mixin and `_executePoll` method used for concurrent multichain polling ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
+ - Consumers can now call `startPollingByNetworkClientId` with a networkClientId to start polling for a specific chain and `stopPollingByPollingToken` with the returned pollingToken to stop polling for that chain.
 
 ### Changed
 - **BREAKING**: Bump `@metamask/network-controller` from ^13.0.1 to ^15.0.0 ([#211](https://github.com/MetaMask/smart-transactions-controller/pull/211))
