@@ -1057,7 +1057,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/eth-json-rpc-provider@npm:^2.1.0":
+"@metamask/eth-json-rpc-provider@npm:^2.1.0, @metamask/eth-json-rpc-provider@npm:^2.2.0":
   version: 2.2.0
   resolution: "@metamask/eth-json-rpc-provider@npm:2.2.0"
   dependencies:
@@ -1126,20 +1126,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/polling-controller@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@metamask/polling-controller@npm:0.2.0"
+"@metamask/network-controller@npm:^15.1.0":
+  version: 15.1.0
+  resolution: "@metamask/network-controller@npm:15.1.0"
   dependencies:
     "@metamask/base-controller": ^3.2.3
     "@metamask/controller-utils": ^5.0.2
-    "@metamask/network-controller": ^15.0.0
+    "@metamask/eth-json-rpc-infura": ^9.0.0
+    "@metamask/eth-json-rpc-middleware": ^12.0.0
+    "@metamask/eth-json-rpc-provider": ^2.2.0
+    "@metamask/eth-query": ^3.0.1
+    "@metamask/json-rpc-engine": ^7.1.1
+    "@metamask/rpc-errors": ^6.1.0
+    "@metamask/swappable-obj-proxy": ^2.1.0
+    "@metamask/utils": ^8.1.0
+    async-mutex: ^0.2.6
+    eth-block-tracker: ^8.0.0
+    immer: ^9.0.6
+    uuid: ^8.3.2
+  checksum: 5ba7f8756aa10a0c4970973fc5112aeeba69b2a23f922b8cbf72c17ccdec89fcc42fdacd7927af2f7aec41dd0824796fabc366e3f546cbc5b8902007b7b3f760
+  languageName: node
+  linkType: hard
+
+"@metamask/polling-controller@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@metamask/polling-controller@npm:1.0.0"
+  dependencies:
+    "@metamask/base-controller": ^3.2.3
+    "@metamask/controller-utils": ^5.0.2
+    "@metamask/network-controller": ^15.1.0
     "@metamask/utils": ^8.1.0
     "@types/uuid": ^8.3.0
     fast-json-stable-stringify: ^2.1.0
     uuid: ^8.3.2
   peerDependencies:
-    "@metamask/network-controller": ^15.0.0
-  checksum: 4dee3e49b23ba2b92055816dcc68b8e468405d9b00528d14b01c490058dea6e7aae943b19a007adbbbe06aa9a5b61d961211f9de82c8b55c7622599de78eb76e
+    "@metamask/network-controller": ^15.1.0
+  checksum: 2fef5665691aa83090fe5d890de0b21e15e6056f5107c877e80d1aab2065f91a39dc0b4fa8fcedce97cfbeada8b6ac720cce065bc1ae617daf66f63ec5531c2b
   languageName: node
   linkType: hard
 
@@ -1175,7 +1197,7 @@ __metadata:
     "@metamask/eslint-config-typescript": ^10.0.0
     "@metamask/eth-query": ^3.0.1
     "@metamask/network-controller": ^15.0.0
-    "@metamask/polling-controller": ^0.2.0
+    "@metamask/polling-controller": ^1.0.0
     "@types/jest": ^26.0.24
     "@types/lodash": ^4.14.194
     "@types/node": ^16.18.31

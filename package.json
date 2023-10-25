@@ -30,7 +30,7 @@
     "@metamask/controller-utils": "^5.0.0",
     "@metamask/eth-query": "^3.0.1",
     "@metamask/network-controller": "^15.0.0",
-    "@metamask/polling-controller": "^0.2.0",
+    "@metamask/polling-controller": "^1.0.0",
     "bignumber.js": "^9.0.1",
     "fast-json-patch": "^3.1.0",
     "lodash": "^4.17.21"
