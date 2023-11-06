@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.1.0]
-### Uncategorized
+### Added
 - Add a new "userOptInV2" prop ([#222](https://github.com/MetaMask/smart-transactions-controller/pull/222))
+
+### Changed
 - chore(deps): bump @metamask/network-controller from 15.0.0 to 15.1.0 ([#219](https://github.com/MetaMask/smart-transactions-controller/pull/219))
 - chore(deps-dev): bump @metamask/auto-changelog from 3.4.1 to 3.4.2 ([#221](https://github.com/MetaMask/smart-transactions-controller/pull/221))
 
