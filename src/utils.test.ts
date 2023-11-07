@@ -1,3 +1,6 @@
+// @ts-ignore
+import packageJson from './../package.json';
+
 import * as utils from './utils';
 import {
   SmartTransactionMinedTx,
@@ -43,7 +46,7 @@ describe('src/utils.js', () => {
       expect(
         utils.getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, CHAIN_IDS.ETHEREUM),
       ).toBe(
-        `${API_BASE_URL}/networks/${ethereumChainIdDec}/submitTransactions`,
+        `${API_BASE_URL}/networks/${ethereumChainIdDec}/submitTransactions&stxControllerVersion=${packageJson.version}`,
       );
     });
 
