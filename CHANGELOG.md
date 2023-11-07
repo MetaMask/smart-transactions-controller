@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.2.0]
-### Uncategorized
+### Added
 - Stx controller version in query params ([#227](https://github.com/MetaMask/smart-transactions-controller/pull/227))
-- chore(deps-dev): bump @metamask/auto-changelog from 3.4.2 to 3.4.3 ([#224](https://github.com/MetaMask/smart-transactions-controller/pull/224))
+
+### Changed
 - chore(deps): bump @metamask/eth-json-rpc-middleware ([#225](https://github.com/MetaMask/smart-transactions-controller/pull/225))
 
 ## [6.1.0]
