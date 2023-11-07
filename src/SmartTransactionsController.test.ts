@@ -1,12 +1,17 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
 import { convertHexToDecimal } from '@metamask/controller-utils';
+// @ts-ignore
+import packageJson from './../package.json';
+
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
 import { API_BASE_URL, CHAIN_IDS } from './constants';
 import { SmartTransaction, SmartTransactionStatuses } from './types';
 import * as utils from './utils';
+
+const packageVersion = packageJson.version;
 
 /**
  * Resolve all pending promises.
@@ -517,6 +522,7 @@ describe('SmartTransactionsController', () => {
       const getFeesApiResponse = createGetFeesApiResponse();
       nock(API_BASE_URL)
         .post(`/networks/${ethereumChainIdDec}/getFees`)
+        .query(true)
         .reply(200, getFeesApiResponse);
       const fees = await smartTransactionsController.getFees(
         tradeTx,
@@ -534,6 +540,7 @@ describe('SmartTransactionsController', () => {
       const getFeesApiResponse = createGetFeesApiResponse();
       nock(API_BASE_URL)
         .post(`/networks/${goerliChainIdDec}/getFees`)
+        .query(true)
         .reply(200, getFeesApiResponse);
 
       expect(
@@ -572,6 +579,7 @@ describe('SmartTransactionsController', () => {
         createSubmitTransactionsApiResponse(); // It has uuid.
       nock(API_BASE_URL)
         .post(`/networks/${ethereumChainIdDec}/submitTransactions`)
+        .query(true)
         .reply(200, submitTransactionsApiResponse);
 
       await smartTransactionsController.submitSignedTransactions({
@@ -598,7 +606,7 @@ describe('SmartTransactionsController', () => {
       const pendingBatchStatusApiResponse =
         createPendingBatchStatusApiResponse();
       nock(API_BASE_URL)
-        .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid1`)
+        .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid1&stxControllerVersion=${packageVersion}`)
         .reply(200, pendingBatchStatusApiResponse);
 
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids, {
@@ -651,7 +659,7 @@ describe('SmartTransactionsController', () => {
       });
 
       nock(API_BASE_URL)
-        .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid2`)
+        .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid2&stxControllerVersion=${packageVersion}`)
         .reply(200, successBatchStatusApiResponse);
 
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids, {
@@ -698,6 +706,7 @@ describe('SmartTransactionsController', () => {
       const successLivenessApiResponse = createSuccessLivenessApiResponse();
       nock(API_BASE_URL)
         .get(`/networks/${ethereumChainIdDec}/health`)
+        .query(true)
         .reply(200, successLivenessApiResponse);
       const liveness = await smartTransactionsController.fetchLiveness();
       expect(liveness).toBe(true);
@@ -706,6 +715,7 @@ describe('SmartTransactionsController', () => {
     it('fetches liveness and sets in feesByChainId state for the Smart Transactions API for the chainId of the networkClientId passed in', async () => {
       nock(API_BASE_URL)
         .get(`/networks/${goerliChainIdDec}/health`)
+        .query(true)
         .replyWithError('random error');
 
       expect(
@@ -811,6 +821,7 @@ describe('SmartTransactionsController', () => {
     it('sends POST call to Transactions API', async () => {
       const apiCall = nock(API_BASE_URL)
         .post(`/networks/${ethereumChainIdDec}/cancel`)
+        .query(true)
         .reply(200, { message: 'successful' });
       await smartTransactionsController.cancelSmartTransaction('uuid1');
       expect(apiCall.isDone()).toBe(true);
@@ -938,7 +949,7 @@ describe('SmartTransactionsController', () => {
         expect.arrayContaining([
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
+          )}/batchStatus?uuids=uuid1&stxControllerVersion=${packageVersion}`,
         ]),
       );
 
@@ -951,13 +962,13 @@ describe('SmartTransactionsController', () => {
         JSON.stringify([
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
+          )}/batchStatus?uuids=uuid1&stxControllerVersion=${packageVersion}`,
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
+          )}/batchStatus?uuids=uuid1&stxControllerVersion=${packageVersion}`,
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
+          )}/batchStatus?uuids=uuid2&stxControllerVersion=${packageVersion}`,
         ]),
       );
 
@@ -977,19 +988,19 @@ describe('SmartTransactionsController', () => {
         JSON.stringify([
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
+          )}/batchStatus?uuids=uuid1&stxControllerVersion=${packageVersion}`,
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
+          )}/batchStatus?uuids=uuid1&stxControllerVersion=${packageVersion}`,
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
+          )}/batchStatus?uuids=uuid2&stxControllerVersion=${packageVersion}`,
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
+          )}/batchStatus?uuids=uuid2&stxControllerVersion=${packageVersion}`,
           `${API_BASE_URL}/networks/${convertHexToDecimal(
             CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
+          )}/batchStatus?uuids=uuid2&stxControllerVersion=${packageVersion}`,
         ]),
       );
 

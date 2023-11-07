@@ -10,6 +10,9 @@ import { BigNumber } from 'bignumber.js';
 import EthQuery from '@metamask/eth-query';
 import { hexlify } from '@ethersproject/bytes';
 import cloneDeep from 'lodash/cloneDeep';
+// @ts-ignore
+import packageJson from './../package.json';
+
 import {
   APIType,
   SmartTransaction,
@@ -81,6 +84,8 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
   /* istanbul ignore next */
   private async fetch(request: string, options?: RequestInit) {
+    const url = new URL(request);
+    url.searchParams.set('stxControllerVersion', packageJson.version);
     const { clientId } = this.config;
     const fetchOptions = {
       ...options,
@@ -90,7 +95,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
       },
     };
 
-    return handleFetch(request, fetchOptions);
+    return handleFetch(url.toString(), fetchOptions);
   }
 
   constructor(
