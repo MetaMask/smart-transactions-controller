@@ -10,9 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Pass current version of this package to API when submitting transactions ([#227](https://github.com/MetaMask/smart-transactions-controller/pull/227))
 
-### Changed
-- chore(deps): bump @metamask/eth-json-rpc-middleware ([#225](https://github.com/MetaMask/smart-transactions-controller/pull/225))
-
 ## [6.1.0]
 ### Added
 - Add a new "userOptInV2" prop ([#222](https://github.com/MetaMask/smart-transactions-controller/pull/222))
