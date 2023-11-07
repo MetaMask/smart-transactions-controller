@@ -12,7 +12,7 @@
     "strict": true,
     "target": "ES2017",
     "skipLibCheck": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "exclude": ["./src/**/*.test.ts"],
   "include": ["./src/**/*.ts"]
