@@ -2,8 +2,10 @@ import jsonDiffer from 'fast-json-patch';
 import _ from 'lodash';
 import { BigNumber } from 'bignumber.js';
 import { hexlify } from '@ethersproject/bytes';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import packageJson from './../package.json';
+import packageJson from '../package.json';
 
 import {
   APIType,

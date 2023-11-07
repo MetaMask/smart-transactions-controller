@@ -1,8 +1,9 @@
 import nock from 'nock';
 import { NetworkState } from '@metamask/network-controller';
 import { convertHexToDecimal } from '@metamask/controller-utils';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import packageJson from './../package.json';
+import packageJson from '../package.json';
 
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
@@ -574,7 +575,9 @@ describe('SmartTransactionsController', () => {
       const submitTransactionsApiResponse =
         createSubmitTransactionsApiResponse(); // It has uuid.
       nock(API_BASE_URL)
-        .post(`/networks/${ethereumChainIdDec}/submitTransactions&stxControllerVersion=${packageJson.version}`)
+        .post(
+          `/networks/${ethereumChainIdDec}/submitTransactions&stxControllerVersion=${packageJson.version}`,
+        )
         .reply(200, submitTransactionsApiResponse);
 
       await smartTransactionsController.submitSignedTransactions({
