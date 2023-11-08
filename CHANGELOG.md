@@ -7,9 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.2.1]
-### Uncategorized
-- Fix: typo in a URL ([#230](https://github.com/MetaMask/smart-transactions-controller/pull/230))
-- chore(deps): bump @metamask/network-controller from 15.1.0 to 15.2.0 ([#229](https://github.com/MetaMask/smart-transactions-controller/pull/229))
+### Fixed
+- Fix a typo in a URL for submitting transactions ([#230](https://github.com/MetaMask/smart-transactions-controller/pull/230))
 
 ## [6.2.0]
 ### Added
