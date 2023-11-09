@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.2]
+### Uncategorized
+- Revert "Parameterize SmartTransactionsController state by ChainId for MultiChain + Integrate PollingController Mixin ([#235](https://github.com/MetaMask/smart-transactions-controller/pull/235))
+- chore(deps): bump @metamask/eth-json-rpc-provider from 2.2.0 to 2.3.0 ([#233](https://github.com/MetaMask/smart-transactions-controller/pull/233))
+- chore(deps): bump @metamask/utils from 8.2.0 to 8.2.1 ([#232](https://github.com/MetaMask/smart-transactions-controller/pull/232))
+- chore(deps): bump @metamask/json-rpc-engine from 7.2.0 to 7.3.0 ([#234](https://github.com/MetaMask/smart-transactions-controller/pull/234))
+
 ## [6.2.1]
 ### Fixed
 - Fix a typo in a URL for submitting transactions ([#230](https://github.com/MetaMask/smart-transactions-controller/pull/230))
@@ -179,7 +186,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.1...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.2...HEAD
+[6.2.2]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.1...v6.2.2
 [6.2.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.1.0...v6.2.0
 [6.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.0.0...v6.1.0
