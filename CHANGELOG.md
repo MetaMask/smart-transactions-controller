@@ -7,28 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.2.2]
-### Uncategorized
+### Fixed
 - Revert "Parameterize SmartTransactionsController state by ChainId for MultiChain + Integrate PollingController Mixin ([#235](https://github.com/MetaMask/smart-transactions-controller/pull/235))
-- chore(deps): bump @metamask/eth-json-rpc-provider from 2.2.0 to 2.3.0 ([#233](https://github.com/MetaMask/smart-transactions-controller/pull/233))
-- chore(deps): bump @metamask/utils from 8.2.0 to 8.2.1 ([#232](https://github.com/MetaMask/smart-transactions-controller/pull/232))
-- chore(deps): bump @metamask/json-rpc-engine from 7.2.0 to 7.3.0 ([#234](https://github.com/MetaMask/smart-transactions-controller/pull/234))
 
-## [6.2.1]
+## [6.2.1] [DEPRECATED]
 ### Fixed
 - Fix a typo in a URL for submitting transactions ([#230](https://github.com/MetaMask/smart-transactions-controller/pull/230))
 
-## [6.2.0]
+## [6.2.0] [DEPRECATED]
 ### Added
 - Pass current version of this package to API when submitting transactions ([#227](https://github.com/MetaMask/smart-transactions-controller/pull/227))
 
-## [6.1.0]
+## [6.1.0] [DEPRECATED]
 ### Added
 - Add a new "userOptInV2" prop ([#222](https://github.com/MetaMask/smart-transactions-controller/pull/222))
 
 ### Changed
 - Bump @metamask/network-controller from 15.0.0 to 15.1.0 ([#219](https://github.com/MetaMask/smart-transactions-controller/pull/219))
 
-## [6.0.0]
+## [6.0.0] [DEPRECATED]
 ### Added
 - **BREAKING:** `getNetworkClientById` is now required argument in constructor options object ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
 - Integrate `PollingController` mixin and `_executePoll` method used for concurrent multichain polling ([#210](https://github.com/MetaMask/smart-transactions-controller/pull/210))
