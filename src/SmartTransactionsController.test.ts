@@ -300,6 +300,7 @@ describe('SmartTransactionsController', () => {
           [CHAIN_IDS.ETHEREUM]: [],
         },
         userOptIn: undefined,
+        userOptInV2: undefined,
         fees: {
           approvalTxFees: undefined,
           tradeTxFees: undefined,
