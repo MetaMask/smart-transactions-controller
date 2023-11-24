@@ -1191,16 +1191,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/base-controller@npm:^3.2.1":
-  version: 3.2.3
-  resolution: "@metamask/base-controller@npm:3.2.3"
-  dependencies:
-    "@metamask/utils": ^8.1.0
-    immer: ^9.0.6
-  checksum: f49fcf2bf892ec25657c2d72a50b3c4f3cad59acb1b74d9fdcdf564107b8f38f73647c696aaa9699d94828b5797d8f1479dab44a2dbcda987c268b0088bb3b76
-  languageName: node
-  linkType: hard
-
 "@metamask/base-controller@npm:^4.0.0":
   version: 4.0.0
   resolution: "@metamask/base-controller@npm:4.0.0"
@@ -1433,7 +1423,7 @@ __metadata:
     "@ethersproject/providers": ^5.7.0
     "@lavamoat/allow-scripts": ^2.3.1
     "@metamask/auto-changelog": ^3.1.0
-    "@metamask/base-controller": ^3.2.1
+    "@metamask/base-controller": ^4.0.0
     "@metamask/controller-utils": ^5.0.0
     "@metamask/eslint-config": ^10.0.0
     "@metamask/eslint-config-jest": ^10.0.0
