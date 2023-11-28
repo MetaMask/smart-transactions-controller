@@ -298,7 +298,6 @@ export default class SmartTransactionsController extends PollingControllerV1<
     if (networkClientId) {
       const networkClient = this.getNetworkClientById(networkClientId);
       chainId = networkClient.configuration.chainId;
-      // @ts-expect-error TODO: Provider type alignment
       ethQuery = new EthQuery(networkClient.provider);
     }
 
@@ -708,8 +707,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
     networkClientId?: NetworkClientId;
   }): EthQuery {
     return networkClientId
-      ? // @ts-expect-error TODO: Provider type alignment
-        new EthQuery(this.getNetworkClientById(networkClientId).provider)
+      ? new EthQuery(this.getNetworkClientById(networkClientId).provider)
       : this.ethQuery;
   }
 

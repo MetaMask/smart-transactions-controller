@@ -7,7 +7,7 @@ describe('default export', () => {
     const controller = new DefaultExport({
       onNetworkStateChange: jest.fn(),
       getNonceLock: null,
-      provider: jest.fn(),
+      provider: { sendAsync: jest.fn() },
       confirmExternalTransaction: jest.fn(),
       trackMetaMetricsEvent: jest.fn(),
       getNetworkClientById: jest.fn(),

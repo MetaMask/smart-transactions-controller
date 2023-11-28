@@ -323,7 +323,7 @@ describe('SmartTransactionsController', () => {
           releaseLock: jest.fn(),
         };
       }),
-      provider: jest.fn(),
+      provider: { sendAsync: jest.fn() },
       confirmExternalTransaction: jest.fn(),
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
       getNetworkClientById: jest.fn().mockImplementation((networkClientId) => {
