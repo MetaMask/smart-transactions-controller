@@ -22,7 +22,7 @@ export const flushPromises = () => {
 export async function advanceTime({
   clock,
   duration,
-  stepSize = duration / 4,
+  stepSize = Math.floor(duration / 4),
 }: {
   clock: sinon.SinonFakeTimers;
   duration: number;

@@ -5,7 +5,7 @@ import {
   NetworkController,
   NetworkClientId,
 } from '@metamask/network-controller';
-import EthQuery from '@metamask/eth-query';
+import EthQuery, { Provider } from '@metamask/eth-query';
 import { PollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
 import { hexlify } from '@ethersproject/bytes';
@@ -106,7 +106,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
         listener: (networkState: NetworkState) => void,
       ) => void;
       getNonceLock: any;
-      provider: any;
+      provider: Provider;
       confirmExternalTransaction: any;
       trackMetaMetricsEvent: any;
       getNetworkClientById: NetworkController['getNetworkClientById'];
@@ -405,7 +405,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
   } = {}): Promise<void> {
     const { smartTransactions } = this.state.smartTransactionsState;
     const chainId = this.getChainId({ networkClientId });
-    const smartTransactionsForChainId = smartTransactions?.[chainId];
+    const smartTransactionsForChainId = smartTransactions[chainId];
 
     const transactionsToUpdate: string[] = smartTransactionsForChainId
       .filter(isSmartTransactionPending)
@@ -513,7 +513,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
   async fetchSmartTransactionsStatus(
     uuids: string[],
     { networkClientId }: { networkClientId?: NetworkClientId } = {},
-  ): Promise<SmartTransaction[]> {
+  ): Promise<Record<string, SmartTransactionsStatus>> {
     const params = new URLSearchParams({
       uuids: uuids.join(','),
     });
@@ -524,15 +524,17 @@ export default class SmartTransactionsController extends PollingControllerV1<
       chainId,
     )}?${params.toString()}`;
 
-    const data = await this.fetch(url);
+    const data = (await this.fetch(url)) as Record<
+      string,
+      SmartTransactionsStatus
+    >;
+
     Object.entries(data).forEach(([uuid, stxStatus]) => {
       this.#updateSmartTransaction(
         {
-          statusMetadata: stxStatus as SmartTransactionsStatus,
-          status: calculateStatus(stxStatus as SmartTransactionsStatus),
-          cancellable: isSmartTransactionCancellable(
-            stxStatus as SmartTransactionsStatus,
-          ),
+          statusMetadata: stxStatus,
+          status: calculateStatus(stxStatus),
+          cancellable: isSmartTransactionCancellable(stxStatus),
           uuid,
         },
         { chainId, ethQuery },
