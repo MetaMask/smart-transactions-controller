@@ -149,14 +149,15 @@ export default class SmartTransactionsController extends PollingControllerV1<
         },
       },
     };
-    this.setIntervalLength(this.config.interval || DEFAULT_INTERVAL);
+
+    this.initialize();
+    this.setIntervalLength(this.config.interval);
     this.getNonceLock = getNonceLock;
     this.ethQuery = new EthQuery(provider);
     this.confirmExternalTransaction = confirmExternalTransaction;
     this.trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.getNetworkClientById = getNetworkClientById;
 
-    this.initialize();
     this.initializeSmartTransactionsForChainId();
 
     onNetworkStateChange(({ providerConfig: newProvider }) => {
