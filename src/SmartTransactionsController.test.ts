@@ -938,57 +938,50 @@ describe('SmartTransactionsController', () => {
 
       await advanceTime({ clock, duration: 0 });
 
-      expect(
-        JSON.stringify(handleFetchSpy.mock.calls.map((arg) => arg[0])),
-      ).toStrictEqual(
-        JSON.stringify([
-          `${API_BASE_URL}/networks/${convertHexToDecimal(
-            CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
-        ]),
+      const fetchHeaders = {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Client-Id': 'default',
+        },
+      };
+
+      expect(handleFetchSpy).toHaveBeenNthCalledWith(
+        1,
+        `${API_BASE_URL}/networks/${convertHexToDecimal(
+          CHAIN_IDS.ETHEREUM,
+        )}/batchStatus?uuids=uuid1`,
+        fetchHeaders,
       );
 
-      handleFetchSpy.mockClear();
       await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
-      expect(
-        JSON.stringify(handleFetchSpy.mock.calls.map((arg) => arg[0])),
-      ).toStrictEqual(
-        JSON.stringify([
-          `${API_BASE_URL}/networks/${convertHexToDecimal(
-            CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
-        ]),
+      expect(handleFetchSpy).toHaveBeenNthCalledWith(
+        2,
+        `${API_BASE_URL}/networks/${convertHexToDecimal(
+          CHAIN_IDS.ETHEREUM,
+        )}/batchStatus?uuids=uuid1`,
+        fetchHeaders,
       );
 
-      handleFetchSpy.mockClear();
       smartTransactionsController.startPollingByNetworkClientId('goerli');
       await advanceTime({ clock, duration: 0 });
 
-      expect(
-        JSON.stringify(handleFetchSpy.mock.calls.map((arg) => arg[0])),
-      ).toStrictEqual(
-        JSON.stringify([
-          `${API_BASE_URL}/networks/${convertHexToDecimal(
-            CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
-        ]),
+      expect(handleFetchSpy).toHaveBeenNthCalledWith(
+        3,
+        `${API_BASE_URL}/networks/${convertHexToDecimal(
+          CHAIN_IDS.GOERLI,
+        )}/batchStatus?uuids=uuid2`,
+        fetchHeaders,
       );
 
-      handleFetchSpy.mockClear();
       await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
-      expect(
-        JSON.stringify(handleFetchSpy.mock.calls.map((arg) => arg[0])),
-      ).toStrictEqual(
-        JSON.stringify([
-          `${API_BASE_URL}/networks/${convertHexToDecimal(
-            CHAIN_IDS.ETHEREUM,
-          )}/batchStatus?uuids=uuid1`,
-          `${API_BASE_URL}/networks/${convertHexToDecimal(
-            CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
-        ]),
+      expect(handleFetchSpy).toHaveBeenNthCalledWith(
+        5,
+        `${API_BASE_URL}/networks/${convertHexToDecimal(
+          CHAIN_IDS.GOERLI,
+        )}/batchStatus?uuids=uuid2`,
+        fetchHeaders,
       );
 
       // stop the mainnet polling
@@ -997,23 +990,25 @@ describe('SmartTransactionsController', () => {
       );
 
       // cycle two polling intervals
-      handleFetchSpy.mockClear();
       await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
       await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
       // check that the mainnet polling has stopped while the goerli polling continues
-      expect(
-        JSON.stringify(handleFetchSpy.mock.calls.map((arg) => arg[0])),
-      ).toStrictEqual(
-        JSON.stringify([
-          `${API_BASE_URL}/networks/${convertHexToDecimal(
-            CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
-          `${API_BASE_URL}/networks/${convertHexToDecimal(
-            CHAIN_IDS.GOERLI,
-          )}/batchStatus?uuids=uuid2`,
-        ]),
+      expect(handleFetchSpy).toHaveBeenNthCalledWith(
+        6,
+        `${API_BASE_URL}/networks/${convertHexToDecimal(
+          CHAIN_IDS.GOERLI,
+        )}/batchStatus?uuids=uuid2`,
+        fetchHeaders,
+      );
+
+      expect(handleFetchSpy).toHaveBeenNthCalledWith(
+        7,
+        `${API_BASE_URL}/networks/${convertHexToDecimal(
+          CHAIN_IDS.GOERLI,
+        )}/batchStatus?uuids=uuid2`,
+        fetchHeaders,
       );
 
       // cleanup

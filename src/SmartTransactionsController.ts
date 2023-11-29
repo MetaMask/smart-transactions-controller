@@ -71,7 +71,7 @@ export default class SmartTransactionsController extends PollingControllerV1<
 
   private getNonceLock: any;
 
-  public ethQuery: EthQuery;
+  private ethQuery: EthQuery;
 
   public confirmExternalTransaction: any;
 
