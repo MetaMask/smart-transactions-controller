@@ -14,8 +14,6 @@ import { SmartTransaction, SmartTransactionStatuses } from './types';
 import * as utils from './utils';
 import { flushPromises, advanceTime } from './test-helpers';
 
-// const confirmExternalMock = jest.fn();
-
 jest.mock('@ethersproject/bytes', () => ({
   ...jest.requireActual('@ethersproject/bytes'),
   hexlify: (str: string) => `0x${str}`,
