@@ -7,12 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [6.2.3]
-### Uncategorized
-- chore(deps): bump @metamask/controller-utils from 6.0.0 to 6.1.0 ([#244](https://github.com/MetaMask/smart-transactions-controller/pull/244))
-- chore(deps): bump @metamask/controller-utils from 5.0.2 to 6.0.0 ([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242))
-- chore(deps): bump @metamask/network-controller from 16.0.0 to 17.0.0 ([#241](https://github.com/MetaMask/smart-transactions-controller/pull/241))
-- chore(deps): bump @metamask/eth-sig-util from 7.0.0 to 7.0.1 ([#239](https://github.com/MetaMask/smart-transactions-controller/pull/239))
-- chore(deps): bump @metamask/network-controller from 15.2.0 to 16.0.0 ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238))
+### Changed
+- Bump `@metamask/network-controller` from `^15.0.0` to `^17.0.0` ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238) [#241](https://github.com/MetaMask/smart-transactions-controller/pull/241))
+- Bump `@metamask/controller-utils` from `^5.0.0` to `^6.1.0` ([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242) [#244](https://github.com/MetaMask/smart-transactions-controller/pull/244))
 
 ## [6.2.2]
 ### Fixed
