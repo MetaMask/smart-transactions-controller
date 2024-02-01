@@ -590,7 +590,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   async getFees(
     tradeTx: UnsignedTransaction,
-    approvalTx: UnsignedTransaction,
+    approvalTx?: UnsignedTransaction,
     { networkClientId }: { networkClientId?: NetworkClientId } = {},
   ): Promise<Fees> {
     const chainId = this.#getChainId({ networkClientId });
