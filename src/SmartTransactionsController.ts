@@ -605,13 +605,12 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         // If there is an approval tx, the trade tx's nonce is increased by 1.
         nonce: incrementNonceInHex(unsignedApprovalTransactionWithNonce.nonce),
       };
-    } else {
+    } else if (tradeTx.nonce) {
       unsignedTradeTransactionWithNonce = tradeTx;
-      if (!unsignedTradeTransactionWithNonce.nonce) {
-        unsignedTradeTransactionWithNonce = await this.addNonceToTransaction(
-          unsignedTradeTransactionWithNonce,
-        );
-      }
+    } else {
+      unsignedTradeTransactionWithNonce = await this.addNonceToTransaction(
+        tradeTx,
+      );
     }
     transactions.push(unsignedTradeTransactionWithNonce);
     const data = await this.fetch(getAPIRequestURL(APIType.GET_FEES, chainId), {
@@ -691,17 +690,22 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     } catch (e) {
       console.error('provider error', e);
     }
-    const requiresNonce = !txParams.nonce;
-    const nonceLock = requiresNonce
-      ? await this.getNonceLock(txParams?.from)
-      : undefined;
-    try {
-      const nonce = nonceLock ? hexlify(nonceLock.nextNonce) : txParams.nonce;
-      if (txParams && !txParams?.nonce) {
-        txParams.nonce = nonce;
-      }
-      const nonceDetails = nonceLock ? nonceLock.nonceDetails : {};
 
+    const requiresNonce = !txParams.nonce;
+    let nonce;
+    let nonceLock;
+    let nonceDetails = {};
+
+    if (requiresNonce) {
+      nonceLock = await this.getNonceLock(txParams?.from);
+      nonce = hexlify(nonceLock.nextNonce);
+      nonceDetails = nonceLock.nonceDetails;
+      if (txParams) {
+        txParams.nonce ??= nonce;
+      }
+    }
+
+    try {
       this.#updateSmartTransaction(
         {
           chainId,
