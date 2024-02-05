@@ -79,7 +79,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   private trackMetaMetricsEvent: any;
 
-  private eventEmitter: any;
+  private eventEmitter: EventEmitter;
 
   private getNetworkClientById: NetworkController['getNetworkClientById'];
 
