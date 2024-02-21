@@ -116,7 +116,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     {
       onNetworkStateChange,
       getNonceLock,
-      provider,
       confirmExternalTransaction,
       trackMetaMetricsEvent,
       getNetworkClientById,
@@ -125,7 +124,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         listener: (networkState: NetworkState) => void,
       ) => void;
       getNonceLock: any;
-      provider: Provider;
       confirmExternalTransaction: any;
       trackMetaMetricsEvent: any;
       getNetworkClientById: NetworkController['getNetworkClientById'];
@@ -172,7 +170,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.initialize();
     this.setIntervalLength(this.config.interval);
     this.getNonceLock = getNonceLock;
-    
+
     this.confirmExternalTransaction = confirmExternalTransaction;
     this.trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.getNetworkClientById = getNetworkClientById;
