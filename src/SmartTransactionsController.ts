@@ -1,13 +1,13 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import { hexlify } from '@ethersproject/bytes';
 import type { BaseConfig, BaseState } from '@metamask/base-controller';
-import { safelyExecute, query } from '@metamask/controller-utils';
+import { query, safelyExecute } from '@metamask/controller-utils';
 import type { Provider } from '@metamask/eth-query';
 import EthQuery from '@metamask/eth-query';
 import type {
-  NetworkState,
-  NetworkController,
   NetworkClientId,
+  NetworkController,
+  NetworkState
 } from '@metamask/network-controller';
 import { StaticIntervalPollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
@@ -21,27 +21,27 @@ import {
   MetaMetricsEventName,
 } from './constants';
 import type {
-  SmartTransaction,
-  SignedTransaction,
-  SignedCanceledTransaction,
-  UnsignedTransaction,
-  SmartTransactionsStatus,
   Fees,
-  IndividualTxFees,
   Hex,
+  IndividualTxFees,
+  SignedCanceledTransaction,
+  SignedTransaction,
+  SmartTransaction,
+  SmartTransactionsStatus,
+  UnsignedTransaction,
 } from './types';
 import { APIType, SmartTransactionStatuses } from './types';
 import {
-  getAPIRequestURL,
-  isSmartTransactionPending,
   calculateStatus,
-  snapshotFromTxMeta,
-  replayHistory,
   generateHistoryEntry,
+  getAPIRequestURL,
   getStxProcessingTime,
   handleFetch,
-  isSmartTransactionCancellable,
   incrementNonceInHex,
+  isSmartTransactionCancellable,
+  isSmartTransactionPending,
+  replayHistory,
+  snapshotFromTxMeta,
 } from './utils';
 
 const SECOND = 1000;
@@ -84,7 +84,11 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   private readonly getNonceLock: any;
 
-  private ethQuery: EthQuery;
+  private ethQuery!: EthQuery;
+
+  private onNetworkStateChange: (
+    listener: (networkState: NetworkState) => void,
+  ) => void;
 
   public confirmExternalTransaction: any;
 
@@ -168,23 +172,29 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.initialize();
     this.setIntervalLength(this.config.interval);
     this.getNonceLock = getNonceLock;
-    this.ethQuery = new EthQuery(provider);
+    
     this.confirmExternalTransaction = confirmExternalTransaction;
     this.trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.getNetworkClientById = getNetworkClientById;
 
     this.initializeSmartTransactionsForChainId();
 
-    onNetworkStateChange(({ providerConfig: newProvider }) => {
+    this.onNetworkStateChange = onNetworkStateChange;
+
+    this.subscribe((currentState: any) => this.checkPoll(currentState));
+    this.eventEmitter = new EventEmitter();
+  }
+
+  delayedInit(passedProvider: Provider) {
+    this.ethQuery = new EthQuery(passedProvider);
+
+    this.onNetworkStateChange(({ providerConfig: newProvider }) => {
       const { chainId } = newProvider;
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
       this.checkPoll(this.state);
-      this.ethQuery = new EthQuery(provider);
+      this.ethQuery = new EthQuery(passedProvider);
     });
-
-    this.subscribe((currentState: any) => this.checkPoll(currentState));
-    this.eventEmitter = new EventEmitter();
   }
 
   async _executePoll(networkClientId: string): Promise<void> {
