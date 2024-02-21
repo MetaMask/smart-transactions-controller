@@ -37,6 +37,8 @@ import {
 } from './utils';
 import { CHAIN_IDS } from './constants';
 
+const MISSING_PROVIDER_ERROR_MSG =
+  '`ethersProvider` is not defined on SmartTransactionsController';
 const SECOND = 1000;
 export const DEFAULT_INTERVAL = SECOND * 5;
 
@@ -256,6 +258,9 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   updateSmartTransaction(smartTransaction: SmartTransaction): void {
+    if (this.ethersProvider === undefined) {
+      throw new Error(MISSING_PROVIDER_ERROR_MSG);
+    }
     const { chainId } = this.config;
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
@@ -266,6 +271,7 @@ export default class SmartTransactionsController extends BaseController<
     const isNewSmartTransaction = this.isNewSmartTransaction(
       smartTransaction.uuid,
     );
+
     this.trackStxStatusChange(
       smartTransaction,
       isNewSmartTransaction
@@ -349,6 +355,9 @@ export default class SmartTransactionsController extends BaseController<
   }
 
   async confirmSmartTransaction(smartTransaction: SmartTransaction) {
+    if (this.ethersProvider === undefined) {
+      throw new Error(MISSING_PROVIDER_ERROR_MSG);
+    }
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
       const transactionReceipt =
