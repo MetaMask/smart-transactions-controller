@@ -519,12 +519,12 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           { chainId, ethQuery },
         );
       }
-    } catch (e) {
+    } catch (error) {
       this.trackMetaMetricsEvent({
         event: 'STX Confirmation Failed',
         category: 'swaps',
       });
-      console.error('confirm error', e);
+      console.error('confirm error', error);
     }
   }
 
@@ -694,8 +694,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         txParams?.from,
       ]);
       preTxBalance = new BigNumber(preTxBalanceBN).toString(16);
-    } catch (e) {
-      console.error('provider error', e);
+    } catch (error) {
+      console.error('provider error', error);
     }
 
     const requiresNonce = !txParams.nonce;
@@ -782,7 +782,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         getAPIRequestURL(APIType.LIVENESS, chainId),
       );
       liveness = Boolean(response.lastBlock);
-    } catch (e) {
+    } catch (error) {
       console.log('"fetchLiveness" API call failed');
     }
 

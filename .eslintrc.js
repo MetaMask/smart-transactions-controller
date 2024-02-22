@@ -35,7 +35,6 @@ module.exports = {
   ],
 
   rules: {
-    'id-length': 0,
     // TODO: Fix jsdoc comments and enable rules
     'jsdoc/check-alignment': 0,
     'jsdoc/check-types': 0,
