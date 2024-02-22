@@ -1,30 +1,32 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import { EventEmitter } from 'events';
-import { BaseConfig, BaseState } from '@metamask/base-controller';
+import { hexlify } from '@ethersproject/bytes';
+import type { BaseConfig, BaseState } from '@metamask/base-controller';
 import { safelyExecute, query } from '@metamask/controller-utils';
-import {
+import type { Provider } from '@metamask/eth-query';
+import EthQuery from '@metamask/eth-query';
+import type {
   NetworkState,
   NetworkController,
   NetworkClientId,
 } from '@metamask/network-controller';
-import EthQuery, { Provider } from '@metamask/eth-query';
 import { StaticIntervalPollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
-import { hexlify } from '@ethersproject/bytes';
+// eslint-disable-next-line import/no-nodejs-modules
+import { EventEmitter } from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 
-import {
-  APIType,
+import { CHAIN_IDS } from './constants';
+import type {
   SmartTransaction,
   SignedTransaction,
   SignedCanceledTransaction,
   UnsignedTransaction,
   SmartTransactionsStatus,
-  SmartTransactionStatuses,
   Fees,
   IndividualTxFees,
   Hex,
 } from './types';
+import { APIType, SmartTransactionStatuses } from './types';
 import {
   getAPIRequestURL,
   isSmartTransactionPending,
@@ -37,7 +39,6 @@ import {
   isSmartTransactionCancellable,
   incrementNonceInHex,
 } from './utils';
-import { CHAIN_IDS } from './constants';
 
 const SECOND = 1000;
 export const DEFAULT_INTERVAL = SECOND * 5;
@@ -182,7 +183,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.eventEmitter = new EventEmitter();
   }
 
-  _executePoll(networkClientId: string): Promise<void> {
+  async _executePoll(networkClientId: string): Promise<void> {
     // if this is going to be truly UI driven polling we shouldn't really reach here
     // with a networkClientId that is not supported, but for now I'll add a check in case
     // wondering if we should add some kind of predicate to the polling controller to check whether
@@ -231,9 +232,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     if (!supportedChainIds.includes(chainId)) {
       return;
     }
-    await safelyExecute(() => this.updateSmartTransactions());
+    await safelyExecute(async () => this.updateSmartTransactions());
     this.timeoutHandle = setInterval(() => {
-      safelyExecute(() => this.updateSmartTransactions());
+      safelyExecute(async () => this.updateSmartTransactions());
     }, this.config.interval);
   }
 
