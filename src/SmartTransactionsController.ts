@@ -1,4 +1,5 @@
-import EventEmitter from 'events';
+// eslint-disable-next-line import/no-nodejs-modules
+import { EventEmitter } from 'events';
 import { BaseConfig, BaseState } from '@metamask/base-controller';
 import { safelyExecute, query } from '@metamask/controller-utils';
 import {
