@@ -6,6 +6,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0]
+### Uncategorized
+- Bump @metamask/rpc-errors from 6.1.0 to 6.2.0 ([#275](https://github.com/MetaMask/smart-transactions-controller/pull/275))
+- Fix missing controller name ([#273](https://github.com/MetaMask/smart-transactions-controller/pull/273))
+- Bump @metamask/controller-utils from 8.0.2 to 8.0.3 ([#272](https://github.com/MetaMask/smart-transactions-controller/pull/272))
+- Add support for more transactions, emit events ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+- Bump polling-controller to 5.0.0 and network-controller to 17.2.0 ([#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
+- chore(deps): bump @metamask/network-controller from 17.1.0 to 17.2.0 ([#264](https://github.com/MetaMask/smart-transactions-controller/pull/264))
+- chore(deps): bump @metamask/controller-utils from 6.1.0 to 8.0.2 ([#267](https://github.com/MetaMask/smart-transactions-controller/pull/267))
+- Bump minimum Node version to 18 and use LTS for development ([#270](https://github.com/MetaMask/smart-transactions-controller/pull/270))
+- chore(deps): bump @metamask/json-rpc-engine from 7.3.1 to 7.3.2 ([#269](https://github.com/MetaMask/smart-transactions-controller/pull/269))
+- chore(deps): bump @metamask/base-controller from 4.1.0 to 4.1.1 ([#268](https://github.com/MetaMask/smart-transactions-controller/pull/268))
+- chore(deps): bump @metamask/eth-json-rpc-middleware ([#263](https://github.com/MetaMask/smart-transactions-controller/pull/263))
+- chore(deps): bump @metamask/utils from 8.2.1 to 8.3.0 ([#261](https://github.com/MetaMask/smart-transactions-controller/pull/261))
+- chore(deps): bump @metamask/swappable-obj-proxy from 2.1.0 to 2.2.0 ([#262](https://github.com/MetaMask/smart-transactions-controller/pull/262))
+- chore(deps): bump @metamask/base-controller from 4.0.1 to 4.1.0 ([#260](https://github.com/MetaMask/smart-transactions-controller/pull/260))
+- chore(deps): bump @metamask/network-controller from 17.0.0 to 17.1.0 ([#255](https://github.com/MetaMask/smart-transactions-controller/pull/255))
+- chore(deps): bump @metamask/base-controller from 4.0.0 to 4.0.1 ([#254](https://github.com/MetaMask/smart-transactions-controller/pull/254))
+- chore(deps): bump @metamask/json-rpc-engine from 7.3.0 to 7.3.1 ([#256](https://github.com/MetaMask/smart-transactions-controller/pull/256))
+- chore(deps): bump @metamask/eth-json-rpc-provider from 2.3.0 to 2.3.1 ([#257](https://github.com/MetaMask/smart-transactions-controller/pull/257))
+- chore(deps-dev): bump @metamask/auto-changelog from 3.4.3 to 3.4.4 ([#252](https://github.com/MetaMask/smart-transactions-controller/pull/252))
+- devDeps: bump semver ([#248](https://github.com/MetaMask/smart-transactions-controller/pull/248))
+- chore: yarn dedupe ([#246](https://github.com/MetaMask/smart-transactions-controller/pull/246))
+- Parameterize SmartTransactionsController state by ChainId for MultiChain + Integrate PollingController Mixin ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+- chore(deps): bump @metamask/controller-utils from 6.0.0 to 6.1.0 ([#244](https://github.com/MetaMask/smart-transactions-controller/pull/244))
+- chore(deps): bump @metamask/controller-utils from 5.0.2 to 6.0.0 ([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242))
+- chore(deps): bump @metamask/network-controller from 16.0.0 to 17.0.0 ([#241](https://github.com/MetaMask/smart-transactions-controller/pull/241))
+- chore(deps): bump @metamask/eth-sig-util from 7.0.0 to 7.0.1 ([#239](https://github.com/MetaMask/smart-transactions-controller/pull/239))
+- chore(deps): bump @metamask/network-controller from 15.2.0 to 16.0.0 ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238))
+
 ## [6.2.2]
 ### Fixed
 - Revert "Parameterize SmartTransactionsController state by ChainId for MultiChain + Integrate PollingController Mixin ([#235](https://github.com/MetaMask/smart-transactions-controller/pull/235))
@@ -183,7 +213,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.2...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v7.0.0...HEAD
+[7.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.2...v7.0.0
 [6.2.2]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.1...v6.2.2
 [6.2.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.1.0...v6.2.0
