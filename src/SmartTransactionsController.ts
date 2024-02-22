@@ -78,17 +78,17 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   public timeoutHandle?: NodeJS.Timeout;
 
-  private getNonceLock: any;
+  private readonly getNonceLock: any;
 
   private ethQuery: EthQuery;
 
   public confirmExternalTransaction: any;
 
-  private trackMetaMetricsEvent: any;
+  private readonly trackMetaMetricsEvent: any;
 
-  private eventEmitter: EventEmitter;
+  private readonly eventEmitter: EventEmitter;
 
-  private getNetworkClientById: NetworkController['getNetworkClientById'];
+  private readonly getNetworkClientById: NetworkController['getNetworkClientById'];
 
   /* istanbul ignore next */
   private async fetch(request: string, options?: RequestInit) {
