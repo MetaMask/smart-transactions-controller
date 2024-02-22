@@ -1,19 +1,20 @@
 import { convertHexToDecimal } from '@metamask/controller-utils';
+import { providerFromEngine } from '@metamask/eth-json-rpc-provider';
+import { JsonRpcEngine } from '@metamask/json-rpc-engine';
 import type { NetworkState } from '@metamask/network-controller';
 import nock from 'nock';
 import * as sinon from 'sinon';
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { API_BASE_URL, CHAIN_IDS } from './constants';
+import packageJson from '../package.json';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
-import { flushPromises, advanceTime } from './test-helpers';
+import { API_BASE_URL, CHAIN_IDS } from './constants';
+import { advanceTime, flushPromises } from './test-helpers';
 import type { SmartTransaction, UnsignedTransaction } from './types';
 import { SmartTransactionStatuses } from './types';
 import * as utils from './utils';
-import packageJson from '../package.json';
 
 jest.mock('@ethersproject/bytes', () => ({
   ...jest.requireActual('@ethersproject/bytes'),
@@ -322,7 +323,6 @@ describe('SmartTransactionsController', () => {
           releaseLock: jest.fn(),
         };
       }),
-      provider: { sendAsync: jest.fn() },
       confirmExternalTransaction: jest.fn(),
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
       getNetworkClientById: jest.fn().mockImplementation((networkClientId) => {
@@ -346,6 +346,10 @@ describe('SmartTransactionsController', () => {
     });
     // eslint-disable-next-line jest/prefer-spy-on
     smartTransactionsController.subscribe = jest.fn();
+
+    const engine = new JsonRpcEngine();
+    const testProvider = providerFromEngine(engine);
+    smartTransactionsController.delayedInit(testProvider);
   });
 
   afterEach(async () => {
@@ -744,6 +748,10 @@ describe('SmartTransactionsController', () => {
     });
 
     it('fetches liveness and sets in feesByChainId state for the Smart Transactions API for the chainId of the networkClientId passed in', async () => {
+      const originalConsoleLogFn = global.console.log;
+      const consoleLogMockFn = jest.fn();
+      global.console.log = consoleLogMockFn;
+
       nock(API_BASE_URL)
         .get(`/networks/${goerliChainIdDec}/health`)
         .replyWithError('random error');
@@ -767,6 +775,12 @@ describe('SmartTransactionsController', () => {
         [CHAIN_IDS.ETHEREUM]: true,
         [CHAIN_IDS.GOERLI]: false,
       });
+
+      expect(consoleLogMockFn).toHaveBeenCalledWith(
+        '"fetchLiveness" API call failed',
+      );
+
+      global.console.log = originalConsoleLogFn;
     });
   });
 
