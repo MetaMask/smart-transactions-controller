@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix handling of transactions without nonce ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
-- Properly override controller name to `SmartTransactionCOntroller` ([#273](https://github.com/MetaMask/smart-transactions-controller/pull/273))
+- Properly override controller name to `SmartTransactionController` ([#273](https://github.com/MetaMask/smart-transactions-controller/pull/273))
 
 ## [6.2.2]
 ### Fixed
