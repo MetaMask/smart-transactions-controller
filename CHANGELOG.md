@@ -22,7 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump `@metamask/polling-controller` from `^2.0.0` to `^5.0.0` ([#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
 
 ### Fixed
-- Fix handling of transactions without nonce ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+- Fix `getFees` so that it does not blow away an existing `nonce` on the trade transaction ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+- Fix `submitSignedTransactions` so that it sets a `nonce` on the resulting transaction if it doesn't have one ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+- Fix updating a smart transaction to no longer throw when no smart transactions have been previously saved under the current chain ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
 - Properly override controller name to `SmartTransactionController` ([#273](https://github.com/MetaMask/smart-transactions-controller/pull/273))
 
 ## [6.2.2]
