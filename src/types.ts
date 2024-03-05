@@ -84,7 +84,8 @@ export type SmartTransaction = {
   sourceTokenSymbol?: string;
   swapMetaData?: any;
   swapTokenValue?: string;
-  time?: number;
+  time?: number; // @deprecated We should use creationTime instead.
+  creationTime?: number;
   txParams?: any;
   type?: string;
   confirmed?: boolean;

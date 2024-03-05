@@ -92,7 +92,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   private readonly trackMetaMetricsEvent: any;
 
-  private readonly eventEmitter: EventEmitter;
+  public eventEmitter: EventEmitter;
 
   private readonly getNetworkClientById: NetworkController['getNetworkClientById'];
 
@@ -328,7 +328,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     });
   }
 
-  #updateSmartTransaction(
+  async #updateSmartTransaction(
     smartTransaction: SmartTransaction,
     {
       chainId = this.config.chainId,
@@ -337,7 +337,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       chainId: Hex;
       ethQuery: EthQuery | undefined;
     },
-  ): void {
+  ): Promise<void> {
     const { smartTransactionsState } = this.state;
     const { smartTransactions } = smartTransactionsState;
     const currentSmartTransactions = smartTransactions[chainId] ?? [];
@@ -399,12 +399,17 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         ...smartTransaction,
       };
       if (!smartTransaction.skipConfirm) {
-        this.#confirmSmartTransaction(nextSmartTransaction, {
+        await this.#confirmSmartTransaction(nextSmartTransaction, {
           chainId,
           ethQuery,
         });
       }
     }
+
+    this.eventEmitter.emit(
+      `${smartTransaction.uuid}:smartTransaction`,
+      smartTransaction,
+    );
 
     this.update({
       smartTransactionsState: {
@@ -568,7 +573,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         cancellable: isSmartTransactionCancellable(stxStatus),
         uuid,
       };
-      this.eventEmitter.emit(`${uuid}:smartTransaction`, smartTransaction);
       this.#updateSmartTransaction(smartTransaction, { chainId, ethQuery });
     });
 
