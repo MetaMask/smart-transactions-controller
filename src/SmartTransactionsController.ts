@@ -46,6 +46,7 @@ import {
 
 const SECOND = 1000;
 export const DEFAULT_INTERVAL = SECOND * 5;
+const ETH_QUERY_ERROR_MSG = "`ethQuery` is not defined on SmartTransactionsController"
 
 export type SmartTransactionsControllerConfig = BaseConfig & {
   interval: number;
@@ -84,11 +85,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   private readonly getNonceLock: any;
 
-  private ethQuery!: EthQuery;
-
-  private onNetworkStateChange: (
-    listener: (networkState: NetworkState) => void,
-  ) => void;
+  private ethQuery: EthQuery | undefined;
 
   public confirmExternalTransaction: any;
 
@@ -115,6 +112,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   constructor(
     {
       onNetworkStateChange,
+      getNonceLock,
+      provider,
       confirmExternalTransaction,
       trackMetaMetricsEvent,
       getNetworkClientById,
@@ -122,6 +121,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       onNetworkStateChange: (
         listener: (networkState: NetworkState) => void,
       ) => void;
+      getNonceLock: any;
+      provider: Provider;
       confirmExternalTransaction: any;
       trackMetaMetricsEvent: any;
       getNetworkClientById: NetworkController['getNetworkClientById'];
@@ -167,31 +168,24 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
     this.initialize();
     this.setIntervalLength(this.config.interval);
-
+    this.getNonceLock = getNonceLock;
+    this.ethQuery = undefined;
     this.confirmExternalTransaction = confirmExternalTransaction;
     this.trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.getNetworkClientById = getNetworkClientById;
 
     this.initializeSmartTransactionsForChainId();
 
-    this.onNetworkStateChange = onNetworkStateChange;
-
-    this.subscribe((currentState: any) => this.checkPoll(currentState));
-    this.eventEmitter = new EventEmitter();
-  }
-
-  delayedInit(passedProvider: Provider, getNonceLock: any) {
-    this.ethQuery = new EthQuery(passedProvider);
-    
-    this.getNonceLock = getNonceLock;
-
-    this.onNetworkStateChange(({ providerConfig: newProvider }) => {
+    onNetworkStateChange(({ providerConfig: newProvider }) => {
       const { chainId } = newProvider;
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
       this.checkPoll(this.state);
-      this.ethQuery = new EthQuery(passedProvider);
+      this.ethQuery = new EthQuery(provider);
     });
+
+    this.subscribe((currentState: any) => this.checkPoll(currentState));
+    this.eventEmitter = new EventEmitter();
   }
 
   async _executePoll(networkClientId: string): Promise<void> {
@@ -340,7 +334,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       ethQuery = this.ethQuery,
     }: {
       chainId: Hex;
-      ethQuery: EthQuery;
+      ethQuery: EthQuery | undefined;
     },
   ): void {
     const { smartTransactionsState } = this.state;
@@ -352,6 +346,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const isNewSmartTransaction = this.isNewSmartTransaction(
       smartTransaction.uuid,
     );
+    if (this.ethQuery === undefined) {
+      throw new Error(ETH_QUERY_ERROR_MSG)
+    }
 
     this.trackStxStatusChange(
       smartTransaction,
@@ -452,11 +449,14 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       ethQuery = this.ethQuery,
     }: {
       chainId: Hex;
-      ethQuery: EthQuery;
+      ethQuery: EthQuery | undefined;
     },
   ) {
     if (smartTransaction.skipConfirm) {
       return;
+    }
+    if (ethQuery === undefined) {
+      throw new Error(ETH_QUERY_ERROR_MSG)
     }
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
@@ -751,9 +751,14 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   }: {
     networkClientId?: NetworkClientId;
   } = {}): EthQuery {
-    return networkClientId
-      ? new EthQuery(this.getNetworkClientById(networkClientId).provider)
-      : this.ethQuery;
+    if (networkClientId) {
+      return new EthQuery(this.getNetworkClientById(networkClientId).provider)
+    } else {
+      if (this.ethQuery === undefined) {
+        throw new Error(ETH_QUERY_ERROR_MSG)
+      }
+      return this.ethQuery
+    }
   }
 
   // TODO: This should return if the cancellation was on chain or not (for nonce management)
