@@ -11,8 +11,8 @@ import type {
 } from '@metamask/network-controller';
 import { StaticIntervalPollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
+import EventEmitter from 'events';
 // eslint-disable-next-line import/no-nodejs-modules
-import { EventEmitter } from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 
 import {
@@ -46,7 +46,8 @@ import {
 
 const SECOND = 1000;
 export const DEFAULT_INTERVAL = SECOND * 5;
-const ETH_QUERY_ERROR_MSG = "`ethQuery` is not defined on SmartTransactionsController"
+const ETH_QUERY_ERROR_MSG =
+  '`ethQuery` is not defined on SmartTransactionsController';
 
 export type SmartTransactionsControllerConfig = BaseConfig & {
   interval: number;
@@ -347,7 +348,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       smartTransaction.uuid,
     );
     if (this.ethQuery === undefined) {
-      throw new Error(ETH_QUERY_ERROR_MSG)
+      throw new Error(ETH_QUERY_ERROR_MSG);
     }
 
     this.trackStxStatusChange(
@@ -455,8 +456,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     if (smartTransaction.skipConfirm) {
       return;
     }
+
     if (ethQuery === undefined) {
-      throw new Error(ETH_QUERY_ERROR_MSG)
+      throw new Error(ETH_QUERY_ERROR_MSG);
     }
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
@@ -752,13 +754,14 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     networkClientId?: NetworkClientId;
   } = {}): EthQuery {
     if (networkClientId) {
-      return new EthQuery(this.getNetworkClientById(networkClientId).provider)
-    } else {
-      if (this.ethQuery === undefined) {
-        throw new Error(ETH_QUERY_ERROR_MSG)
-      }
-      return this.ethQuery
+      return new EthQuery(this.getNetworkClientById(networkClientId).provider);
     }
+
+    if (this.ethQuery === undefined) {
+      throw new Error(ETH_QUERY_ERROR_MSG);
+    }
+
+    return this.ethQuery;
   }
 
   // TODO: This should return if the cancellation was on chain or not (for nonce management)

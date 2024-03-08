@@ -1,7 +1,6 @@
-import { convertHexToDecimal } from '@metamask/controller-utils';
-import { providerFromEngine } from '@metamask/eth-json-rpc-provider';
-import { JsonRpcEngine } from '@metamask/json-rpc-engine';
+import { NetworkType, convertHexToDecimal } from '@metamask/controller-utils';
 import type { NetworkState } from '@metamask/network-controller';
+import { NetworkStatus } from '@metamask/network-controller';
 import nock from 'nock';
 import * as sinon from 'sinon';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -309,12 +308,47 @@ const defaultState = {
   },
 };
 
+const mockProvider = {
+  sendAsync: jest.fn(),
+};
+
+const mockProviderConfig = {
+  chainId: '0x1' as `0x${string}`,
+  provider: mockProvider,
+  type: NetworkType.mainnet,
+  ticker: 'ticker',
+};
+
+const mockNetworkState = {
+  providerConfig: mockProviderConfig,
+  selectedNetworkClientId: 'id',
+  networkConfigurations: {
+    id: {
+      id: 'id',
+      rpcUrl: 'string',
+      chainId: '0x1' as `0x${string}`,
+      ticker: 'string',
+    },
+  },
+  networksMetadata: {
+    id: {
+      EIPS: {
+        1155: true,
+      },
+      status: NetworkStatus.Available,
+    },
+  },
+};
+
 describe('SmartTransactionsController', () => {
   let smartTransactionsController: SmartTransactionsController;
   let networkListener: (networkState: NetworkState) => void;
+
   beforeEach(() => {
     smartTransactionsController = new SmartTransactionsController({
-      onNetworkStateChange: (listener) => {
+      onNetworkStateChange: (
+        listener: (networkState: NetworkState) => void,
+      ) => {
         networkListener = listener;
       },
       getNonceLock: jest.fn(() => {
@@ -323,6 +357,7 @@ describe('SmartTransactionsController', () => {
           releaseLock: jest.fn(),
         };
       }),
+      provider: { sendAsync: jest.fn() },
       confirmExternalTransaction: jest.fn(),
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
       getNetworkClientById: jest.fn().mockImplementation((networkClientId) => {
@@ -347,9 +382,7 @@ describe('SmartTransactionsController', () => {
     // eslint-disable-next-line jest/prefer-spy-on
     smartTransactionsController.subscribe = jest.fn();
 
-    const engine = new JsonRpcEngine();
-    const testProvider = providerFromEngine(engine);
-    smartTransactionsController.delayedInit(testProvider);
+    networkListener(mockNetworkState);
   });
 
   afterEach(async () => {
