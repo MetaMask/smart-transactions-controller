@@ -7,12 +7,12 @@ import EthQuery from '@metamask/eth-query';
 import type {
   NetworkClientId,
   NetworkController,
-  NetworkState
+  NetworkState,
 } from '@metamask/network-controller';
 import { StaticIntervalPollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
-import EventEmitter from 'events';
 // eslint-disable-next-line import/no-nodejs-modules
+import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 
 import {

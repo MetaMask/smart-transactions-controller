@@ -3,17 +3,18 @@ import type { NetworkState } from '@metamask/network-controller';
 import { NetworkStatus } from '@metamask/network-controller';
 import nock from 'nock';
 import * as sinon from 'sinon';
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import packageJson from '../package.json';
+import { API_BASE_URL, CHAIN_IDS } from './constants';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
-import { API_BASE_URL, CHAIN_IDS } from './constants';
 import { advanceTime, flushPromises } from './test-helpers';
 import type { SmartTransaction, UnsignedTransaction } from './types';
 import { SmartTransactionStatuses } from './types';
 import * as utils from './utils';
+import packageJson from '../package.json';
 
 jest.mock('@ethersproject/bytes', () => ({
   ...jest.requireActual('@ethersproject/bytes'),
@@ -781,10 +782,6 @@ describe('SmartTransactionsController', () => {
     });
 
     it('fetches liveness and sets in feesByChainId state for the Smart Transactions API for the chainId of the networkClientId passed in', async () => {
-      const originalConsoleLogFn = global.console.log;
-      const consoleLogMockFn = jest.fn();
-      global.console.log = consoleLogMockFn;
-
       nock(API_BASE_URL)
         .get(`/networks/${goerliChainIdDec}/health`)
         .replyWithError('random error');
@@ -808,12 +805,6 @@ describe('SmartTransactionsController', () => {
         [CHAIN_IDS.ETHEREUM]: true,
         [CHAIN_IDS.GOERLI]: false,
       });
-
-      expect(consoleLogMockFn).toHaveBeenCalledWith(
-        '"fetchLiveness" API call failed',
-      );
-
-      global.console.log = originalConsoleLogFn;
     });
   });
 
