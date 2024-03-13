@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `stopPollingByPollingToken`
     - `onPollingCompleteByNetworkClientId`
 - Validation can be now be circumvented by passing the `skipConfirm` option ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+- Several methods now take a `networkClientId` option within an options object which can be used to operate on smart transactions that live on a particular chain instead of the globally selected one ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+  - `updateSmartTransaction`
+  - `fetchSmartTransactionsStatus`
+  - `getFees`
+  - `submitSignedTransactions`
+  - `cancelSmartTransaction`
+  - `fetchLiveness`
 
 ### Changed
 - **BREAKING**: Bump `@metamask/network-controller` from `^15.0.0` to `^17.0.0` ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238) [#241](https://github.com/MetaMask/smart-transactions-controller/pull/241))
@@ -27,13 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING**: Minimum Node.js version is now 18.18 ([#270](https://github.com/MetaMask/smart-transactions-controller/pull/270))
 - **BREAKING:** Constrain the type of the constructor `provider` option to `Provider` from `@metamask/network-controller` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
 - **BREAKING:** The constructor now takes a required argument `getNetworkClientById`, which should be bound from NetworkController's `getNetworkClientById` method ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
-- Several methods now take a `networkClientId` option within an options object which can be used to operate on smart transactions that live on a particular chain instead of the globally selected one ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
-  - `updateSmartTransaction`
-  - `fetchSmartTransactionsStatus`
-  - `getFees`
-  - `submitSignedTransactions`
-  - `cancelSmartTransaction`
-  - `fetchLiveness`
+- **BREAKING:** `fetchSmartTransactionsStatus` now emits `<transaction-uuid>:smartTransaction` instead of `<transaction-uuid>:transaction-hash` ([#279](https://github.com/MetaMask/smart-transactions-controller/pull/279))
+  - This event contains more information than just the transaction hash.
+  - This event is also always emitted even if there is no transaction hash.
+**BREAKING:** Use a category of "Transactions" for MetaMetrics events rather than "swaps" ([#282](https://github.com/MetaMask/smart-transactions-controller/pull/282))
 - Bump `@metamask/base-controller` from `^3.2.1` to `^4.0.0` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
 - Bump `@metamask/controller-utils` from `^5.0.0` to `^8.0.3` ([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242) [#244](https://github.com/MetaMask/smart-transactions-controller/pull/244))([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242)) ([#244](https://github.com/MetaMask/smart-transactions-controller/pull/244)) ([#267](https://github.com/MetaMask/smart-transactions-controller/pull/267)) ([#272](https://github.com/MetaMask/smart-transactions-controller/pull/272))
 - Bump `@metamask/network-controller` from `^15.2.0` to `^17.2.0` ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238)) ([#241](https://github.com/MetaMask/smart-transactions-controller/pull/241)) ([#255](https://github.com/MetaMask/smart-transactions-controller/pull/255)) ([#264](https://github.com/MetaMask/smart-transactions-controller/pull/264)) ([#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
