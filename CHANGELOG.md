@@ -8,7 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [7.0.0]
 ### Added
-- Integrate `PollingController` mixin into `SmartTransactionsController` and implement the abstract `_executePoll` method ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+- **BREAKING:** Track fees and liveness for multiple chains by adding `feesByChainId` and `livenessByChainId` properties to SmartTransactionsControllerState ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+  - In particular, clients should prefer accessing `feesByChainId` and `livenessByChainId` instead of `fees` and `liveness`, which will be removed in a future major version.
+- `SmartTransactionsController` now inherits from `StaticIntervalPollingControllerV1` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237), [#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
+  - This change introduces a set of public methods to the controller which is designed to manage polling on a particular network instead of the globally selected network. Internally, `updateSmartTransactions` will still be called as the legacy polling does. The methods added are:
+    - `setIntervalLength`
+    - `getIntervalLength`
+    - `startPollingByNetworkClientId`
+    - `stopAllPolling`
+    - `stopPollingByPollingToken`
+    - `onPollingCompleteByNetworkClientId`
 - Validation can be now be circumvented by passing the `skipConfirm` option ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
 
 ### Changed
@@ -16,16 +25,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - This is breaking because the type of the `messenger` has backward-incompatible changes. See the changelog for `@metamask/base-controller@4.0.0` for more.
 - **BREAKING**: The set of supported chains (configurable via `supportedChainIds`) now defaults to including Goerli instead of Rinkeby ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
 - **BREAKING**: Minimum Node.js version is now 18.18 ([#270](https://github.com/MetaMask/smart-transactions-controller/pull/270))
-- Add optional options object containing a `networkClientId` argument to `updateSmartTransaction` which, if passed, is used fetch the chainId that corresponds to the networkClientId and is then used to fetch and update the status of pending smart transactions for that chainId ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+- **BREAKING:** Constrain the type of the constructor `provider` option to `Provider` from `@metamask/network-controller` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+- **BREAKING:** The constructor now takes a required argument `getNetworkClientById`, which should be bound from NetworkController's `getNetworkClientById` method ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+- Several methods now take a `networkClientId` option within an options object which can be used to operate on smart transactions that live on a particular chain instead of the globally selected one ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+  - `updateSmartTransaction`
+  - `fetchSmartTransactionsStatus`
+  - `getFees`
+  - `submitSignedTransactions`
+  - `cancelSmartTransaction`
+  - `fetchLiveness`
+- Bump `@metamask/base-controller` from `^3.2.1` to `^4.0.0` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
 - Bump `@metamask/controller-utils` from `^5.0.0` to `^8.0.3` ([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242) [#244](https://github.com/MetaMask/smart-transactions-controller/pull/244))([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242)) ([#244](https://github.com/MetaMask/smart-transactions-controller/pull/244)) ([#267](https://github.com/MetaMask/smart-transactions-controller/pull/267)) ([#272](https://github.com/MetaMask/smart-transactions-controller/pull/272))
 - Bump `@metamask/network-controller` from `^15.2.0` to `^17.2.0` ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238)) ([#241](https://github.com/MetaMask/smart-transactions-controller/pull/241)) ([#255](https://github.com/MetaMask/smart-transactions-controller/pull/255)) ([#264](https://github.com/MetaMask/smart-transactions-controller/pull/264)) ([#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
 - Bump `@metamask/polling-controller` from `^2.0.0` to `^5.0.0` ([#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
+- Remove `@ethersprovider/bignumber` and `@ethersproject/providers` from dependencies; replace with `@metamask/eth-query@^4.0.0` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
+- Add `events@^3.3.0` as a dependency ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+
+### Removed
+- **BREAKING:** Remove property `ethersProvider` from `SmartTransactionsController` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
 
 ### Fixed
 - Fix `getFees` so that it does not blow away an existing `nonce` on the trade transaction ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
 - Fix `submitSignedTransactions` so that it sets a `nonce` on the resulting transaction if it doesn't have one ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
 - Fix updating a smart transaction to no longer throw when no smart transactions have been previously saved under the current chain ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
 - Properly override controller name to `SmartTransactionController` ([#273](https://github.com/MetaMask/smart-transactions-controller/pull/273))
+- Properly mark `getFees` as having an optional second argument, since it was being handled that way anyway ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
 
 ## [6.2.2]
 ### Fixed
