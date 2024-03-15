@@ -1,5 +1,6 @@
 import nock from 'nock';
-import { NetworkState } from '@metamask/network-controller';
+import { NetworkType } from '@metamask/controller-utils';
+import { NetworkState, NetworkStatus } from '@metamask/network-controller';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import packageJson from '../package.json';
@@ -255,13 +256,47 @@ const ethereumChainIdDec = parseInt(CHAIN_IDS.ETHEREUM, 16);
 
 const trackMetaMetricsEventSpy = jest.fn();
 
+const mockProvider = {
+  sendAsync: jest.fn(),
+};
+
+const mockProviderConfig = {
+  chainId: '0x1' as `0x${string}`,
+  provider: mockProvider,
+  type: NetworkType.mainnet,
+  ticker: 'ticker',
+};
+
+const mockNetworkState = {
+  providerConfig: mockProviderConfig,
+  selectedNetworkClientId: 'id',
+  networkConfigurations: {
+    id: {
+      id: 'id',
+      rpcUrl: 'string',
+      chainId: '0x1' as `0x${string}`,
+      ticker: 'string',
+    },
+  },
+  networksMetadata: {
+    id: {
+      EIPS: {
+        1155: true,
+      },
+      status: NetworkStatus.Available,
+    },
+  },
+};
+
 describe('SmartTransactionsController', () => {
   let smartTransactionsController: SmartTransactionsController;
   let networkListener: (networkState: NetworkState) => void;
 
   beforeEach(() => {
     smartTransactionsController = new SmartTransactionsController({
-      onNetworkStateChange: (listener) => {
+      onNetworkStateChange: (
+        listener: (networkState: NetworkState) => void,
+      ) => {
         networkListener = listener;
       },
       getNonceLock: jest.fn(() => {
@@ -276,6 +311,8 @@ describe('SmartTransactionsController', () => {
     });
     // eslint-disable-next-line jest/prefer-spy-on
     smartTransactionsController.subscribe = jest.fn();
+
+    networkListener(mockNetworkState);
   });
 
   afterEach(async () => {
