@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
-    "@metamask/base-controller": "^4.0.0",
+    "@metamask/base-controller": "^5.0.1",
     "@metamask/controller-utils": "^8.0.2",
     "@metamask/eth-query": "^4.0.0",
     "@metamask/network-controller": "^17.2.0",
