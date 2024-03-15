@@ -549,6 +549,9 @@ export default class SmartTransactionsController extends BaseController<
     signedCanceledTransactions: SignedCanceledTransaction[];
     txParams?: any;
   }) {
+    if (this.ethersProvider === undefined) {
+      throw new Error(MISSING_PROVIDER_ERROR_MSG);
+    }
     const { chainId } = this.config;
     const data = await this.fetch(
       getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
