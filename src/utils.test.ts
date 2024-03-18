@@ -10,8 +10,6 @@ import {
 import * as utils from './utils';
 import packageJson from '../package.json';
 
-const { getTxHash } = require('./utils');
-
 const createSignedTransaction = () => {
   return '0xf86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a02b79f322a625d623a2bb2911e0c6b3e7eaf741a7c7c5d2e8c67ef3ff4acf146ca01ae168fea63dc3391b75b586c8a7c0cb55cdf3b8e2e4d8e097957a3a56c6f2c5';
 };
@@ -287,19 +285,19 @@ describe('src/utils.js', () => {
     it('returns a transaction hash from a signed transaction', () => {
       const expectedTxHash =
         '0x0302b75dfb9fd9eb34056af031efcaee2a8cbd799ea054a85966165cd82a7356';
-      const txHash = getTxHash(createSignedTransaction());
+      const txHash = utils.getTxHash(createSignedTransaction());
       expect(txHash).toBe(expectedTxHash);
     });
 
     it('returns an empty string if there is no signed transaction', () => {
       const expectedTxHash = '';
-      const txHash = getTxHash('');
+      const txHash = utils.getTxHash('');
       expect(txHash).toBe(expectedTxHash);
     });
 
     it('throws an error with an incorrect signed transaction', () => {
       expect(() => {
-        getTxHash('0x0302b75dfb9fd9eb34056af0');
+        utils.getTxHash('0x0302b75dfb9fd9eb34056af0');
       }).toThrow('kzg instance required to instantiate blob tx');
     });
   });
