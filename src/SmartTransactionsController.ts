@@ -42,6 +42,7 @@ import {
   isSmartTransactionPending,
   replayHistory,
   snapshotFromTxMeta,
+  getTxHash,
 } from './utils';
 
 const SECOND = 1000;
@@ -715,6 +716,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         txParams.nonce ??= nonce;
       }
     }
+    const submitTransactionResponse = {
+      ...data,
+      txHash: getTxHash(signedTransactions[0]),
+    };
 
     try {
       this.#updateSmartTransaction(
@@ -725,7 +730,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           status: SmartTransactionStatuses.PENDING,
           time,
           txParams,
-          uuid: data.uuid,
+          uuid: submitTransactionResponse.uuid,
+          txHash: submitTransactionResponse.txHash,
           cancellable: true,
           type: transactionMeta?.type || 'swap',
         },
@@ -735,7 +741,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       nonceLock?.releaseLock();
     }
 
-    return data;
+    return submitTransactionResponse;
   }
 
   #getChainId({
