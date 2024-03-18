@@ -398,12 +398,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         ...currentSmartTransaction,
         ...smartTransaction,
       };
-      if (!smartTransaction.skipConfirm) {
-        await this.#confirmSmartTransaction(nextSmartTransaction, {
-          chainId,
-          ethQuery,
-        });
-      }
+      await this.#confirmSmartTransaction(nextSmartTransaction, {
+        chainId,
+        ethQuery,
+      });
     }
 
     this.eventEmitter.emit(
@@ -458,10 +456,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       ethQuery: EthQuery | undefined;
     },
   ) {
-    if (smartTransaction.skipConfirm) {
-      return;
-    }
-
     if (ethQuery === undefined) {
       throw new Error(ETH_QUERY_ERROR_MSG);
     }
@@ -673,17 +667,17 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   // * After this successful call client must add a nonce representative to
   // * transaction controller external transactions list
   async submitSignedTransactions({
+    transactionMeta,
     txParams,
     signedTransactions,
     signedCanceledTransactions,
     networkClientId,
-    skipConfirm,
   }: {
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions: SignedCanceledTransaction[];
+    transactionMeta?: any;
     txParams?: any;
     networkClientId?: NetworkClientId;
-    skipConfirm?: boolean;
   }) {
     const chainId = this.#getChainId({ networkClientId });
     const ethQuery = this.#getEthQuery({ networkClientId });
@@ -733,7 +727,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           txParams,
           uuid: data.uuid,
           cancellable: true,
-          skipConfirm: skipConfirm ?? false,
+          type: transactionMeta?.type || 'swap',
         },
         { chainId, ethQuery },
       );
