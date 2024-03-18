@@ -403,28 +403,28 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         chainId,
         ethQuery,
       });
+    } else {
+      this.update({
+        smartTransactionsState: {
+          ...smartTransactionsState,
+          smartTransactions: {
+            ...smartTransactionsState.smartTransactions,
+            [chainId]: smartTransactionsState.smartTransactions[chainId].map(
+              (item, index) => {
+                return index === currentIndex
+                  ? { ...item, ...smartTransaction }
+                  : item;
+              },
+            ),
+          },
+        },
+      });
     }
 
     this.eventEmitter.emit(
       `${smartTransaction.uuid}:smartTransaction`,
       smartTransaction,
     );
-
-    this.update({
-      smartTransactionsState: {
-        ...smartTransactionsState,
-        smartTransactions: {
-          ...smartTransactionsState.smartTransactions,
-          [chainId]: smartTransactionsState.smartTransactions[chainId].map(
-            (item, index) => {
-              return index === currentIndex
-                ? { ...item, ...smartTransaction }
-                : item;
-            },
-          ),
-        },
-      },
-    });
   }
 
   async updateSmartTransactions({
@@ -467,7 +467,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         maxPriorityFeePerGas?: string;
         blockNumber: string;
       } | null = await query(ethQuery, 'getTransactionReceipt', [txHash]);
-
       const transaction: {
         maxFeePerGas?: string;
         maxPriorityFeePerGas?: string;
