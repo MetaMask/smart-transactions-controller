@@ -90,7 +90,7 @@ export type SmartTransaction = {
   swapTokenValue?: string;
   time?: number; // @deprecated We should use creationTime instead.
   creationTime?: number;
-  txParams?: any;
+  transaction?: any;
   type?: string;
   confirmed?: boolean;
   cancellable?: boolean;

@@ -685,7 +685,7 @@ describe('SmartTransactionsController', () => {
       await smartTransactionsController.submitSignedTransactions({
         signedTransactions: [signedTransaction],
         signedCanceledTransactions: [signedCanceledTransaction],
-        txParams: createTxParams(),
+        transaction: createTxParams(),
       });
 
       expect(
@@ -1158,7 +1158,7 @@ describe('SmartTransactionsController', () => {
       const pendingStx = {
         ...createStateAfterPending()[0],
         history: testHistory,
-        txParams: {
+        transaction: {
           from: addressFrom,
         },
       };
