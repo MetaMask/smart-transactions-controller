@@ -1,18 +1,18 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import { hexlify } from '@ethersproject/bytes';
 import type { BaseConfig, BaseState } from '@metamask/base-controller';
-import { query, safelyExecute } from '@metamask/controller-utils';
+import { safelyExecute, query } from '@metamask/controller-utils';
 import type { Provider } from '@metamask/eth-query';
 import EthQuery from '@metamask/eth-query';
 import type {
-  NetworkClientId,
-  NetworkController,
   NetworkState,
+  NetworkController,
+  NetworkClientId,
 } from '@metamask/network-controller';
 import { StaticIntervalPollingControllerV1 } from '@metamask/polling-controller';
 import { BigNumber } from 'bignumber.js';
 // eslint-disable-next-line import/no-nodejs-modules
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 
 import {
@@ -21,33 +21,31 @@ import {
   MetaMetricsEventName,
 } from './constants';
 import type {
-  Fees,
-  Hex,
-  IndividualTxFees,
-  SignedCanceledTransaction,
-  SignedTransaction,
   SmartTransaction,
-  SmartTransactionsStatus,
+  SignedTransaction,
+  SignedCanceledTransaction,
   UnsignedTransaction,
+  SmartTransactionsStatus,
+  Fees,
+  IndividualTxFees,
+  Hex,
 } from './types';
 import { APIType, SmartTransactionStatuses } from './types';
 import {
-  calculateStatus,
-  generateHistoryEntry,
   getAPIRequestURL,
+  isSmartTransactionPending,
+  calculateStatus,
+  snapshotFromTxMeta,
+  replayHistory,
+  generateHistoryEntry,
   getStxProcessingTime,
   handleFetch,
-  incrementNonceInHex,
   isSmartTransactionCancellable,
-  isSmartTransactionPending,
-  replayHistory,
-  snapshotFromTxMeta,
+  incrementNonceInHex,
 } from './utils';
 
 const SECOND = 1000;
 export const DEFAULT_INTERVAL = SECOND * 5;
-const ETH_QUERY_ERROR_MSG =
-  '`ethQuery` is not defined on SmartTransactionsController';
 
 export type SmartTransactionsControllerConfig = BaseConfig & {
   interval: number;
@@ -86,7 +84,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   private readonly getNonceLock: any;
 
-  private ethQuery: EthQuery | undefined;
+  private ethQuery: EthQuery;
 
   public confirmExternalTransaction: any;
 
@@ -170,7 +168,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.initialize();
     this.setIntervalLength(this.config.interval);
     this.getNonceLock = getNonceLock;
-    this.ethQuery = undefined;
+    this.ethQuery = new EthQuery(provider);
     this.confirmExternalTransaction = confirmExternalTransaction;
     this.trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.getNetworkClientById = getNetworkClientById;
@@ -335,7 +333,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       ethQuery = this.ethQuery,
     }: {
       chainId: Hex;
-      ethQuery: EthQuery | undefined;
+      ethQuery: EthQuery;
     },
   ): void {
     const { smartTransactionsState } = this.state;
@@ -347,9 +345,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const isNewSmartTransaction = this.isNewSmartTransaction(
       smartTransaction.uuid,
     );
-    if (this.ethQuery === undefined) {
-      throw new Error(ETH_QUERY_ERROR_MSG);
-    }
 
     this.trackStxStatusChange(
       smartTransaction,
@@ -450,15 +445,11 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       ethQuery = this.ethQuery,
     }: {
       chainId: Hex;
-      ethQuery: EthQuery | undefined;
+      ethQuery: EthQuery;
     },
   ) {
     if (smartTransaction.skipConfirm) {
       return;
-    }
-
-    if (ethQuery === undefined) {
-      throw new Error(ETH_QUERY_ERROR_MSG);
     }
     const txHash = smartTransaction.statusMetadata?.minedHash;
     try {
@@ -753,15 +744,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   }: {
     networkClientId?: NetworkClientId;
   } = {}): EthQuery {
-    if (networkClientId) {
-      return new EthQuery(this.getNetworkClientById(networkClientId).provider);
-    }
-
-    if (this.ethQuery === undefined) {
-      throw new Error(ETH_QUERY_ERROR_MSG);
-    }
-
-    return this.ethQuery;
+    return networkClientId
+      ? new EthQuery(this.getNetworkClientById(networkClientId).provider)
+      : this.ethQuery;
   }
 
   // TODO: This should return if the cancellation was on chain or not (for nonce management)
