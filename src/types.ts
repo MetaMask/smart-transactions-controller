@@ -64,7 +64,7 @@ export type SmartTransactionsStatus = {
   cancellationFeeWei: number;
   cancellationReason?: SmartTransactionCancellationReason;
   deadlineRatio: number;
-  minedHash: string | undefined;
+  minedHash: string;
   minedTx: SmartTransactionMinedTx;
   isSettled: boolean;
 };
