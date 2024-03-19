@@ -26,6 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `submitSignedTransactions`
   - `cancelSmartTransaction`
   - `fetchLiveness`
+- Expose `eventEmitter` as a public property ([#298](https://github.com/MetaMask/smart-transactions-controller/pull/298))
+- `submitSignedTransactions` now takes a `transactionMeta` option which is used to set the `type` of the submitted smart transaction ([#298](https://github.com/MetaMask/smart-transactions-controller/pull/298))
+- `submitSignedTransactions` now sets `uuid` and `txHash` on the submitted smart transaction ([#298](https://github.com/MetaMask/smart-transactions-controller/pull/298))
+- `submitSignedTransactions` now returns metadata about the submitted transaction ([#298](https://github.com/MetaMask/smart-transactions-controller/pull/298))
+- Add `getTxHash` utility function which can be used to get the transaction hash from a signed transaction ([#298](https://github.com/MetaMask/smart-transactions-controller/pull/298))
+- `<transaction-uuid>:smartTransaction` is now emitted whenever a smart transaction is updated ([#298](https://github.com/MetaMask/smart-transactions-controller/pull/298))
+  - This occurs after transactions are submitted, after they are confirmed, after statuses are updated, and also explicitly via `updateSmartTransaction`.
 
 ### Changed
 - **BREAKING**: Bump `@metamask/network-controller` from `^15.0.0` to `^17.0.0` ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238) [#241](https://github.com/MetaMask/smart-transactions-controller/pull/241))
@@ -37,13 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING:** `fetchSmartTransactionsStatus` now emits `<transaction-uuid>:smartTransaction` instead of `<transaction-uuid>:transaction-hash` ([#279](https://github.com/MetaMask/smart-transactions-controller/pull/279))
   - This event contains more information than just the transaction hash.
   - This event is also always emitted even if there is no transaction hash.
-**BREAKING:** Use a category of "Transactions" for MetaMetrics events rather than "swaps" ([#282](https://github.com/MetaMask/smart-transactions-controller/pull/282))
+- **BREAKING:** Use a category of "Transactions" for MetaMetrics events rather than "swaps" ([#282](https://github.com/MetaMask/smart-transactions-controller/pull/282))
 - Bump `@metamask/base-controller` from `^3.2.1` to `^4.0.0` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
 - Bump `@metamask/controller-utils` from `^5.0.0` to `^8.0.3` ([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242) [#244](https://github.com/MetaMask/smart-transactions-controller/pull/244))([#242](https://github.com/MetaMask/smart-transactions-controller/pull/242)) ([#244](https://github.com/MetaMask/smart-transactions-controller/pull/244)) ([#267](https://github.com/MetaMask/smart-transactions-controller/pull/267)) ([#272](https://github.com/MetaMask/smart-transactions-controller/pull/272))
 - Bump `@metamask/network-controller` from `^15.2.0` to `^17.2.0` ([#238](https://github.com/MetaMask/smart-transactions-controller/pull/238)) ([#241](https://github.com/MetaMask/smart-transactions-controller/pull/241)) ([#255](https://github.com/MetaMask/smart-transactions-controller/pull/255)) ([#264](https://github.com/MetaMask/smart-transactions-controller/pull/264)) ([#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
 - Bump `@metamask/polling-controller` from `^2.0.0` to `^5.0.0` ([#265](https://github.com/MetaMask/smart-transactions-controller/pull/265))
 - Remove `@ethersprovider/bignumber` and `@ethersproject/providers` from dependencies; replace with `@metamask/eth-query@^4.0.0` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
 - Add `events@^3.3.0` as a dependency ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+- Deprecate `time` property on `SmartTransaction` type in favor of `creationTime` ([#298](https://github.com/MetaMask/smart-transactions-controller/pull/298))
 
 ### Removed
 - **BREAKING:** Remove property `ethersProvider` from `SmartTransactionsController` ([#237](https://github.com/MetaMask/smart-transactions-controller/pull/237))
@@ -54,6 +62,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix updating a smart transaction to no longer throw when no smart transactions have been previously saved under the current chain ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
 - Properly override controller name to `SmartTransactionController` ([#273](https://github.com/MetaMask/smart-transactions-controller/pull/273))
 - Properly mark `getFees` as having an optional second argument, since it was being handled that way anyway ([#271](https://github.com/MetaMask/smart-transactions-controller/pull/271))
+- The controller now waits until the first NetworkController update before making use of the `provider` constructor argument to hit the currently selected network ([#274](https://github.com/MetaMask/smart-transactions-controller/pull/274))
+  - This change was made because in the future, the `provider` may no longer be defined initially.
+  - This change may cause errors to be thrown immediately following a network switch until a future NetworkController state update or polling iteration.
 
 ## [6.2.2]
 ### Fixed
