@@ -363,7 +363,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       // add smart transaction
       const cancelledNonceIndex = currentSmartTransactions?.findIndex(
         (stx: SmartTransaction) =>
-          stx.txParams?.nonce === smartTransaction.txParams?.nonce &&
+          stx.transaction?.nonce === smartTransaction.transaction?.nonce &&
           stx.status?.startsWith('cancelled'),
       );
       const snapshot = cloneDeep(smartTransaction);
@@ -482,7 +482,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         );
         const baseFeePerGas = blockData?.baseFeePerGas;
         const updatedTxParams = {
-          ...smartTransaction.txParams,
+          ...smartTransaction.transaction,
           maxFeePerGas,
           maxPriorityFeePerGas,
         };
@@ -492,7 +492,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           id: smartTransaction.uuid,
           status: 'confirmed',
           hash: txHash,
-          txParams: updatedTxParams,
+          transaction: updatedTxParams,
         };
         // create txMeta snapshot for history
         const snapshot = snapshotFromTxMeta(originalTxMeta);
@@ -668,7 +668,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   // * transaction controller external transactions list
   async submitSignedTransactions({
     transactionMeta,
-    txParams,
+    transaction,
     signedTransactions,
     signedCanceledTransactions,
     networkClientId,
@@ -676,7 +676,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions: SignedCanceledTransaction[];
     transactionMeta?: any;
-    txParams?: any;
+    transaction?: any;
     networkClientId?: NetworkClientId;
   }) {
     const chainId = this.#getChainId({ networkClientId });
@@ -695,24 +695,24 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     let preTxBalance;
     try {
       const preTxBalanceBN = await query(ethQuery, 'getBalance', [
-        txParams?.from,
+        transaction?.from,
       ]);
       preTxBalance = new BigNumber(preTxBalanceBN).toString(16);
     } catch (error) {
       console.error('provider error', error);
     }
 
-    const requiresNonce = !txParams.nonce;
+    const requiresNonce = !transaction.nonce;
     let nonce;
     let nonceLock;
     let nonceDetails = {};
 
     if (requiresNonce) {
-      nonceLock = await this.getNonceLock(txParams?.from);
+      nonceLock = await this.getNonceLock(transaction?.from);
       nonce = hexlify(nonceLock.nextNonce);
       nonceDetails = nonceLock.nonceDetails;
-      if (txParams) {
-        txParams.nonce ??= nonce;
+      if (transaction) {
+        transaction.nonce ??= nonce;
       }
     }
     const submitTransactionResponse = {
@@ -728,7 +728,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           preTxBalance,
           status: SmartTransactionStatuses.PENDING,
           time,
-          txParams,
+          transaction,
           uuid: submitTransactionResponse.uuid,
           txHash: submitTransactionResponse.txHash,
           cancellable: true,
@@ -836,7 +836,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
 
     return currentSmartTransactions.filter((stx) => {
-      return stx.status === status && stx.txParams?.from === addressFrom;
+      return stx.status === status && stx.transaction?.from === addressFrom;
     });
   }
 }
