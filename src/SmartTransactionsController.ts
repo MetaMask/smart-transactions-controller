@@ -31,6 +31,7 @@ import type {
   SmartTransaction,
   SmartTransactionsStatus,
   UnsignedTransaction,
+  GetTransactionsOptions,
 } from './types';
 import { APIType, SmartTransactionStatuses } from './types';
 import {
@@ -94,10 +95,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   public confirmExternalTransaction: any;
 
   public getRegularTransactions: (
-    searchCriteria?: any,
-    initialList?: TransactionMeta[],
-    filterToCurrentNetwork?: boolean,
-    limit?: number,
+    options?: GetTransactionsOptions,
   ) => TransactionMeta[];
 
   private readonly trackMetaMetricsEvent: any;
@@ -136,7 +134,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       getNonceLock: any;
       provider: Provider;
       confirmExternalTransaction: any;
-      getTransactions: any;
+      getTransactions: (options?: GetTransactionsOptions) => TransactionMeta[];
       trackMetaMetricsEvent: any;
       getNetworkClientById: NetworkController['getNetworkClientById'];
     },

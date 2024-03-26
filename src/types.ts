@@ -1,5 +1,6 @@
-/** API */
+import type { TransactionMeta } from '@metamask/transaction-controller';
 
+/** API */
 export enum APIType {
   'GET_FEES',
   'ESTIMATE_GAS',
@@ -10,7 +11,6 @@ export enum APIType {
 }
 
 /** SmartTransactions */
-
 export enum SmartTransactionMinedTx {
   NOT_MINED = 'not_mined',
   SUCCESS = 'success',
@@ -121,3 +121,10 @@ export type SignedTransaction = any;
 export type SignedCanceledTransaction = any;
 
 export type Hex = `0x${string}`;
+
+export type GetTransactionsOptions = {
+  searchCriteria?: any;
+  initialList?: TransactionMeta[];
+  filterToCurrentNetwork?: boolean;
+  limit?: number;
+};
