@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [7.1.0]
-### Uncategorized
-- Update the "doesTransactionNeedConfirmation" fn, add additional tests ([#307](https://github.com/MetaMask/smart-transactions-controller/pull/307))
+### Fixed
+- Update the "doesTransactionNeedConfirmation" function, add additional tests ([#307](https://github.com/MetaMask/smart-transactions-controller/pull/307))
+
+### Changed
 - Confirm a transaction conditionally ([#301](https://github.com/MetaMask/smart-transactions-controller/pull/301))
 - meta: Drop nodejs v16 support ([#277](https://github.com/MetaMask/smart-transactions-controller/pull/277))
 
