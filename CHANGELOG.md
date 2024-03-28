@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [7.1.0]
 ### Changed
-- Confirm a transaction conditionally ([#301](https://github.com/MetaMask/smart-transactions-controller/pull/301))
+- **BREAKING:** The constructor now requires a `getTransactions` option, which can be used to get a list of existing transactions ([#301](https://github.com/MetaMask/smart-transactions-controller/pull/301))
+- Ensure that a transaction does not get re-confirmed it is already confirmed or submitted ([#301](https://github.com/MetaMask/smart-transactions-controller/pull/301))
 
 ### Fixed
 
