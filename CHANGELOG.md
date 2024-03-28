@@ -6,12 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [7.1.0]
+## [8.0.0]
 ### Changed
 - **BREAKING:** The constructor now requires a `getTransactions` option, which can be used to get a list of existing transactions ([#301](https://github.com/MetaMask/smart-transactions-controller/pull/301))
-- Ensure that a transaction does not get re-confirmed it is already confirmed or submitted ([#301](https://github.com/MetaMask/smart-transactions-controller/pull/301))
-
-### Fixed
+- Ensure that a transaction does not get re-confirmed if it is already confirmed or submitted. MetaMask Swaps are confirmed from this controller, other transaction types are most of the time confirmed from the TransactionController. ([#301](https://github.com/MetaMask/smart-transactions-controller/pull/301))
 
 ## [7.0.0]
 ### Added
