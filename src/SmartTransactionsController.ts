@@ -463,7 +463,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
     const transactions = this.getRegularTransactions();
     const foundTransaction = transactions?.find((tx) => {
-      return tx.hash?.toLowerCase() === txHash.toLowerCase();
+      // @ts-expect-error TxController v8 uses tx.transactionHash instead of tx.hash
+      return tx.transactionHash?.toLowerCase() === txHash.toLowerCase();
     });
     if (!foundTransaction) {
       return true;
@@ -520,7 +521,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           ...smartTransaction,
           id: smartTransaction.uuid,
           status: TransactionStatus.confirmed,
-          hash: txHash,
+          transactionHash: txHash,
           transaction: updatedTxParams,
         };
         // create txMeta snapshot for history
