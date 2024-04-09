@@ -74,7 +74,7 @@ export type SmartTransactionsStatus = {
 
 export type SmartTransaction = {
   uuid: string;
-  txHash?: string;
+  transactionHash?: string;
   chainId?: string;
   destinationTokenAddress?: string;
   destinationTokenDecimals?: string;
