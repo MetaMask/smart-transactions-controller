@@ -762,7 +762,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           time,
           transaction,
           uuid: submitTransactionResponse.uuid,
-          txHash: submitTransactionResponse.txHash,
+          transactionHash: submitTransactionResponse.txHash,
           cancellable: true,
           type: transactionMeta?.type || 'swap',
         },
