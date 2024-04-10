@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [8.1.0]
-### Uncategorized
-- Update domain name for transaction-api, add a new function "getSmartTransactionByMinedTxHash" ([#314](https://github.com/MetaMask/smart-transactions-controller/pull/314))
+### Changed
+- Update a URL for transaction-api from `https://transaction.metaswap.codefi.network` to `https://transaction.api.cx.metamask.io`, since we shouldn't be using `codefi.network` anymore ([#314](https://github.com/MetaMask/smart-transactions-controller/pull/314))
+- Add a new function called `getSmartTransactionByMinedTxHash`, which can be used to get a smart transaction by its `minedHash` prop ([#314](https://github.com/MetaMask/smart-transactions-controller/pull/314))
+- Add new props on the `SmartTransactionsStatus` type, so they can be used e.g. as event props ([#314](https://github.com/MetaMask/smart-transactions-controller/pull/314))
 
 ## [8.0.0]
 ### Changed
