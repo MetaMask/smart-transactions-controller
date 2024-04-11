@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":";;;;;AAAA,gGAAwE;AAExE,kBAAe,qCAA2B,CAAC","sourcesContent":["import SmartTransactionsController from './SmartTransactionsController';\n\nexport default SmartTransactionsController;\n"]}
