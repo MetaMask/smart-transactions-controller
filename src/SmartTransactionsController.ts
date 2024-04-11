@@ -463,7 +463,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
     const transactions = this.getRegularTransactions();
     const foundTransaction = transactions?.find((tx) => {
-      // @ts-expect-error TxController v8 uses tx.transactionHash instead of tx.hash
       return tx.transactionHash?.toLowerCase() === txHash.toLowerCase();
     });
     if (!foundTransaction) {
