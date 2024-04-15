@@ -57,7 +57,7 @@ export type SmartTransactionsControllerConfig = BaseConfig & {
   interval: number;
   clientId: string;
   chainId: Hex;
-  supportedChainIds: string[];
+  supportedChainIds: Hex[];
 };
 
 type FeeEstimates = {
@@ -888,5 +888,57 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         txHash.toLowerCase()
       );
     });
+  }
+
+  #wipeSmartTransactionsPerChainId(
+    chainId: Hex,
+    selectedAddressLowerCase: string,
+  ): void {
+    const { smartTransactions } = this.state.smartTransactionsState;
+    const smartTransactionsForSelectedChain: SmartTransaction[] =
+      smartTransactions?.[chainId];
+    if (
+      !smartTransactionsForSelectedChain ||
+      smartTransactionsForSelectedChain.length === 0
+    ) {
+      return;
+    }
+    const newSmartTransactionsForSelectedChain =
+      smartTransactionsForSelectedChain.filter(
+        (smartTransaction: SmartTransaction) =>
+          smartTransaction.txParams?.from !== selectedAddressLowerCase,
+      );
+    this.update({
+      smartTransactionsState: {
+        ...this.state.smartTransactionsState,
+        smartTransactions: {
+          ...smartTransactions,
+          [chainId]: newSmartTransactionsForSelectedChain,
+        },
+      },
+    });
+  }
+
+  wipeSmartTransactions(
+    selectedAddress?: string,
+    ignoreNetwork?: boolean,
+  ): void {
+    if (!selectedAddress) {
+      return;
+    }
+    const selectedAddressLowerCase = selectedAddress.toLowerCase();
+    if (ignoreNetwork) {
+      this.#wipeSmartTransactionsPerChainId(
+        this.config.chainId,
+        selectedAddressLowerCase,
+      );
+    } else {
+      this.config.supportedChainIds.forEach((chainId) => {
+        this.#wipeSmartTransactionsPerChainId(
+          chainId,
+          selectedAddressLowerCase,
+        );
+      });
+    }
   }
 }
