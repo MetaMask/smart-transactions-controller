@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { API_BASE_URL, CHAIN_IDS } from './constants';
+import { API_BASE_URL, CHAIN_IDS, NetworkClientId } from './constants';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
@@ -306,7 +306,7 @@ const createTransactionMeta = (
 };
 
 const ethereumChainIdDec = parseInt(CHAIN_IDS.ETHEREUM, 16);
-const goerliChainIdDec = parseInt(CHAIN_IDS.GOERLI, 16);
+const sepoliaChainIdDec = parseInt(CHAIN_IDS.SEPOLIA, 16);
 
 const trackMetaMetricsEventSpy = jest.fn();
 const defaultState = {
@@ -325,7 +325,7 @@ const defaultState = {
         approvalTxFees: undefined,
         tradeTxFees: undefined,
       },
-      [CHAIN_IDS.GOERLI]: {
+      [CHAIN_IDS.SEPOLIA]: {
         approvalTxFees: undefined,
         tradeTxFees: undefined,
       },
@@ -333,7 +333,7 @@ const defaultState = {
     liveness: true,
     livenessByChainId: {
       [CHAIN_IDS.ETHEREUM]: true,
-      [CHAIN_IDS.GOERLI]: true,
+      [CHAIN_IDS.SEPOLIA]: true,
     },
   },
 };
@@ -343,7 +343,7 @@ const mockProvider = {
 };
 
 const mockProviderConfig = {
-  chainId: '0x1' as `0x${string}`,
+  chainId: CHAIN_IDS.ETHEREUM,
   provider: mockProvider,
   type: NetworkType.mainnet,
   ticker: 'ticker',
@@ -356,7 +356,7 @@ const mockNetworkState = {
     id: {
       id: 'id',
       rpcUrl: 'string',
-      chainId: '0x1' as `0x${string}`,
+      chainId: CHAIN_IDS.ETHEREUM,
       ticker: 'string',
     },
   },
@@ -393,16 +393,16 @@ describe('SmartTransactionsController', () => {
       trackMetaMetricsEvent: trackMetaMetricsEventSpy,
       getNetworkClientById: jest.fn().mockImplementation((networkClientId) => {
         switch (networkClientId) {
-          case 'mainnet':
+          case NetworkClientId.Mainnet:
             return {
               configuration: {
                 chainId: CHAIN_IDS.ETHEREUM,
               },
             };
-          case 'goerli':
+          case NetworkClientId.Sepolia:
             return {
               configuration: {
-                chainId: CHAIN_IDS.GOERLI,
+                chainId: CHAIN_IDS.SEPOLIA,
               },
             };
           default:
@@ -425,7 +425,7 @@ describe('SmartTransactionsController', () => {
   it('initializes with default config', () => {
     expect(smartTransactionsController.config).toStrictEqual({
       interval: DEFAULT_INTERVAL,
-      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.GOERLI],
+      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.SEPOLIA],
       chainId: CHAIN_IDS.ETHEREUM,
       clientId: 'default',
     });
@@ -635,11 +635,11 @@ describe('SmartTransactionsController', () => {
     });
 
     it('should add fee data to feesByChainId state using the networkClientId passed in to identify the appropriate chain', async () => {
-      const tradeTx = createUnsignedTransaction(goerliChainIdDec);
-      const approvalTx = createUnsignedTransaction(goerliChainIdDec);
+      const tradeTx = createUnsignedTransaction(sepoliaChainIdDec);
+      const approvalTx = createUnsignedTransaction(sepoliaChainIdDec);
       const getFeesApiResponse = createGetFeesApiResponse();
       nock(API_BASE_URL)
-        .post(`/networks/${goerliChainIdDec}/getFees`)
+        .post(`/networks/${sepoliaChainIdDec}/getFees`)
         .reply(200, getFeesApiResponse);
 
       expect(
@@ -647,7 +647,7 @@ describe('SmartTransactionsController', () => {
       ).toStrictEqual(defaultState.smartTransactionsState.feesByChainId);
 
       await smartTransactionsController.getFees(tradeTx, approvalTx, {
-        networkClientId: 'goerli',
+        networkClientId: NetworkClientId.Sepolia,
       });
 
       expect(
@@ -657,7 +657,7 @@ describe('SmartTransactionsController', () => {
           approvalTxFees: undefined,
           tradeTxFees: undefined,
         },
-        [CHAIN_IDS.GOERLI]: {
+        [CHAIN_IDS.SEPOLIA]: {
           approvalTxFees: getFeesApiResponse.txs[0],
           tradeTxFees: getFeesApiResponse.txs[1],
         },
@@ -710,7 +710,7 @@ describe('SmartTransactionsController', () => {
         .reply(200, pendingBatchStatusApiResponse);
 
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids, {
-        networkClientId: 'mainnet',
+        networkClientId: NetworkClientId.Mainnet,
       });
       const pendingState = createStateAfterPending()[0];
       const pendingTransaction = { ...pendingState, history: [pendingState] };
@@ -730,7 +730,7 @@ describe('SmartTransactionsController', () => {
               approvalTxFees: undefined,
               tradeTxFees: undefined,
             },
-            [CHAIN_IDS.GOERLI]: {
+            [CHAIN_IDS.SEPOLIA]: {
               approvalTxFees: undefined,
               tradeTxFees: undefined,
             },
@@ -738,7 +738,7 @@ describe('SmartTransactionsController', () => {
           liveness: true,
           livenessByChainId: {
             [CHAIN_IDS.ETHEREUM]: true,
-            [CHAIN_IDS.GOERLI]: true,
+            [CHAIN_IDS.SEPOLIA]: true,
           },
         },
       });
@@ -763,7 +763,7 @@ describe('SmartTransactionsController', () => {
         .reply(200, successBatchStatusApiResponse);
 
       await smartTransactionsController.fetchSmartTransactionsStatus(uuids, {
-        networkClientId: 'mainnet',
+        networkClientId: NetworkClientId.Mainnet,
       });
       const successState = createStateAfterSuccess()[0];
       const successTransaction = { ...successState, history: [successState] };
@@ -783,18 +783,18 @@ describe('SmartTransactionsController', () => {
           },
           liveness: true,
           feesByChainId: {
-            '0x1': {
+            [CHAIN_IDS.ETHEREUM]: {
               approvalTxFees: undefined,
               tradeTxFees: undefined,
             },
-            '0x5': {
+            [CHAIN_IDS.SEPOLIA]: {
               approvalTxFees: undefined,
               tradeTxFees: undefined,
             },
           },
           livenessByChainId: {
-            '0x1': true,
-            '0x5': true,
+            [CHAIN_IDS.ETHEREUM]: true,
+            [CHAIN_IDS.SEPOLIA]: true,
           },
         },
       });
@@ -813,7 +813,7 @@ describe('SmartTransactionsController', () => {
 
     it('fetches liveness and sets in feesByChainId state for the Smart Transactions API for the chainId of the networkClientId passed in', async () => {
       nock(API_BASE_URL)
-        .get(`/networks/${goerliChainIdDec}/health`)
+        .get(`/networks/${sepoliaChainIdDec}/health`)
         .replyWithError('random error');
 
       expect(
@@ -821,11 +821,11 @@ describe('SmartTransactionsController', () => {
           .livenessByChainId,
       ).toStrictEqual({
         [CHAIN_IDS.ETHEREUM]: true,
-        [CHAIN_IDS.GOERLI]: true,
+        [CHAIN_IDS.SEPOLIA]: true,
       });
 
       await smartTransactionsController.fetchLiveness({
-        networkClientId: 'goerli',
+        networkClientId: NetworkClientId.Sepolia,
       });
 
       expect(
@@ -833,7 +833,7 @@ describe('SmartTransactionsController', () => {
           .livenessByChainId,
       ).toStrictEqual({
         [CHAIN_IDS.ETHEREUM]: true,
-        [CHAIN_IDS.GOERLI]: false,
+        [CHAIN_IDS.SEPOLIA]: false,
       });
     });
   });
@@ -865,7 +865,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          networkClientId: 'mainnet',
+          networkClientId: NetworkClientId.Mainnet,
         },
       );
 
@@ -907,7 +907,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          networkClientId: 'mainnet',
+          networkClientId: NetworkClientId.Mainnet,
         },
       );
       await flushPromises();
@@ -957,7 +957,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          networkClientId: 'mainnet',
+          networkClientId: NetworkClientId.Mainnet,
         },
       );
       await flushPromises();
@@ -1007,7 +1007,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          networkClientId: 'mainnet',
+          networkClientId: NetworkClientId.Mainnet,
         },
       );
       await flushPromises();
@@ -1056,7 +1056,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          networkClientId: 'mainnet',
+          networkClientId: NetworkClientId.Mainnet,
         },
       );
       await flushPromises();
@@ -1105,7 +1105,7 @@ describe('SmartTransactionsController', () => {
       smartTransactionsController.updateSmartTransaction(
         updateTransaction as SmartTransaction,
         {
-          networkClientId: 'mainnet',
+          networkClientId: NetworkClientId.Mainnet,
         },
       );
       await flushPromises();
@@ -1271,20 +1271,20 @@ describe('SmartTransactionsController', () => {
         smartTransactionsState: {
           ...defaultState.smartTransactionsState,
           smartTransactions: {
-            '0x1': [
+            [CHAIN_IDS.ETHEREUM]: [
               {
                 uuid: 'uuid1',
                 status: 'pending',
                 cancellable: true,
-                chainId: '0x1',
+                chainId: CHAIN_IDS.ETHEREUM,
               },
             ],
-            '0x5': [
+            [CHAIN_IDS.SEPOLIA]: [
               {
                 uuid: 'uuid2',
                 status: 'pending',
                 cancellable: true,
-                chainId: '0x5',
+                chainId: CHAIN_IDS.SEPOLIA,
               },
             ],
           },
@@ -1294,7 +1294,9 @@ describe('SmartTransactionsController', () => {
       const handleFetchSpy = jest.spyOn(utils, 'handleFetch');
 
       const mainnetPollingToken =
-        smartTransactionsController.startPollingByNetworkClientId('mainnet');
+        smartTransactionsController.startPollingByNetworkClientId(
+          NetworkClientId.Mainnet,
+        );
 
       await advanceTime({ clock, duration: 0 });
 
@@ -1323,13 +1325,15 @@ describe('SmartTransactionsController', () => {
         fetchHeaders,
       );
 
-      smartTransactionsController.startPollingByNetworkClientId('goerli');
+      smartTransactionsController.startPollingByNetworkClientId(
+        NetworkClientId.Sepolia,
+      );
       await advanceTime({ clock, duration: 0 });
 
       expect(handleFetchSpy).toHaveBeenNthCalledWith(
         3,
         `${API_BASE_URL}/networks/${convertHexToDecimal(
-          CHAIN_IDS.GOERLI,
+          CHAIN_IDS.SEPOLIA,
         )}/batchStatus?uuids=uuid2`,
         fetchHeaders,
       );
@@ -1339,7 +1343,7 @@ describe('SmartTransactionsController', () => {
       expect(handleFetchSpy).toHaveBeenNthCalledWith(
         5,
         `${API_BASE_URL}/networks/${convertHexToDecimal(
-          CHAIN_IDS.GOERLI,
+          CHAIN_IDS.SEPOLIA,
         )}/batchStatus?uuids=uuid2`,
         fetchHeaders,
       );
@@ -1354,11 +1358,11 @@ describe('SmartTransactionsController', () => {
 
       await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
-      // check that the mainnet polling has stopped while the goerli polling continues
+      // check that the mainnet polling has stopped while the sepolia polling continues
       expect(handleFetchSpy).toHaveBeenNthCalledWith(
         6,
         `${API_BASE_URL}/networks/${convertHexToDecimal(
-          CHAIN_IDS.GOERLI,
+          CHAIN_IDS.SEPOLIA,
         )}/batchStatus?uuids=uuid2`,
         fetchHeaders,
       );
@@ -1366,7 +1370,7 @@ describe('SmartTransactionsController', () => {
       expect(handleFetchSpy).toHaveBeenNthCalledWith(
         7,
         `${API_BASE_URL}/networks/${convertHexToDecimal(
-          CHAIN_IDS.GOERLI,
+          CHAIN_IDS.SEPOLIA,
         )}/batchStatus?uuids=uuid2`,
         fetchHeaders,
       );
@@ -1386,7 +1390,7 @@ describe('SmartTransactionsController', () => {
           { uuid: 'some-uuid-2', txParams: { from: '0x456' } },
           { uuid: 'some-uuid-3', txParams: { from: '0x123' } },
         ],
-        [CHAIN_IDS.GOERLI]: [
+        [CHAIN_IDS.SEPOLIA]: [
           { uuid: 'some-uuid-4', txParams: { from: '0x123' } },
           { uuid: 'some-uuid-5', txParams: { from: '0x789' } },
           { uuid: 'some-uuid-6', txParams: { from: '0x123' } },
@@ -1418,7 +1422,7 @@ describe('SmartTransactionsController', () => {
       ).not.toContainEqual({ txParams: { from: address } });
       expect(
         smartTransactionsController.state.smartTransactionsState
-          .smartTransactions[CHAIN_IDS.GOERLI],
+          .smartTransactions[CHAIN_IDS.SEPOLIA],
       ).toContainEqual(
         expect.objectContaining({
           txParams: expect.objectContaining({ from: address }),

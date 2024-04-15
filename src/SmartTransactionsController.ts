@@ -147,7 +147,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       interval: DEFAULT_INTERVAL,
       chainId: CHAIN_IDS.ETHEREUM,
       clientId: 'default',
-      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.GOERLI],
+      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.SEPOLIA],
     };
 
     this.defaultState = {
@@ -162,14 +162,14 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         liveness: true,
         livenessByChainId: {
           [CHAIN_IDS.ETHEREUM]: true,
-          [CHAIN_IDS.GOERLI]: true,
+          [CHAIN_IDS.SEPOLIA]: true,
         },
         feesByChainId: {
           [CHAIN_IDS.ETHEREUM]: {
             approvalTxFees: undefined,
             tradeTxFees: undefined,
           },
-          [CHAIN_IDS.GOERLI]: {
+          [CHAIN_IDS.SEPOLIA]: {
             approvalTxFees: undefined,
             tradeTxFees: undefined,
           },
