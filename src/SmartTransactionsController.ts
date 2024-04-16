@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import { hexlify } from '@ethersproject/bytes';
 import type { BaseConfig, BaseState } from '@metamask/base-controller';
-import { query, safelyExecute } from '@metamask/controller-utils';
+import { query, safelyExecute, ChainId } from '@metamask/controller-utils';
 import type { Provider } from '@metamask/eth-query';
 import EthQuery from '@metamask/eth-query';
 import type {
@@ -17,11 +17,7 @@ import { BigNumber } from 'bignumber.js';
 import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 
-import {
-  CHAIN_IDS,
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from './constants';
+import { MetaMetricsEventCategory, MetaMetricsEventName } from './constants';
 import type {
   Fees,
   Hex,
@@ -145,9 +141,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
     this.defaultConfig = {
       interval: DEFAULT_INTERVAL,
-      chainId: CHAIN_IDS.ETHEREUM,
+      chainId: ChainId.mainnet,
       clientId: 'default',
-      supportedChainIds: [CHAIN_IDS.ETHEREUM, CHAIN_IDS.SEPOLIA],
+      supportedChainIds: [ChainId.mainnet, ChainId.sepolia],
     };
 
     this.defaultState = {
@@ -161,15 +157,15 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         },
         liveness: true,
         livenessByChainId: {
-          [CHAIN_IDS.ETHEREUM]: true,
-          [CHAIN_IDS.SEPOLIA]: true,
+          [ChainId.mainnet]: true,
+          [ChainId.sepolia]: true,
         },
         feesByChainId: {
-          [CHAIN_IDS.ETHEREUM]: {
+          [ChainId.mainnet]: {
             approvalTxFees: undefined,
             tradeTxFees: undefined,
           },
-          [CHAIN_IDS.SEPOLIA]: {
+          [ChainId.sepolia]: {
             approvalTxFees: undefined,
             tradeTxFees: undefined,
           },
@@ -890,10 +886,41 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     });
   }
 
-  #wipeSmartTransactionsPerChainId(
-    chainId: Hex,
-    selectedAddressLowerCase: string,
-  ): void {
+  wipeSmartTransactions({
+    address,
+    ignoreNetwork,
+  }: {
+    address: string;
+    ignoreNetwork?: boolean;
+  }): void {
+    if (!address) {
+      return;
+    }
+    const addressLowerCase = address.toLowerCase();
+    if (ignoreNetwork) {
+      this.#wipeSmartTransactionsPerChainId({
+        chainId: this.config.chainId,
+        addressLowerCase,
+      });
+    } else {
+      const { smartTransactions } = this.state.smartTransactionsState;
+      Object.keys(smartTransactions).forEach((chainId) => {
+        const chainIdHex: Hex = chainId as Hex;
+        this.#wipeSmartTransactionsPerChainId({
+          chainId: chainIdHex,
+          addressLowerCase,
+        });
+      });
+    }
+  }
+
+  #wipeSmartTransactionsPerChainId({
+    chainId,
+    addressLowerCase,
+  }: {
+    chainId: Hex;
+    addressLowerCase: string;
+  }): void {
     const { smartTransactions } = this.state.smartTransactionsState;
     const smartTransactionsForSelectedChain: SmartTransaction[] =
       smartTransactions?.[chainId];
@@ -906,7 +933,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const newSmartTransactionsForSelectedChain =
       smartTransactionsForSelectedChain.filter(
         (smartTransaction: SmartTransaction) =>
-          smartTransaction.txParams?.from !== selectedAddressLowerCase,
+          smartTransaction.txParams?.from !== addressLowerCase,
       );
     this.update({
       smartTransactionsState: {
@@ -917,28 +944,5 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         },
       },
     });
-  }
-
-  wipeSmartTransactions(
-    selectedAddress?: string,
-    ignoreNetwork?: boolean,
-  ): void {
-    if (!selectedAddress) {
-      return;
-    }
-    const selectedAddressLowerCase = selectedAddress.toLowerCase();
-    if (ignoreNetwork) {
-      this.#wipeSmartTransactionsPerChainId(
-        this.config.chainId,
-        selectedAddressLowerCase,
-      );
-    } else {
-      this.config.supportedChainIds.forEach((chainId) => {
-        this.#wipeSmartTransactionsPerChainId(
-          chainId,
-          selectedAddressLowerCase,
-        );
-      });
-    }
   }
 }
