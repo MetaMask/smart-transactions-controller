@@ -7,20 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [9.0.0]
-### Uncategorized
-- Add a new function "wipeSmartTransactions", replace Goerli with Sepolia ([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
-- build(deps): bump @metamask/controller-utils from 8.0.3 to 9.1.0 ([#318](https://github.com/MetaMask/smart-transactions-controller/pull/318))
-- build(deps): bump @metamask/polling-controller from 5.0.1 to 6.0.1 ([#294](https://github.com/MetaMask/smart-transactions-controller/pull/294))
-- build(deps): bump @metamask/base-controller from 4.1.1 to 5.0.1 ([#296](https://github.com/MetaMask/smart-transactions-controller/pull/296))
-- build(deps): bump @metamask/network-controller from 17.2.0 to 18.1.0 ([#310](https://github.com/MetaMask/smart-transactions-controller/pull/310))
-- build(deps): bump ip from 2.0.0 to 2.0.1 ([#321](https://github.com/MetaMask/smart-transactions-controller/pull/321))
-- build(deps): bump @metamask/json-rpc-engine from 7.3.2 to 7.3.3 ([#302](https://github.com/MetaMask/smart-transactions-controller/pull/302))
-- build(deps): bump tar from 6.1.15 to 6.2.1 ([#320](https://github.com/MetaMask/smart-transactions-controller/pull/320))
-- build(deps): bump @metamask/transaction-controller from 25.1.0 to 28.1.0 ([#319](https://github.com/MetaMask/smart-transactions-controller/pull/319))
-- build(deps): bump @metamask/safe-event-emitter from 3.0.0 to 3.1.1 ([#291](https://github.com/MetaMask/smart-transactions-controller/pull/291))
-- build(deps): bump @metamask/utils from 8.3.0 to 8.4.0 ([#297](https://github.com/MetaMask/smart-transactions-controller/pull/297))
-- build(deps): bump @metamask/eth-json-rpc-infura from 9.0.0 to 9.1.0 ([#303](https://github.com/MetaMask/smart-transactions-controller/pull/303))
-- build(deps): bump @metamask/metamask-eth-abis from 3.0.0 to 3.1.1 ([#308](https://github.com/MetaMask/smart-transactions-controller/pull/308))
+### Added
+- Add Sepolia support([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
+- Add function `wipeSmartTransactions` to clear all state for a given address (needs to be supplied in all-lowercase) ([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
+
+### Changed
+- Update `@metamask/base-controller` from `^4.1.1` to `^5.0.1` ([#296](https://github.com/MetaMask/smart-transactions-controller/pull/296))
+- Update `@metamask/controller-utils` from `^8.0.3` to `^9.1.0` ([#318](https://github.com/MetaMask/smart-transactions-controller/pull/318))
+- Update `@metamask/network-controller` from `^17.2.0` to `^18.1.0` ([#310](https://github.com/MetaMask/smart-transactions-controller/pull/310))
+- Update `@metamask/polling-controller` from `^5.0.1` to `^6.0.1` ([#294](https://github.com/MetaMask/smart-transactions-controller/pull/294))
+- Update `@metamask/transaction-controller` from `^25.1.0` to `^28.1.0` ([#319](https://github.com/MetaMask/smart-transactions-controller/pull/319))
+
+### Removed
+- **BREAKING**: Remove Goerli support ([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
 
 ## [8.1.0]
 ### Changed
