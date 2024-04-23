@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.0]
+### Uncategorized
+- Add a new function "wipeSmartTransactions", replace Goerli with Sepolia ([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
+- build(deps): bump @metamask/controller-utils from 8.0.3 to 9.1.0 ([#318](https://github.com/MetaMask/smart-transactions-controller/pull/318))
+- build(deps): bump @metamask/polling-controller from 5.0.1 to 6.0.1 ([#294](https://github.com/MetaMask/smart-transactions-controller/pull/294))
+- build(deps): bump @metamask/base-controller from 4.1.1 to 5.0.1 ([#296](https://github.com/MetaMask/smart-transactions-controller/pull/296))
+- build(deps): bump @metamask/network-controller from 17.2.0 to 18.1.0 ([#310](https://github.com/MetaMask/smart-transactions-controller/pull/310))
+- build(deps): bump ip from 2.0.0 to 2.0.1 ([#321](https://github.com/MetaMask/smart-transactions-controller/pull/321))
+- build(deps): bump @metamask/json-rpc-engine from 7.3.2 to 7.3.3 ([#302](https://github.com/MetaMask/smart-transactions-controller/pull/302))
+- build(deps): bump tar from 6.1.15 to 6.2.1 ([#320](https://github.com/MetaMask/smart-transactions-controller/pull/320))
+- build(deps): bump @metamask/transaction-controller from 25.1.0 to 28.1.0 ([#319](https://github.com/MetaMask/smart-transactions-controller/pull/319))
+- build(deps): bump @metamask/safe-event-emitter from 3.0.0 to 3.1.1 ([#291](https://github.com/MetaMask/smart-transactions-controller/pull/291))
+- build(deps): bump @metamask/utils from 8.3.0 to 8.4.0 ([#297](https://github.com/MetaMask/smart-transactions-controller/pull/297))
+- build(deps): bump @metamask/eth-json-rpc-infura from 9.0.0 to 9.1.0 ([#303](https://github.com/MetaMask/smart-transactions-controller/pull/303))
+- build(deps): bump @metamask/metamask-eth-abis from 3.0.0 to 3.1.1 ([#308](https://github.com/MetaMask/smart-transactions-controller/pull/308))
+
 ## [8.1.0]
 ### Changed
 - Update a URL for transaction-api from `https://transaction.metaswap.codefi.network` to `https://transaction.api.cx.metamask.io`, since we shouldn't be using `codefi.network` anymore ([#314](https://github.com/MetaMask/smart-transactions-controller/pull/314))
@@ -254,7 +270,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v8.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v9.0.0...HEAD
+[9.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v8.1.0...v9.0.0
 [8.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v6.2.2...v7.0.0
