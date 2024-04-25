@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [9.0.0]
 ### Added
-- Add Sepolia support([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
+- Add Sepolia support ([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
 - Add function `wipeSmartTransactions` to clear all state for a given address (needs to be supplied in all-lowercase) ([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
 
 ### Changed
