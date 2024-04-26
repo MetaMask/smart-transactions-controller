@@ -1415,11 +1415,27 @@ describe('SmartTransactionsController', () => {
       expect(smartTransactionsController.state).toStrictEqual(prevState);
     });
 
-    it('removes transactions from current chainId if ignoreNetwork is true', () => {
+    it('removes transactions from all supported chainIds if ignoreNetwork is true', () => {
       const address = '0x123';
       smartTransactionsController.wipeSmartTransactions({
         address,
         ignoreNetwork: true,
+      });
+      smartTransactionsController.config.supportedChainIds.forEach(
+        (chainId) => {
+          expect(
+            smartTransactionsController.state.smartTransactionsState
+              .smartTransactions[chainId],
+          ).not.toContainEqual({ txParams: { from: address } });
+        },
+      );
+    });
+
+    it('removes transactions from current chainId if ignoreNetwork is false', () => {
+      const address = '0x123';
+      smartTransactionsController.wipeSmartTransactions({
+        address,
+        ignoreNetwork: false,
       });
       expect(
         smartTransactionsController.state.smartTransactionsState
@@ -1432,22 +1448,6 @@ describe('SmartTransactionsController', () => {
         expect.objectContaining({
           txParams: expect.objectContaining({ from: address }),
         }),
-      );
-    });
-
-    it('removes transactions from all supported chainIds if ignoreNetwork is false', () => {
-      const address = '0x123';
-      smartTransactionsController.wipeSmartTransactions({
-        address,
-        ignoreNetwork: false,
-      });
-      smartTransactionsController.config.supportedChainIds.forEach(
-        (chainId) => {
-          expect(
-            smartTransactionsController.state.smartTransactionsState
-              .smartTransactions[chainId],
-          ).not.toContainEqual({ txParams: { from: address } });
-        },
       );
     });
   });
