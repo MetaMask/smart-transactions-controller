@@ -19,7 +19,7 @@ import SmartTransactionsController, {
   DEFAULT_INTERVAL,
 } from './SmartTransactionsController';
 import { advanceTime, flushPromises } from './test-helpers';
-import type { SmartTransaction, UnsignedTransaction } from './types';
+import type { SmartTransaction, UnsignedTransaction, Hex } from './types';
 import { SmartTransactionStatuses } from './types';
 import * as utils from './utils';
 import packageJson from '../package.json';
@@ -1421,14 +1421,15 @@ describe('SmartTransactionsController', () => {
         address,
         ignoreNetwork: true,
       });
-      smartTransactionsController.config.supportedChainIds.forEach(
-        (chainId) => {
-          expect(
-            smartTransactionsController.state.smartTransactionsState
-              .smartTransactions[chainId],
-          ).not.toContainEqual({ txParams: { from: address } });
-        },
-      );
+      const { smartTransactions } =
+        smartTransactionsController.state.smartTransactionsState;
+      Object.keys(smartTransactions).forEach((chainId) => {
+        const chainIdHex: Hex = chainId as Hex;
+        expect(
+          smartTransactionsController.state.smartTransactionsState
+            .smartTransactions[chainIdHex],
+        ).not.toContainEqual({ txParams: { from: address } });
+      });
     });
 
     it('removes transactions from current chainId if ignoreNetwork is false', () => {
