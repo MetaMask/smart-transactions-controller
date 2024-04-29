@@ -1415,7 +1415,7 @@ describe('SmartTransactionsController', () => {
       expect(smartTransactionsController.state).toStrictEqual(prevState);
     });
 
-    it('removes transactions from all supported chainIds if ignoreNetwork is true', () => {
+    it('removes transactions from all chains saved in the smartTransactionsState if ignoreNetwork is true', () => {
       const address = '0x123';
       smartTransactionsController.wipeSmartTransactions({
         address,
@@ -1432,7 +1432,7 @@ describe('SmartTransactionsController', () => {
       });
     });
 
-    it('removes transactions from current chainId if ignoreNetwork is false', () => {
+    it('removes transactions only from the current chainId if ignoreNetwork is false', () => {
       const address = '0x123';
       smartTransactionsController.wipeSmartTransactions({
         address,
