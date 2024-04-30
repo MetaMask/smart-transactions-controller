@@ -1451,5 +1451,45 @@ describe('SmartTransactionsController', () => {
         }),
       );
     });
+
+    it('removes transactions from the current chainId (even if it is not in supportedChainIds) if ignoreNetwork is false', () => {
+      const address = '0x123';
+      smartTransactionsController.config.supportedChainIds = [ChainId.mainnet];
+      smartTransactionsController.config.chainId = ChainId.sepolia;
+      smartTransactionsController.wipeSmartTransactions({
+        address,
+        ignoreNetwork: false,
+      });
+      expect(
+        smartTransactionsController.state.smartTransactionsState
+          .smartTransactions[smartTransactionsController.config.chainId],
+      ).not.toContainEqual({ txParams: { from: address } });
+      expect(
+        smartTransactionsController.state.smartTransactionsState
+          .smartTransactions[ChainId.mainnet],
+      ).toContainEqual(
+        expect.objectContaining({
+          txParams: expect.objectContaining({ from: address }),
+        }),
+      );
+    });
+
+    it('removes transactions from all chains (even if they are not in supportedChainIds) if ignoreNetwork is true', () => {
+      const address = '0x123';
+      smartTransactionsController.config.supportedChainIds = [];
+      smartTransactionsController.wipeSmartTransactions({
+        address,
+        ignoreNetwork: true,
+      });
+      const { smartTransactions } =
+        smartTransactionsController.state.smartTransactionsState;
+      Object.keys(smartTransactions).forEach((chainId) => {
+        const chainIdHex: Hex = chainId as Hex;
+        expect(
+          smartTransactionsController.state.smartTransactionsState
+            .smartTransactions[chainIdHex],
+        ).not.toContainEqual({ txParams: { from: address } });
+      });
+    });
   });
 });
