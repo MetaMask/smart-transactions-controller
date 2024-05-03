@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.0.0]
+### Uncategorized
+- build(deps): bump @metamask/transaction-controller from 28.1.0 to 28.1.1 ([#327](https://github.com/MetaMask/smart-transactions-controller/pull/327))
+- build(deps): bump @metamask/approval-controller from 6.0.1 to 6.0.2 ([#330](https://github.com/MetaMask/smart-transactions-controller/pull/330))
+- build(deps): bump @metamask/gas-fee-controller from 15.1.0 to 15.1.1 ([#329](https://github.com/MetaMask/smart-transactions-controller/pull/329))
+- build(deps): bump @metamask/polling-controller from 6.0.1 to 6.0.2 ([#328](https://github.com/MetaMask/smart-transactions-controller/pull/328))
+- build(deps): bump @metamask/base-controller from 5.0.1 to 5.0.2 ([#326](https://github.com/MetaMask/smart-transactions-controller/pull/326))
+- build(deps): bump @metamask/eth-sig-util from 7.0.1 to 7.0.2 ([#331](https://github.com/MetaMask/smart-transactions-controller/pull/331))
+- Fix a condition in the "wipeSmartTransations" function ([#323](https://github.com/MetaMask/smart-transactions-controller/pull/323))
+- build(deps): bump @metamask/gas-fee-controller from 15.0.0 to 15.1.0 ([#324](https://github.com/MetaMask/smart-transactions-controller/pull/324))
+
 ## [9.0.0]
 ### Added
 - Add Sepolia support ([#316](https://github.com/MetaMask/smart-transactions-controller/pull/316))
@@ -269,7 +280,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v9.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.0.0...HEAD
+[10.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v9.0.0...v10.0.0
 [9.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v8.1.0...v9.0.0
 [8.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v7.0.0...v8.0.0
