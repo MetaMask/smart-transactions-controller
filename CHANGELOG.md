@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-- **BREAKING**: Fix a condition in the "wipeSmartTransations" function, so the `ignoreNetwork` param works as expected ([#323](https://github.com/MetaMask/smart-transactions-controller/pull/323))
+- **BREAKING**: Flip the behavior of the `wipeSmartTransactions` method's `ignoreNetwork` option ([#323](https://github.com/MetaMask/smart-transactions-controller/pull/323))
+  - Passing `false` will now wipe transactions for the globally selected chain, and passing `true` will now wipe transactions from each chain stored in state, instead of the other way around
 
 ## [9.0.0]
 ### Added
