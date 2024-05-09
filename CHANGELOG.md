@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [10.0.1]
-### Uncategorized
-- Emit an event with a Smart Transaction before confirmation ([#333](https://github.com/MetaMask/smart-transactions-controller/pull/333))
+### Fixed
+- Emit an event with an updated Smart Transaction before confirmation ([#333](https://github.com/MetaMask/smart-transactions-controller/pull/333))
 
 ## [10.0.0]
 ### Fixed
