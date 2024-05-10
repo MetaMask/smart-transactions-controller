@@ -1184,7 +1184,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/approval-controller@npm:^6.0.1":
+"@metamask/approval-controller@npm:^6.0.2":
   version: 6.0.2
   resolution: "@metamask/approval-controller@npm:6.0.2"
   dependencies:
@@ -1452,7 +1452,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/gas-fee-controller@npm:^15.1.0":
+"@metamask/gas-fee-controller@npm:^15.1.1":
   version: 15.1.1
   resolution: "@metamask/gas-fee-controller@npm:15.1.1"
   dependencies:
@@ -1587,7 +1587,7 @@ __metadata:
     "@metamask/eth-query": ^4.0.0
     "@metamask/network-controller": ^18.1.0
     "@metamask/polling-controller": ^6.0.1
-    "@metamask/transaction-controller": ^28.1.0
+    "@metamask/transaction-controller": ^29.0.0
     "@types/jest": ^26.0.24
     "@types/lodash": ^4.14.194
     "@types/node": ^18.19.17
@@ -1624,9 +1624,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/transaction-controller@npm:^28.1.0":
-  version: 28.1.1
-  resolution: "@metamask/transaction-controller@npm:28.1.1"
+"@metamask/transaction-controller@npm:^29.0.0":
+  version: 29.0.0
+  resolution: "@metamask/transaction-controller@npm:29.0.0"
   dependencies:
     "@ethereumjs/common": ^3.2.0
     "@ethereumjs/tx": ^4.2.0
@@ -1634,11 +1634,11 @@ __metadata:
     "@ethersproject/abi": ^5.7.0
     "@ethersproject/contracts": ^5.7.0
     "@ethersproject/providers": ^5.7.0
-    "@metamask/approval-controller": ^6.0.1
-    "@metamask/base-controller": ^5.0.1
+    "@metamask/approval-controller": ^6.0.2
+    "@metamask/base-controller": ^5.0.2
     "@metamask/controller-utils": ^9.1.0
     "@metamask/eth-query": ^4.0.0
-    "@metamask/gas-fee-controller": ^15.1.0
+    "@metamask/gas-fee-controller": ^15.1.1
     "@metamask/metamask-eth-abis": ^3.1.1
     "@metamask/network-controller": ^18.1.0
     "@metamask/rpc-errors": ^6.2.1
@@ -1655,7 +1655,7 @@ __metadata:
     "@metamask/approval-controller": ^6.0.0
     "@metamask/gas-fee-controller": ^15.0.0
     "@metamask/network-controller": ^18.0.0
-  checksum: 04e532ef0caeaafce950ff3299cc52dbdf4e57e100288d1dbd8b3169826974d3b7ab5a9b70f218fc14f40d4f780ea47d1d52a737ec5c9889d5048911c8787ef5
+  checksum: 0994207101b97a9be99bdfc272bff5834e8bd06cfd945f9343baf082536bf4eb5da0b4416ff67e380cf323dafdadede12472c89a0cc27605f804bde842f1447b
   languageName: node
   linkType: hard
 
