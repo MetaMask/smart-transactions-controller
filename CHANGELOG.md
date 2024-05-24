@@ -7,10 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [10.1.0]
-### Uncategorized
-- build(deps): bump @metamask/network-controller from 18.1.0 to 18.1.1 ([#337](https://github.com/MetaMask/smart-transactions-controller/pull/337))
-- --- ([#339](https://github.com/MetaMask/smart-transactions-controller/pull/339))
-- build(deps): bump @metamask/gas-fee-controller from 15.1.1 to 15.1.2 ([#336](https://github.com/MetaMask/smart-transactions-controller/pull/336))
+### Changed
+- Update `@metamask/transaction-controller` from `^28.1.0` to `^29.1.0` ([#339](https://github.com/MetaMask/smart-transactions-controller/pull/339))
 
 ## [10.0.1]
 ### Fixed
