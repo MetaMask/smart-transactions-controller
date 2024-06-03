@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.1.1]
 ### Fixed
 - Call the "poll" function only once on a network switch ([#348](https://github.com/MetaMask/smart-transactions-controller/pull/348))
-
-### Changed
 - Update `@metamask/transaction-controller` from `^29.1.0` to `^30.0.0` ([#342](https://github.com/MetaMask/smart-transactions-controller/pull/342))
 
 ## [10.1.0]
