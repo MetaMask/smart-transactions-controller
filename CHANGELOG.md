@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.1.1]
 ### Fixed
 - Call the "poll" function only once on a network switch ([#348](https://github.com/MetaMask/smart-transactions-controller/pull/348))
-
-### Changed
-- build(deps): bump @metamask/eth-json-rpc-middleware ([#341](https://github.com/MetaMask/smart-transactions-controller/pull/341))
-
 ## [10.1.0]
 ### Changed
 - Update `@metamask/transaction-controller` from `^28.1.0` to `^29.1.0` ([#339](https://github.com/MetaMask/smart-transactions-controller/pull/339))
