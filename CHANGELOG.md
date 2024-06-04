@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [10.1.2]
-### Uncategorized
-- fix: Improve state management ([#353](https://github.com/MetaMask/smart-transactions-controller/pull/353))
+### Fixed
+- fix: Improve state management to ensure unique smart transactions in a rare edge case. This will be removed in a future version once we have confirmed this is resolved. ([#353](https://github.com/MetaMask/smart-transactions-controller/pull/353))
 - Bring release instructions in README up to date ([#354](https://github.com/MetaMask/smart-transactions-controller/pull/354))
 
 ## [10.1.1]
