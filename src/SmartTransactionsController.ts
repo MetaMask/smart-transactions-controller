@@ -183,7 +183,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.getNetworkClientById = getNetworkClientById;
 
     this.initializeSmartTransactionsForChainId();
-    this.ensureUniqueSmartTransactions();
+    this.#ensureUniqueSmartTransactions();
 
     onNetworkStateChange(({ providerConfig: newProvider }) => {
       const { chainId } = newProvider;
@@ -191,7 +191,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
       if (isNewChainId) {
-        this.ensureUniqueSmartTransactions();
+        this.#ensureUniqueSmartTransactions();
       }
       this.checkPoll(this.state);
       this.ethQuery = new EthQuery(provider);
@@ -246,7 +246,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   // We fixed having duplicate smart transactions with the same uuid in a very rare edge case.
   // This function resolves it for a few users who have this issue and once we see in logs
   // that everything is fine, we can remove this function.
-  ensureUniqueSmartTransactions() {
+  #ensureUniqueSmartTransactions() {
     const { smartTransactions } = this.state.smartTransactionsState;
     const chainId = ChainId.mainnet; // Smart Transactions are only available on Ethereum mainnet at the moment.
     const smartTransactionsForChainId = smartTransactions[chainId];
