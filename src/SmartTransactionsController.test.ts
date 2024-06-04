@@ -462,10 +462,6 @@ describe('SmartTransactionsController', () => {
     });
 
     it('calls "ensureUniqueSmartTransactions" on network change if it is a new chainId', () => {
-      const ensureUniqueSmartTransactionsSpy = jest.spyOn(
-        smartTransactionsController,
-        'ensureUniqueSmartTransactions',
-      );
       const { smartTransactionsState } = smartTransactionsController.state;
       const smartTransactionsForChainId = createStateAfterSuccess();
       smartTransactionsForChainId.push({
@@ -496,7 +492,6 @@ describe('SmartTransactionsController', () => {
       const uniqueSmartTransactionsForChainId =
         smartTransactionsController.state.smartTransactionsState
           .smartTransactions[ChainId.mainnet];
-      expect(ensureUniqueSmartTransactionsSpy).toHaveBeenCalled();
       expect(uniqueSmartTransactionsForChainId).toHaveLength(1);
       expect(uniqueSmartTransactionsForChainId).toStrictEqual([
         smartTransactionsForChainId[0],
@@ -504,10 +499,22 @@ describe('SmartTransactionsController', () => {
     });
 
     it('does not call "ensureUniqueSmartTransactions" on network change for the same chainId', () => {
-      const ensureUniqueSmartTransactionsSpy = jest.spyOn(
-        smartTransactionsController,
-        'ensureUniqueSmartTransactions',
-      );
+      const { smartTransactionsState } = smartTransactionsController.state;
+      const smartTransactionsForChainId = createStateAfterSuccess();
+      smartTransactionsForChainId.push({
+        // Duplicate a smart transaction with the same uuid.
+        ...smartTransactionsForChainId[0],
+        status: 'pending',
+      });
+      smartTransactionsController.update({
+        smartTransactionsState: {
+          ...smartTransactionsState,
+          smartTransactions: {
+            [ChainId.mainnet]:
+              smartTransactionsForChainId as SmartTransaction[],
+          },
+        },
+      });
       networkListener({
         providerConfig: {
           chainId: ChainId.mainnet,
@@ -518,7 +525,13 @@ describe('SmartTransactionsController', () => {
         networkConfigurations: {},
         networksMetadata: {},
       } as NetworkState);
-      expect(ensureUniqueSmartTransactionsSpy).not.toHaveBeenCalled();
+      const currentSmartTransactionsForChainId =
+        smartTransactionsController.state.smartTransactionsState
+          .smartTransactions[ChainId.mainnet];
+      expect(currentSmartTransactionsForChainId).toHaveLength(2);
+      expect(currentSmartTransactionsForChainId).toStrictEqual(
+        smartTransactionsForChainId,
+      );
     });
   });
 
