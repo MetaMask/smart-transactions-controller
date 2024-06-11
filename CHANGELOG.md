@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.1.3]
+### Uncategorized
+- build(deps): bump @metamask/controller-utils from 9.1.0 to 11.0.0 ([#350](https://github.com/MetaMask/smart-transactions-controller/pull/350))
+- build(deps): bump braces in the npm_and_yarn group across 1 directory ([#358](https://github.com/MetaMask/smart-transactions-controller/pull/358))
+- build(deps): bump @metamask/rpc-errors from 6.2.1 to 6.3.0 ([#356](https://github.com/MetaMask/smart-transactions-controller/pull/356))
+- build(deps): bump @metamask/utils from 8.4.0 to 8.5.0 ([#357](https://github.com/MetaMask/smart-transactions-controller/pull/357))
+- chore(devDeps): bump jest from v26 to v29, ts-jest from v26 to v29 and nock from v13 to v14 ([#325](https://github.com/MetaMask/smart-transactions-controller/pull/325))
+
 ## [10.1.2]
 ### Fixed
 - fix: Improve state management to ensure unique smart transactions in a rare edge case. This will be removed in a future version once we have confirmed this is resolved. ([#353](https://github.com/MetaMask/smart-transactions-controller/pull/353))
@@ -292,7 +300,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.2...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.3...HEAD
+[10.1.3]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.2...v10.1.3
 [10.1.2]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.1...v10.1.2
 [10.1.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.0...v10.1.1
 [10.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.0.1...v10.1.0
