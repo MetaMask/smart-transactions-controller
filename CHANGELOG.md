@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.1.4]
+### Uncategorized
+- build(deps): bump @metamask/eth-json-rpc-middleware ([#360](https://github.com/MetaMask/smart-transactions-controller/pull/360))
+- build(deps): bump @metamask/network-controller from 18.1.1 to 19.0.0 ([#349](https://github.com/MetaMask/smart-transactions-controller/pull/349))
+- build(deps): bump @metamask/base-controller from 5.0.2 to 6.0.0 ([#351](https://github.com/MetaMask/smart-transactions-controller/pull/351))
+
 ## [10.1.3]
 ### Changed
 - Update jest from v26 to v29, ts-jest from v26 to v29 and nock from v13 to v14 ([#325](https://github.com/MetaMask/smart-transactions-controller/pull/325))
@@ -296,7 +302,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.3...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.4...HEAD
+[10.1.4]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.3...v10.1.4
 [10.1.3]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.2...v10.1.3
 [10.1.2]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.1...v10.1.2
 [10.1.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.0...v10.1.1
