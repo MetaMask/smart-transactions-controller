@@ -7,9 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [10.1.6]
-### Uncategorized
-- build(deps): bump @metamask/rpc-errors from 6.2.1 to 6.3.0 ([#363](https://github.com/MetaMask/smart-transactions-controller/pull/363))
-- build(deps): bump @metamask/utils from 8.4.0 to 8.5.0 ([#364](https://github.com/MetaMask/smart-transactions-controller/pull/364))
+### Changed
+- Update @metamask/transaction-controller from 29.1.0 to 32.0.0 ([#348](https://github.com/MetaMask/smart-transactions-controller/pull/348))
 
 ## [10.1.5]
 ### Changed
