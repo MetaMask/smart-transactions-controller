@@ -622,7 +622,22 @@ describe('SmartTransactionsController', () => {
       expect(trackMetaMetricsEventSpy).not.toHaveBeenCalled();
     });
 
-    it('tracks status change if smartTransaction and prevSmartTransaction have different statuses', () => {
+    it('tracks status change if smartTransaction and prevSmartTransaction have different statuses and status is not pending', () => {
+      const smartTransaction = {
+        ...createStateAfterPending()[0],
+        status: 'success',
+        swapMetaData: {},
+      };
+      const prevSmartTransaction = { ...smartTransaction, status: 'pending' };
+
+      smartTransactionsController.trackStxStatusChange(
+        smartTransaction as SmartTransaction,
+        prevSmartTransaction as SmartTransaction,
+      );
+      expect(trackMetaMetricsEventSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('tracks status change if smartTransaction and prevSmartTransaction and status is pending', () => {
       const smartTransaction = {
         ...createStateAfterPending()[0],
         swapMetaData: {},
@@ -632,7 +647,21 @@ describe('SmartTransactionsController', () => {
         smartTransaction as SmartTransaction,
         prevSmartTransaction as SmartTransaction,
       );
-      expect(trackMetaMetricsEventSpy).toHaveBeenCalled();
+      expect(trackMetaMetricsEventSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('tracks status change if smartTransaction and prevSmartTransaction and status is cancelled', () => {
+      const smartTransaction = {
+        ...createStateAfterPending()[0],
+        status: 'cancelled',
+        swapMetaData: {},
+      };
+      const prevSmartTransaction = { ...smartTransaction, status: 'pending' };
+      smartTransactionsController.trackStxStatusChange(
+        smartTransaction as SmartTransaction,
+        prevSmartTransaction as SmartTransaction,
+      );
+      expect(trackMetaMetricsEventSpy).toHaveBeenCalledTimes(2);
     });
   });
 
