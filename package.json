@@ -83,7 +83,9 @@
       "@lavamoat/preinstall-always-fail": false,
       "@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>keccak": false,
       "@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>secp256k1": false,
-      "@metamask/controller-utils>babel-runtime>core-js": false
+      "@metamask/controller-utils>babel-runtime>core-js": false,
+      "@metamask/transaction-controller>@metamask/accounts-controller>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>keccak": false,
+      "@metamask/transaction-controller>@metamask/accounts-controller>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>secp256k1": false
     }
   }
 }
