@@ -374,10 +374,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         smartTransactions: {
           ...smartTransactionsState.smartTransactions,
           [chainId]: smartTransactionsState.smartTransactions[chainId].map(
-            (item, index) => {
+            (existingSmartTransaction, index) => {
               return index === currentIndex
-                ? { ...item, ...smartTransaction }
-                : item;
+                ? { ...existingSmartTransaction, ...smartTransaction }
+                : existingSmartTransaction;
             },
           ),
         },
