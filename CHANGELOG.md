@@ -7,11 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [10.2.0]
-### Uncategorized
-- Update metrics, refactoring ([#374](https://github.com/MetaMask/smart-transactions-controller/pull/374))
-- chore: Update yarn.lock for the `socks` module ([#373](https://github.com/MetaMask/smart-transactions-controller/pull/373))
-- build(deps): bump @metamask/transaction-controller from 32.0.0 to 34.0.0 ([#371](https://github.com/MetaMask/smart-transactions-controller/pull/371))
-- build(deps): bump braces from 3.0.2 to 3.0.3 in the npm_and_yarn group across 1 directory ([#367](https://github.com/MetaMask/smart-transactions-controller/pull/367))
+### Changed
+- Update metrics, so events work even for non-swaps transactions ([#374](https://github.com/MetaMask/smart-transactions-controller/pull/374))
+- Update @metamask/transaction-controller from 32.0.0 to 34.0.0 ([#371](https://github.com/MetaMask/smart-transactions-controller/pull/371))
+- Update braces from 3.0.2 to 3.0.3 and remove the `--immutable-cache` flag in a build file ([#367](https://github.com/MetaMask/smart-transactions-controller/pull/367))
 
 ## [10.1.6]
 ### Changed
