@@ -1565,6 +1565,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/eth-json-rpc-provider@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@metamask/eth-json-rpc-provider@npm:4.1.0"
+  dependencies:
+    "@metamask/json-rpc-engine": ^9.0.0
+    "@metamask/rpc-errors": ^6.2.1
+    "@metamask/safe-event-emitter": ^3.0.0
+    "@metamask/utils": ^8.3.0
+    uuid: ^8.3.2
+  checksum: c9669c93df073423d36ff941b512247b569e7f7c56cc6110565bc8dc6590ad691a78d6d17eea6243721c1c464f0f008ea1326fc7373f90fb705fba5fb85d804d
+  languageName: node
+  linkType: hard
+
 "@metamask/eth-query@npm:^4.0.0":
   version: 4.0.0
   resolution: "@metamask/eth-query@npm:4.0.0"
@@ -1708,24 +1721,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/gas-fee-controller@npm:^18.0.0":
-  version: 18.0.0
-  resolution: "@metamask/gas-fee-controller@npm:18.0.0"
+"@metamask/gas-fee-controller@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "@metamask/gas-fee-controller@npm:19.0.0"
   dependencies:
     "@metamask/base-controller": ^6.0.0
     "@metamask/controller-utils": ^11.0.0
     "@metamask/eth-query": ^4.0.0
     "@metamask/ethjs-unit": ^0.3.0
-    "@metamask/network-controller": ^19.0.0
-    "@metamask/polling-controller": ^8.0.0
+    "@metamask/network-controller": ^20.0.0
+    "@metamask/polling-controller": ^9.0.0
     "@metamask/utils": ^8.3.0
     "@types/bn.js": ^5.1.5
     "@types/uuid": ^8.3.0
     bn.js: ^5.2.1
     uuid: ^8.3.2
   peerDependencies:
-    "@metamask/network-controller": ^19.0.0
-  checksum: b22624e6a0683a3466e05e024823666049fe6fe7ca4ac3f3cc1611cb861279cec375474cc0ffc099eeb807fe7e97730d882ecf4cc90402f530b5ec68a69ab85b
+    "@metamask/network-controller": ^20.0.0
+  checksum: 5823a583bdcc0677919a91dc3c17433909c97299ad21a03e1cb6d81ee5c47a1b6784a92076b7859612d42910aba97a3c4b3f029b4f79eb7ae0d55fb40910370e
   languageName: node
   linkType: hard
 
@@ -1880,6 +1893,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/network-controller@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "@metamask/network-controller@npm:20.0.0"
+  dependencies:
+    "@metamask/base-controller": ^6.0.0
+    "@metamask/controller-utils": ^11.0.0
+    "@metamask/eth-block-tracker": ^9.0.3
+    "@metamask/eth-json-rpc-infura": ^9.1.0
+    "@metamask/eth-json-rpc-middleware": ^12.1.1
+    "@metamask/eth-json-rpc-provider": ^4.1.0
+    "@metamask/eth-query": ^4.0.0
+    "@metamask/json-rpc-engine": ^9.0.0
+    "@metamask/rpc-errors": ^6.2.1
+    "@metamask/swappable-obj-proxy": ^2.2.0
+    "@metamask/utils": ^8.3.0
+    async-mutex: ^0.5.0
+    immer: ^9.0.6
+    loglevel: ^1.8.1
+    uuid: ^8.3.2
+  checksum: 27a4b669655d4566045de5489d9bc8fee8454f2e74ddc844c0c978a5af6b821c0bdf020b9b649db32f07a298006c021e33e6d29ccf64a6f6301a8e80de21000c
+  languageName: node
+  linkType: hard
+
 "@metamask/nonce-tracker@npm:^5.0.0":
   version: 5.0.0
   resolution: "@metamask/nonce-tracker@npm:5.0.0"
@@ -1990,6 +2026,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/polling-controller@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@metamask/polling-controller@npm:9.0.0"
+  dependencies:
+    "@metamask/base-controller": ^6.0.0
+    "@metamask/controller-utils": ^11.0.0
+    "@metamask/network-controller": ^20.0.0
+    "@metamask/utils": ^8.3.0
+    "@types/uuid": ^8.3.0
+    fast-json-stable-stringify: ^2.1.0
+    uuid: ^8.3.2
+  peerDependencies:
+    "@metamask/network-controller": ^20.0.0
+  checksum: b08312fb106dc3d452a714ac5844b3facb57df002f3f423908e4fe2dc9fc42a74bef4200855ea230955eb6de1a598f6ce67a76fbeacd4c9a8f735061d01910f7
+  languageName: node
+  linkType: hard
+
 "@metamask/post-message-stream@npm:^8.1.0":
   version: 8.1.0
   resolution: "@metamask/post-message-stream@npm:8.1.0"
@@ -2074,7 +2127,7 @@ __metadata:
     "@metamask/eth-query": ^4.0.0
     "@metamask/network-controller": ^19.0.0
     "@metamask/polling-controller": ^8.0.0
-    "@metamask/transaction-controller": ^34.0.0
+    "@metamask/transaction-controller": ^35.0.0
     "@types/jest": ^26.0.24
     "@types/lodash": ^4.14.194
     "@types/node": ^18.19.17
@@ -2241,9 +2294,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/transaction-controller@npm:^34.0.0":
-  version: 34.0.0
-  resolution: "@metamask/transaction-controller@npm:34.0.0"
+"@metamask/transaction-controller@npm:^35.0.0":
+  version: 35.0.0
+  resolution: "@metamask/transaction-controller@npm:35.0.0"
   dependencies:
     "@ethereumjs/common": ^3.2.0
     "@ethereumjs/tx": ^4.2.0
@@ -2256,9 +2309,9 @@ __metadata:
     "@metamask/base-controller": ^6.0.0
     "@metamask/controller-utils": ^11.0.0
     "@metamask/eth-query": ^4.0.0
-    "@metamask/gas-fee-controller": ^18.0.0
+    "@metamask/gas-fee-controller": ^19.0.0
     "@metamask/metamask-eth-abis": ^3.1.1
-    "@metamask/network-controller": ^19.0.0
+    "@metamask/network-controller": ^20.0.0
     "@metamask/nonce-tracker": ^5.0.0
     "@metamask/rpc-errors": ^6.2.1
     "@metamask/utils": ^8.3.0
@@ -2272,9 +2325,9 @@ __metadata:
     "@babel/runtime": ^7.23.9
     "@metamask/accounts-controller": ^17.0.0
     "@metamask/approval-controller": ^7.0.0
-    "@metamask/gas-fee-controller": ^18.0.0
-    "@metamask/network-controller": ^19.0.0
-  checksum: 99e31518a49b69d62d39929448bfe771bb08b2d3c5203131e2600dba3b5d3b7ce2b861ed4dc4ca2f32dc11fd87514ec5ea955bbdea8536cfd3f69679e6f133e7
+    "@metamask/gas-fee-controller": ^19.0.0
+    "@metamask/network-controller": ^20.0.0
+  checksum: 1f52920dee35b9d6f6c32cc508c6f8db2384a2581c6f68afd74ebb50b823c05ebc1b2ab8237ce3a2c3190ac6acca0cca70905c5ddd690fe788fcfc20be84510c
   languageName: node
   linkType: hard
 
@@ -6720,6 +6773,13 @@ __metadata:
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
+  languageName: node
+  linkType: hard
+
+"loglevel@npm:^1.8.1":
+  version: 1.9.1
+  resolution: "loglevel@npm:1.9.1"
+  checksum: e1c8586108c4d566122e91f8a79c8df728920e3a714875affa5120566761a24077ec8ec9e5fc388b022e39fc411ec6e090cde1b5775871241b045139771eeb06
   languageName: node
   linkType: hard
 
