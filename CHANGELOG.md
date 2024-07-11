@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.2.0]
+### Uncategorized
+- Update metrics, refactoring ([#374](https://github.com/MetaMask/smart-transactions-controller/pull/374))
+- chore: Update yarn.lock for the `socks` module ([#373](https://github.com/MetaMask/smart-transactions-controller/pull/373))
+- build(deps): bump @metamask/transaction-controller from 32.0.0 to 34.0.0 ([#371](https://github.com/MetaMask/smart-transactions-controller/pull/371))
+- build(deps): bump braces from 3.0.2 to 3.0.3 in the npm_and_yarn group across 1 directory ([#367](https://github.com/MetaMask/smart-transactions-controller/pull/367))
+
 ## [10.1.6]
 ### Changed
 - Update @metamask/transaction-controller from 29.1.0 to 32.0.0 ([#348](https://github.com/MetaMask/smart-transactions-controller/pull/348))
@@ -309,7 +316,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.6...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.2.0...HEAD
+[10.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.6...v10.2.0
 [10.1.6]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.5...v10.1.6
 [10.1.5]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.4...v10.1.5
 [10.1.4]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.1.3...v10.1.4
