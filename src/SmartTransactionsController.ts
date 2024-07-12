@@ -42,6 +42,7 @@ import {
   snapshotFromTxMeta,
   getTxHash,
   getSmartTransactionMetricsProperties,
+  getSmartTransactionMetricsSensitiveProperties,
 } from './utils';
 
 const SECOND = 1000;
@@ -316,7 +317,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.trackMetaMetricsEvent({
       event: MetaMetricsEventName.StxStatusUpdated,
       category: MetaMetricsEventCategory.Transactions,
-      properties: getSmartTransactionMetricsProperties(updatedSmartTransaction),
+      properties: getSmartTransactionMetricsProperties(smartTransaction),
+      sensitiveProperties:
+        getSmartTransactionMetricsSensitiveProperties(smartTransaction),
     });
   }
 
@@ -588,6 +591,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           event: MetaMetricsEventName.StxConfirmed,
           category: MetaMetricsEventCategory.Transactions,
           properties: getSmartTransactionMetricsProperties(smartTransaction),
+          sensitiveProperties:
+            getSmartTransactionMetricsSensitiveProperties(smartTransaction),
         });
         this.#updateSmartTransaction(
           { ...smartTransaction, confirmed: true },
