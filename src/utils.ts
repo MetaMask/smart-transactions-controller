@@ -258,5 +258,8 @@ export const getSmartTransactionMetricsSensitiveProperties = (
   return {
     token_from_symbol: smartTransaction.sourceTokenSymbol,
     token_to_symbol: smartTransaction.destinationTokenSymbol,
+    account_hardware_type: smartTransaction.accountHardwareType,
+    account_type: smartTransaction.accountType,
+    device_model: smartTransaction.deviceModel,
   };
 };
