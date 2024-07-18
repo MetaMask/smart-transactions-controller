@@ -342,13 +342,9 @@ const defaultState = {
   },
 };
 
-const mockProvider = {
-  request: jest.fn(),
-};
-
 const mockProviderConfig = {
   chainId: ChainId.mainnet,
-  provider: mockProvider,
+  provider: getFakeProvider(),
   type: NetworkType.mainnet,
   ticker: 'ticker',
 };
