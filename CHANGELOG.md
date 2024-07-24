@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [11.0.0]
-### Uncategorized
+### Changed
 - adapt to eip-1193 provider changes ([#384](https://github.com/MetaMask/smart-transactions-controller/pull/384))
-- Save new event props to a newly created smart transaction, use both `properties` and `sensitiveProperties` for events ([#386](https://github.com/MetaMask/smart-transactions-controller/pull/386))
+- **BREAKING**: Save new event props to a newly created smart transaction, use both `properties` and `sensitiveProperties` for events. ([#386](https://github.com/MetaMask/smart-transactions-controller/pull/386))([#390](https://github.com/MetaMask/smart-transactions-controller/pull/390))
 
 ## [10.2.0]
 ### Changed
