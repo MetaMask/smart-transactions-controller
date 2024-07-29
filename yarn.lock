@@ -1383,6 +1383,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/base-controller@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@metamask/base-controller@npm:6.0.2"
+  dependencies:
+    "@metamask/utils": ^9.1.0
+    immer: ^9.0.6
+  checksum: 2cdd0310850d7a5ead05248b79ba94bbaee368ea1a99c999ff38e2d16630a7f12d2e4c781d0fe1d7b349f8a0b3651a831ceccd03b376cb7cc451154867fd5668
+  languageName: node
+  linkType: hard
+
 "@metamask/browser-passworder@npm:^4.3.0":
   version: 4.3.0
   resolution: "@metamask/browser-passworder@npm:4.3.0"
@@ -1423,6 +1433,23 @@ __metadata:
     eth-ens-namehash: ^2.0.8
     fast-deep-equal: ^3.1.3
   checksum: ce77d9006c34109d78787d91036b605c2e401f51bae58a60cfd955905ebd63ebe5a007b93861a1fcc51bb7e57b69ec2a6dd6142656c1ee2d87d74e397752dffa
+  languageName: node
+  linkType: hard
+
+"@metamask/controller-utils@npm:^11.0.2":
+  version: 11.0.2
+  resolution: "@metamask/controller-utils@npm:11.0.2"
+  dependencies:
+    "@ethereumjs/util": ^8.1.0
+    "@metamask/eth-query": ^4.0.0
+    "@metamask/ethjs-unit": ^0.3.0
+    "@metamask/utils": ^9.1.0
+    "@spruceid/siwe-parser": 2.1.0
+    "@types/bn.js": ^5.1.5
+    bn.js: ^5.2.1
+    eth-ens-namehash: ^2.0.8
+    fast-deep-equal: ^3.1.3
+  checksum: 21a760f68270318a9f31c35878cdbeae3c093e1aeea45b838c9359ced621f7c9fdd969f6b751f9bc3112bfc8f110da3e75b6990daabd815841e99479fe798a2c
   languageName: node
   linkType: hard
 
@@ -2003,6 +2030,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/polling-controller@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@metamask/polling-controller@npm:9.0.1"
+  dependencies:
+    "@metamask/base-controller": ^6.0.2
+    "@metamask/controller-utils": ^11.0.2
+    "@metamask/utils": ^9.1.0
+    "@types/uuid": ^8.3.0
+    fast-json-stable-stringify: ^2.1.0
+    uuid: ^8.3.2
+  peerDependencies:
+    "@metamask/network-controller": ^20.0.0
+  checksum: 12a294901fb8cde333353741e483110b8627b9ba872ef6f0197df8654bed0cb2e8bba23ad69e36a93b322ebf43c312fe071b8fc496e1708fd364532e9650265a
+  languageName: node
+  linkType: hard
+
 "@metamask/post-message-stream@npm:^8.1.0":
   version: 8.1.0
   resolution: "@metamask/post-message-stream@npm:8.1.0"
@@ -2088,7 +2131,7 @@ __metadata:
     "@metamask/eth-query": ^4.0.0
     "@metamask/json-rpc-engine": ^9.0.0
     "@metamask/network-controller": ^19.0.0
-    "@metamask/polling-controller": ^8.0.0
+    "@metamask/polling-controller": ^9.0.1
     "@metamask/transaction-controller": ^34.0.0
     "@types/jest": ^26.0.24
     "@types/lodash": ^4.14.194
@@ -2249,6 +2292,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/superstruct@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@metamask/superstruct@npm:3.1.0"
+  checksum: 00e4d0c0aae8b25ccc1885c1db0bb4ed1590010570140c255e4deee3bf8a10c859c8fce5e475b4ae09c8a56316207af87585b91f7f5a5c028d668ccd111f19e3
+  languageName: node
+  linkType: hard
+
 "@metamask/swappable-obj-proxy@npm:^2.2.0":
   version: 2.2.0
   resolution: "@metamask/swappable-obj-proxy@npm:2.2.0"
@@ -2307,6 +2357,23 @@ __metadata:
     semver: ^7.5.4
     uuid: ^9.0.1
   checksum: e8eac1c796c3f6b623be3c2736e8682248620f666b180f5c12ce56ee09587d4e28b6811862139a05c7a1bec91415f10ccf0516f3cdf342f88b0189d2a057c24b
+  languageName: node
+  linkType: hard
+
+"@metamask/utils@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "@metamask/utils@npm:9.1.0"
+  dependencies:
+    "@ethereumjs/tx": ^4.2.0
+    "@metamask/superstruct": ^3.1.0
+    "@noble/hashes": ^1.3.1
+    "@scure/base": ^1.1.3
+    "@types/debug": ^4.1.7
+    debug: ^4.3.4
+    pony-cause: ^2.1.10
+    semver: ^7.5.4
+    uuid: ^9.0.1
+  checksum: 01f2c71a8f06158d5335bfe96bfd2f3aa39ec6b2323c5d0ff1d3136071a3e8ff7c1804d640ba1d4e07f96f3e68a95ff7729ddfcd34b373e5fefd86d6ef12d034
   languageName: node
   linkType: hard
 
