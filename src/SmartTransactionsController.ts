@@ -2,7 +2,6 @@
 import { hexlify } from '@ethersproject/bytes';
 import type { BaseConfig, BaseState } from '@metamask/base-controller';
 import { query, safelyExecute, ChainId } from '@metamask/controller-utils';
-import type { SafeEventEmitterProvider } from '@metamask/eth-json-rpc-provider';
 import EthQuery from '@metamask/eth-query';
 import type {
   NetworkClientId,
