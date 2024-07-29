@@ -122,7 +122,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     {
       onNetworkStateChange,
       getNonceLock,
-      provider,
       confirmExternalTransaction,
       getTransactions,
       trackMetaMetricsEvent,
@@ -133,7 +132,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         listener: (networkState: NetworkState) => void,
       ) => void;
       getNonceLock: any;
-      provider: SafeEventEmitterProvider;
       confirmExternalTransaction: any;
       getTransactions: (options?: GetTransactionsOptions) => TransactionMeta[];
       trackMetaMetricsEvent: any;
@@ -192,8 +190,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.initializeSmartTransactionsForChainId();
     this.#ensureUniqueSmartTransactions();
 
-    onNetworkStateChange(({ providerConfig: newProvider }) => {
-      const { chainId } = newProvider;
+    onNetworkStateChange((networkState) => {
+      const { selectedNetworkClientId } = networkState;
+      const networkClient = this.getNetworkClientById(selectedNetworkClientId);
+      const { chainId } = networkClient.configuration;
       const isNewChainId = chainId !== this.config.chainId;
       this.configure({ chainId });
       this.initializeSmartTransactionsForChainId();
@@ -201,7 +201,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         this.#ensureUniqueSmartTransactions();
       }
       this.checkPoll(this.state);
-      this.ethQuery = new EthQuery(provider);
+      this.ethQuery = new EthQuery(networkClient.provider);
     });
 
     this.subscribe((currentState: any) => this.checkPoll(currentState));
