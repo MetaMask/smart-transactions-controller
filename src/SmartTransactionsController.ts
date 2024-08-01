@@ -449,12 +449,11 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
 
     this.update((state) => {
-      state.smartTransactionsState.smartTransactions[chainId][currentIndex] = {
-        ...state.smartTransactionsState.smartTransactions[chainId][
-          currentIndex
-        ],
-        ...smartTransaction,
-      };
+      const currentTransaction = cloneDeep(
+        state.smartTransactionsState.smartTransactions[chainId][currentIndex],
+      );
+      state.smartTransactionsState.smartTransactions[chainId][currentIndex] =
+        Object.assign(currentTransaction, smartTransaction);
     });
   }
 
