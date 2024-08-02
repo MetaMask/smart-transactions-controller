@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [12.0.0]
 ### Changed
-- Upgrade @metamask/network-controller from 19.0.0 to 20.0.0. Removed providerConfig from state and provider constructor param removed. ([#395](https://github.com/MetaMask/smart-transactions-controller/pull/395))
+- Upgrade @metamask/network-controller from 19.0.0 to 20.0.0 ([#395](https://github.com/MetaMask/smart-transactions-controller/pull/395))
+- **BREAKING**: Removed providerConfig from state and provider object from constructor parameters. Instead provider object will be used from selected network client. ([#395](https://github.com/MetaMask/smart-transactions-controller/pull/395))
 
 ## [11.0.0]
 ### Changed
