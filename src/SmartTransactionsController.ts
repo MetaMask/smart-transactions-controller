@@ -256,9 +256,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
     this.messagingSystem.subscribe(
       'NetworkController:stateChange',
-      // TODO: Either fix this lint violation or explain why it's necessary to ignore.
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      async ({ selectedNetworkClientId }) => {
+      ({ selectedNetworkClientId }) => {
         const {
           configuration: { chainId },
           provider,
