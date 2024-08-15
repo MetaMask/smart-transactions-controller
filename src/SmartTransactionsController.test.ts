@@ -1517,11 +1517,10 @@ describe('SmartTransactionsController', () => {
     });
 
     it('starts and stops calling smart transactions batch status api endpoint with the correct chainId at the polling interval', async () => {
+      // mock this to a noop because it causes an extra fetch call to the API upon state changes
       jest
         .spyOn(SmartTransactionsController.prototype, 'checkPoll')
         .mockImplementation(() => undefined);
-      // mock this to a noop because it causes an extra fetch call to the API upon state changes
-      const handleFetchSpy = jest.spyOn(utils, 'handleFetch');
       await withController(
         {
           options: {
@@ -1553,6 +1552,7 @@ describe('SmartTransactionsController', () => {
           },
         },
         async ({ controller }) => {
+          const handleFetchSpy = jest.spyOn(utils, 'handleFetch');
           const mainnetPollingToken = controller.startPollingByNetworkClientId(
             NetworkType.mainnet,
           );
