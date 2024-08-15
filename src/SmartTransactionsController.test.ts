@@ -1473,6 +1473,12 @@ describe('SmartTransactionsController', () => {
   });
 
   describe('isNewSmartTransaction', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(SmartTransactionsController.prototype, 'checkPoll')
+        .mockImplementation(() => ({}));
+    });
+
     it('returns true if it is a new STX', async () => {
       await withController(({ controller }) => {
         const actual = controller.isNewSmartTransaction('newUuid');
