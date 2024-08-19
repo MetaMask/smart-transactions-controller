@@ -1056,6 +1056,7 @@ describe('SmartTransactionsController', () => {
         ...createStateAfterPending()[0],
         history: testHistory,
       };
+      const confirmExternalTransactionSpy = jest.fn();
       await withController(
         {
           options: {
@@ -1067,6 +1068,7 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
+            confirmExternalTransaction: confirmExternalTransactionSpy,
           },
         },
         async ({ controller }) => {
@@ -1092,9 +1094,7 @@ describe('SmartTransactionsController', () => {
           );
           await flushPromises();
 
-          expect(controller.confirmExternalTransaction).toHaveBeenCalledTimes(
-            1,
-          );
+          expect(confirmExternalTransactionSpy).toHaveBeenCalledTimes(1);
           expect(
             controller.state.smartTransactionsState.smartTransactions[
               ChainId.mainnet
@@ -1116,6 +1116,7 @@ describe('SmartTransactionsController', () => {
         ...createStateAfterPending()[0],
         history: testHistory,
       };
+      const confirmExternalTransactionSpy = jest.fn();
       await withController(
         {
           options: {
@@ -1127,6 +1128,7 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
+            confirmExternalTransaction: confirmExternalTransactionSpy,
           },
         },
         async ({ controller }) => {
@@ -1152,9 +1154,7 @@ describe('SmartTransactionsController', () => {
           );
           await flushPromises();
 
-          expect(controller.confirmExternalTransaction).toHaveBeenCalledTimes(
-            1,
-          );
+          expect(confirmExternalTransactionSpy).toHaveBeenCalledTimes(1);
           expect(
             controller.state.smartTransactionsState.smartTransactions[
               ChainId.mainnet
@@ -1176,6 +1176,7 @@ describe('SmartTransactionsController', () => {
         ...createStateAfterPending()[0],
         history: testHistory,
       };
+      const confirmExternalTransactionSpy = jest.fn();
       await withController(
         {
           options: {
@@ -1187,6 +1188,7 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
+            confirmExternalTransaction: confirmExternalTransactionSpy,
           },
         },
         async ({ controller }) => {
@@ -1212,9 +1214,7 @@ describe('SmartTransactionsController', () => {
           );
           await flushPromises();
 
-          expect(controller.confirmExternalTransaction).toHaveBeenCalledTimes(
-            1,
-          );
+          expect(confirmExternalTransactionSpy).toHaveBeenCalledTimes(1);
           expect(
             controller.state.smartTransactionsState.smartTransactions[
               ChainId.mainnet
@@ -1236,6 +1236,7 @@ describe('SmartTransactionsController', () => {
         ...createStateAfterPending()[0],
         history: testHistory,
       };
+      const confirmExternalTransactionSpy = jest.fn();
       await withController(
         {
           options: {
@@ -1247,6 +1248,7 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
+            confirmExternalTransaction: confirmExternalTransactionSpy,
           },
         },
         async ({ controller }) => {
@@ -1272,7 +1274,7 @@ describe('SmartTransactionsController', () => {
           );
           await flushPromises();
 
-          expect(controller.confirmExternalTransaction).not.toHaveBeenCalled();
+          expect(confirmExternalTransactionSpy).not.toHaveBeenCalled();
           expect(
             controller.state.smartTransactionsState.smartTransactions[
               ChainId.mainnet
@@ -1294,6 +1296,7 @@ describe('SmartTransactionsController', () => {
         ...createStateAfterPending()[0],
         history: testHistory,
       };
+      const confirmExternalTransactionSpy = jest.fn();
       await withController(
         {
           options: {
@@ -1305,6 +1308,7 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
+            confirmExternalTransaction: confirmExternalTransactionSpy,
           },
         },
         async ({ controller }) => {
@@ -1330,7 +1334,7 @@ describe('SmartTransactionsController', () => {
           );
           await flushPromises();
 
-          expect(controller.confirmExternalTransaction).not.toHaveBeenCalled();
+          expect(confirmExternalTransactionSpy).not.toHaveBeenCalled();
           expect(
             controller.state.smartTransactionsState.smartTransactions[
               ChainId.mainnet

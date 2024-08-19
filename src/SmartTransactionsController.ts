@@ -194,7 +194,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #ethQuery: EthQuery | undefined;
 
-  public confirmExternalTransaction: any;
+  #confirmExternalTransaction: any;
 
   public getRegularTransactions: (
     options?: GetTransactionsOptions,
@@ -246,7 +246,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.setIntervalLength(interval);
     this.#getNonceLock = getNonceLock;
     this.#ethQuery = undefined;
-    this.confirmExternalTransaction = confirmExternalTransaction;
+    this.#confirmExternalTransaction = confirmExternalTransaction;
     this.getRegularTransactions = getTransactions;
     this.#trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.#getMetaMetricsProps = getMetaMetricsProps;
@@ -661,7 +661,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
             : originalTxMeta;
 
         if (this.#doesTransactionNeedConfirmation(txHash)) {
-          this.confirmExternalTransaction(
+          this.#confirmExternalTransaction(
             txMeta,
             transactionReceipt,
             baseFeePerGas,
@@ -784,12 +784,13 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         }),
       },
     );
-    let approvalTxFees: IndividualTxFees | null = null;
+    let approvalTxFees: IndividualTxFees | null;
     let tradeTxFees: IndividualTxFees | null;
     if (approvalTx) {
       approvalTxFees = data?.txs[0];
       tradeTxFees = data?.txs[1];
     } else {
+      approvalTxFees = null;
       tradeTxFees = data?.txs[0];
     }
 
