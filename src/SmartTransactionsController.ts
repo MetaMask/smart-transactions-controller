@@ -18,6 +18,7 @@ import type {
 } from '@metamask/network-controller';
 import { StaticIntervalPollingController } from '@metamask/polling-controller';
 import type {
+  TransactionController,
   TransactionMeta,
   TransactionParams,
 } from '@metamask/transaction-controller';
@@ -174,8 +175,8 @@ type SmartTransactionsControllerOptions = {
   clientId?: string;
   chainId?: Hex;
   supportedChainIds?: Hex[];
-  getNonceLock: any;
-  confirmExternalTransaction: any;
+  getNonceLock: TransactionController['getNonceLock'];
+  confirmExternalTransaction: TransactionController['confirmExternalTransaction'];
   trackMetaMetricsEvent: any;
   state?: Partial<SmartTransactionsControllerState>;
   messenger: SmartTransactionsControllerMessenger;
@@ -198,17 +199,17 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   timeoutHandle?: NodeJS.Timeout;
 
-  readonly #getNonceLock: any;
+  readonly #getNonceLock: SmartTransactionsControllerOptions['getNonceLock'];
 
   #ethQuery: EthQuery | undefined;
 
-  #confirmExternalTransaction: any;
+  #confirmExternalTransaction: SmartTransactionsControllerOptions['confirmExternalTransaction'];
 
   #getRegularTransactions: (
     options?: GetTransactionsOptions,
   ) => TransactionMeta[];
 
-  readonly #trackMetaMetricsEvent: any;
+  readonly #trackMetaMetricsEvent: SmartTransactionsControllerOptions['trackMetaMetricsEvent'];
 
   readonly #getMetaMetricsProps: () => Promise<MetaMetricsProps>;
 
@@ -635,7 +636,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       const maxFeePerGas = transaction?.maxFeePerGas;
       const maxPriorityFeePerGas = transaction?.maxPriorityFeePerGas;
       if (transactionReceipt?.blockNumber) {
-        const blockData: { baseFeePerGas?: string } | null = await query(
+        const blockData: { baseFeePerGas?: Hex } | null = await query(
           ethQuery,
           'getBlockByNumber',
           [transactionReceipt?.blockNumber, false],
@@ -674,9 +675,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
         if (this.#doesTransactionNeedConfirmation(txHash)) {
           this.#confirmExternalTransaction(
-            txMeta,
+            txMeta as TransactionMeta,
             transactionReceipt,
-            baseFeePerGas,
+            baseFeePerGas as Hex,
           );
         }
         this.#trackMetaMetricsEvent({
@@ -869,7 +870,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     let nonceDetails = {};
 
     if (requiresNonce) {
-      nonceLock = await this.#getNonceLock(txParams?.from);
+      nonceLock = await this.#getNonceLock(txParams?.from as string);
       nonce = hexlify(nonceLock.nextNonce);
       nonceDetails = nonceLock.nonceDetails;
       if (txParams) {

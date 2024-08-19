@@ -23,7 +23,7 @@ describe('default export', () => {
     });
     const controller = new DefaultExport({
       messenger,
-      getNonceLock: null,
+      getNonceLock: jest.fn(),
       confirmExternalTransaction: jest.fn(),
       getTransactions: jest.fn(),
       trackMetaMetricsEvent: jest.fn(),

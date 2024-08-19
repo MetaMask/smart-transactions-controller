@@ -1943,11 +1943,9 @@ async function withController<ReturnValue>(
 
   const controller = new SmartTransactionsController({
     messenger,
-    getNonceLock: jest.fn(() => {
-      return {
-        nextNonce: 'nextNonce',
-        releaseLock: jest.fn(),
-      };
+    getNonceLock: jest.fn().mockResolvedValue({
+      nextNonce: 'nextNonce',
+      releaseLock: jest.fn(),
     }),
     confirmExternalTransaction: jest.fn(),
     getTransactions: jest.fn(),
