@@ -4,7 +4,12 @@ import type {
   ControllerStateChangeEvent,
   RestrictedControllerMessenger,
 } from '@metamask/base-controller';
-import { query, safelyExecute, ChainId } from '@metamask/controller-utils';
+import {
+  query,
+  safelyExecute,
+  ChainId,
+  isSafeDynamicKey,
+} from '@metamask/controller-utils';
 import EthQuery from '@metamask/eth-query';
 import type {
   NetworkClientId,
@@ -450,8 +455,12 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       const currentTransaction = cloneDeep(
         state.smartTransactionsState.smartTransactions[chainId][currentIndex],
       );
-      state.smartTransactionsState.smartTransactions[chainId][currentIndex] =
-        Object.assign(currentTransaction, smartTransaction);
+      if (
+        [chainId, currentIndex].every((key) => isSafeDynamicKey(String(key)))
+      ) {
+        state.smartTransactionsState.smartTransactions[chainId][currentIndex] =
+          Object.assign(currentTransaction, smartTransaction);
+      }
     });
   }
 
