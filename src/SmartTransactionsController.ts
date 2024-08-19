@@ -17,7 +17,10 @@ import type {
   NetworkControllerStateChangeEvent,
 } from '@metamask/network-controller';
 import { StaticIntervalPollingController } from '@metamask/polling-controller';
-import type { TransactionMeta } from '@metamask/transaction-controller';
+import type {
+  TransactionMeta,
+  TransactionParams,
+} from '@metamask/transaction-controller';
 import { TransactionStatus } from '@metamask/transaction-controller';
 import { BigNumber } from 'bignumber.js';
 import cloneDeep from 'lodash/cloneDeep';
@@ -833,8 +836,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   }: {
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions: SignedCanceledTransaction[];
-    transactionMeta?: any;
-    txParams?: any;
+    transactionMeta?: TransactionMeta;
+    txParams?: TransactionParams;
     networkClientId?: NetworkClientId;
   }) {
     const chainId = this.#getChainId({ networkClientId });
@@ -860,7 +863,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       console.error('provider error', error);
     }
 
-    const requiresNonce = !txParams.nonce;
+    const requiresNonce = !txParams?.nonce;
     let nonce;
     let nonceLock;
     let nonceDetails = {};
@@ -890,7 +893,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           uuid: submitTransactionResponse.uuid,
           txHash: submitTransactionResponse.txHash,
           cancellable: true,
-          type: transactionMeta?.type || 'swap',
+          type: transactionMeta?.type ?? 'swap',
         },
         { chainId, ethQuery },
       );

@@ -6,6 +6,7 @@ import {
 } from '@metamask/controller-utils';
 import { NetworkStatus, type NetworkState } from '@metamask/network-controller';
 import {
+  type TransactionParams,
   TransactionStatus,
   TransactionType,
 } from '@metamask/transaction-controller';
@@ -197,17 +198,17 @@ const createSignedTransaction = () => {
   return '0xf86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a02b79f322a625d623a2bb2911e0c6b3e7eaf741a7c7c5d2e8c67ef3ff4acf146ca01ae168fea63dc3391b75b586c8a7c0cb55cdf3b8e2e4d8e097957a3a56c6f2c5';
 };
 
-const createTxParams = () => {
+const createTxParams = (): TransactionParams => {
   return {
     from: addressFrom,
     to: '0x0000000000000000000000000000000000000000',
-    value: 0,
+    value: '0',
     data: '0x',
-    nonce: 0,
-    type: 2,
-    chainId: 4,
-    maxFeePerGas: 2310003200,
-    maxPriorityFeePerGas: 513154852,
+    nonce: '0',
+    type: '2',
+    chainId: '0x4',
+    maxFeePerGas: '2310003200',
+    maxPriorityFeePerGas: '513154852',
   };
 };
 
