@@ -188,7 +188,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #supportedChainIds: Hex[];
 
-  public timeoutHandle?: NodeJS.Timeout;
+  timeoutHandle?: NodeJS.Timeout;
 
   readonly #getNonceLock: any;
 
