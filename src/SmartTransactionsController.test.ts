@@ -1057,6 +1057,9 @@ describe('SmartTransactionsController', () => {
         history: testHistory,
       };
       const confirmExternalTransactionSpy = jest.fn();
+      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
+        return [createTransactionMeta()];
+      });
       await withController(
         {
           options: {
@@ -1069,14 +1072,10 @@ describe('SmartTransactionsController', () => {
               },
             },
             confirmExternalTransaction: confirmExternalTransactionSpy,
+            getTransactions: getRegularTransactionsSpy,
           },
         },
         async ({ controller }) => {
-          jest
-            .spyOn(controller, 'getRegularTransactions')
-            .mockImplementation(() => {
-              return [createTransactionMeta()];
-            });
           const updateTransaction = {
             ...pendingStx,
             statusMetadata: {
@@ -1117,6 +1116,9 @@ describe('SmartTransactionsController', () => {
         history: testHistory,
       };
       const confirmExternalTransactionSpy = jest.fn();
+      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
+        return [];
+      });
       await withController(
         {
           options: {
@@ -1129,14 +1131,10 @@ describe('SmartTransactionsController', () => {
               },
             },
             confirmExternalTransaction: confirmExternalTransactionSpy,
+            getTransactions: getRegularTransactionsSpy,
           },
         },
         async ({ controller }) => {
-          jest
-            .spyOn(controller, 'getRegularTransactions')
-            .mockImplementation(() => {
-              return [];
-            });
           const updateTransaction = {
             ...pendingStx,
             statusMetadata: {
@@ -1177,6 +1175,9 @@ describe('SmartTransactionsController', () => {
         history: testHistory,
       };
       const confirmExternalTransactionSpy = jest.fn();
+      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
+        return [createTransactionMeta(TransactionStatus.confirmed)];
+      });
       await withController(
         {
           options: {
@@ -1189,14 +1190,10 @@ describe('SmartTransactionsController', () => {
               },
             },
             confirmExternalTransaction: confirmExternalTransactionSpy,
+            getTransactions: getRegularTransactionsSpy,
           },
         },
         async ({ controller }) => {
-          jest
-            .spyOn(controller, 'getRegularTransactions')
-            .mockImplementation(() => {
-              return [createTransactionMeta(TransactionStatus.confirmed)];
-            });
           const updateTransaction = {
             ...pendingStx,
             statusMetadata: {
@@ -1237,6 +1234,9 @@ describe('SmartTransactionsController', () => {
         history: testHistory,
       };
       const confirmExternalTransactionSpy = jest.fn();
+      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
+        return [createTransactionMeta(TransactionStatus.confirmed)];
+      });
       await withController(
         {
           options: {
@@ -1249,14 +1249,10 @@ describe('SmartTransactionsController', () => {
               },
             },
             confirmExternalTransaction: confirmExternalTransactionSpy,
+            getTransactions: getRegularTransactionsSpy,
           },
         },
         async ({ controller }) => {
-          jest
-            .spyOn(controller, 'getRegularTransactions')
-            .mockImplementation(() => {
-              return [createTransactionMeta(TransactionStatus.confirmed)];
-            });
           const updateTransaction = {
             ...pendingStx,
             status: SmartTransactionStatuses.SUCCESS,
@@ -1297,6 +1293,9 @@ describe('SmartTransactionsController', () => {
         history: testHistory,
       };
       const confirmExternalTransactionSpy = jest.fn();
+      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
+        return [createTransactionMeta(TransactionStatus.submitted)];
+      });
       await withController(
         {
           options: {
@@ -1309,14 +1308,10 @@ describe('SmartTransactionsController', () => {
               },
             },
             confirmExternalTransaction: confirmExternalTransactionSpy,
+            getTransactions: getRegularTransactionsSpy,
           },
         },
         async ({ controller }) => {
-          jest
-            .spyOn(controller, 'getRegularTransactions')
-            .mockImplementation(() => {
-              return [createTransactionMeta(TransactionStatus.submitted)];
-            });
           const updateTransaction = {
             ...pendingStx,
             status: SmartTransactionStatuses.SUCCESS,

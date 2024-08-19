@@ -196,7 +196,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #confirmExternalTransaction: any;
 
-  public getRegularTransactions: (
+  #getRegularTransactions: (
     options?: GetTransactionsOptions,
   ) => TransactionMeta[];
 
@@ -247,7 +247,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.#getNonceLock = getNonceLock;
     this.#ethQuery = undefined;
     this.#confirmExternalTransaction = confirmExternalTransaction;
-    this.getRegularTransactions = getTransactions;
+    this.#getRegularTransactions = getTransactions;
     this.#trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.#getMetaMetricsProps = getMetaMetricsProps;
 
@@ -580,7 +580,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     if (!txHash) {
       return true;
     }
-    const transactions = this.getRegularTransactions();
+    const transactions = this.#getRegularTransactions();
     const foundTransaction = transactions?.find((tx) => {
       return tx.hash?.toLowerCase() === txHash.toLowerCase();
     });
