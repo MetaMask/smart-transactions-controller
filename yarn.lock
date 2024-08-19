@@ -1383,6 +1383,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/base-controller@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@metamask/base-controller@npm:6.0.2"
+  dependencies:
+    "@metamask/utils": ^9.1.0
+    immer: ^9.0.6
+  checksum: 2cdd0310850d7a5ead05248b79ba94bbaee368ea1a99c999ff38e2d16630a7f12d2e4c781d0fe1d7b349f8a0b3651a831ceccd03b376cb7cc451154867fd5668
+  languageName: node
+  linkType: hard
+
 "@metamask/browser-passworder@npm:^4.3.0":
   version: 4.3.0
   resolution: "@metamask/browser-passworder@npm:4.3.0"
@@ -1423,6 +1433,23 @@ __metadata:
     eth-ens-namehash: ^2.0.8
     fast-deep-equal: ^3.1.3
   checksum: ce77d9006c34109d78787d91036b605c2e401f51bae58a60cfd955905ebd63ebe5a007b93861a1fcc51bb7e57b69ec2a6dd6142656c1ee2d87d74e397752dffa
+  languageName: node
+  linkType: hard
+
+"@metamask/controller-utils@npm:^11.0.2":
+  version: 11.0.2
+  resolution: "@metamask/controller-utils@npm:11.0.2"
+  dependencies:
+    "@ethereumjs/util": ^8.1.0
+    "@metamask/eth-query": ^4.0.0
+    "@metamask/ethjs-unit": ^0.3.0
+    "@metamask/utils": ^9.1.0
+    "@spruceid/siwe-parser": 2.1.0
+    "@types/bn.js": ^5.1.5
+    bn.js: ^5.2.1
+    eth-ens-namehash: ^2.0.8
+    fast-deep-equal: ^3.1.3
+  checksum: 21a760f68270318a9f31c35878cdbeae3c093e1aeea45b838c9359ced621f7c9fdd969f6b751f9bc3112bfc8f110da3e75b6990daabd815841e99479fe798a2c
   languageName: node
   linkType: hard
 
@@ -1575,6 +1602,19 @@ __metadata:
     "@metamask/utils": ^8.3.0
     uuid: ^8.3.2
   checksum: c9669c93df073423d36ff941b512247b569e7f7c56cc6110565bc8dc6590ad691a78d6d17eea6243721c1c464f0f008ea1326fc7373f90fb705fba5fb85d804d
+  languageName: node
+  linkType: hard
+
+"@metamask/eth-json-rpc-provider@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "@metamask/eth-json-rpc-provider@npm:4.1.3"
+  dependencies:
+    "@metamask/json-rpc-engine": ^9.0.2
+    "@metamask/rpc-errors": ^6.3.1
+    "@metamask/safe-event-emitter": ^3.0.0
+    "@metamask/utils": ^9.1.0
+    uuid: ^8.3.2
+  checksum: 788c1f983d8021a10922f414f7c5aa93f79e14000219bd5155f027c1964e73d08e931cb98749057f57fb4001441098724aedacbe2198ab5a0b28cc3fcb4d262d
   languageName: node
   linkType: hard
 
@@ -1775,6 +1815,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/json-rpc-engine@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "@metamask/json-rpc-engine@npm:9.0.2"
+  dependencies:
+    "@metamask/rpc-errors": ^6.3.1
+    "@metamask/safe-event-emitter": ^3.0.0
+    "@metamask/utils": ^9.1.0
+  checksum: 4c852c9f30d05706ee497a2aca3ef6df12aabcff4a71a7426a27d95829f20cf2ff45c774eb9d95224bf16c9555a8cd7e44dccaea1bd44eda4dc43bf298885272
+  languageName: node
+  linkType: hard
+
 "@metamask/json-rpc-middleware-stream@npm:^7.0.1":
   version: 7.0.2
   resolution: "@metamask/json-rpc-middleware-stream@npm:7.0.2"
@@ -1894,25 +1945,25 @@ __metadata:
   linkType: hard
 
 "@metamask/network-controller@npm:^20.0.0":
-  version: 20.0.0
-  resolution: "@metamask/network-controller@npm:20.0.0"
+  version: 20.2.0
+  resolution: "@metamask/network-controller@npm:20.2.0"
   dependencies:
-    "@metamask/base-controller": ^6.0.0
-    "@metamask/controller-utils": ^11.0.0
+    "@metamask/base-controller": ^6.0.2
+    "@metamask/controller-utils": ^11.0.2
     "@metamask/eth-block-tracker": ^9.0.3
     "@metamask/eth-json-rpc-infura": ^9.1.0
     "@metamask/eth-json-rpc-middleware": ^12.1.1
-    "@metamask/eth-json-rpc-provider": ^4.1.0
+    "@metamask/eth-json-rpc-provider": ^4.1.3
     "@metamask/eth-query": ^4.0.0
-    "@metamask/json-rpc-engine": ^9.0.0
-    "@metamask/rpc-errors": ^6.2.1
+    "@metamask/json-rpc-engine": ^9.0.2
+    "@metamask/rpc-errors": ^6.3.1
     "@metamask/swappable-obj-proxy": ^2.2.0
-    "@metamask/utils": ^8.3.0
+    "@metamask/utils": ^9.1.0
     async-mutex: ^0.5.0
     immer: ^9.0.6
     loglevel: ^1.8.1
     uuid: ^8.3.2
-  checksum: 27a4b669655d4566045de5489d9bc8fee8454f2e74ddc844c0c978a5af6b821c0bdf020b9b649db32f07a298006c021e33e6d29ccf64a6f6301a8e80de21000c
+  checksum: 9c03a43c8c9b4c1beb29d12ab1293a86c8a731a2e335dbdffa8c3eef49103e4748b9cfa0406d9609097d33f87058782688163ec4739d377f71e717b418cb6ac7
   languageName: node
   linkType: hard
 
@@ -2064,6 +2115,16 @@ __metadata:
     "@metamask/utils": ^8.3.0
     fast-safe-stringify: ^2.0.6
   checksum: de79d132f149cba6d2efcf7b17b93d0bad92c7e5c15b3826f889e0b01979883d71acc4445b781098cee13c3837c807ee56f8b03bce78887f6a6bc95de1adfe9d
+  languageName: node
+  linkType: hard
+
+"@metamask/rpc-errors@npm:^6.3.1":
+  version: 6.3.1
+  resolution: "@metamask/rpc-errors@npm:6.3.1"
+  dependencies:
+    "@metamask/utils": ^9.0.0
+    fast-safe-stringify: ^2.0.6
+  checksum: 8761f5c0161cb3b342abd3ccccbd7b792f36a987e1f22c3f89b1bd29f72a2e35a2c91b58164fdd9dc3e5b67157500dcbdb5d04245117c14310c34cf42f7b8463
   languageName: node
   linkType: hard
 
@@ -2272,6 +2333,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/superstruct@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@metamask/superstruct@npm:3.1.0"
+  checksum: 00e4d0c0aae8b25ccc1885c1db0bb4ed1590010570140c255e4deee3bf8a10c859c8fce5e475b4ae09c8a56316207af87585b91f7f5a5c028d668ccd111f19e3
+  languageName: node
+  linkType: hard
+
 "@metamask/swappable-obj-proxy@npm:^2.2.0":
   version: 2.2.0
   resolution: "@metamask/swappable-obj-proxy@npm:2.2.0"
@@ -2330,6 +2398,23 @@ __metadata:
     semver: ^7.5.4
     uuid: ^9.0.1
   checksum: e8eac1c796c3f6b623be3c2736e8682248620f666b180f5c12ce56ee09587d4e28b6811862139a05c7a1bec91415f10ccf0516f3cdf342f88b0189d2a057c24b
+  languageName: node
+  linkType: hard
+
+"@metamask/utils@npm:^9.0.0, @metamask/utils@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "@metamask/utils@npm:9.1.0"
+  dependencies:
+    "@ethereumjs/tx": ^4.2.0
+    "@metamask/superstruct": ^3.1.0
+    "@noble/hashes": ^1.3.1
+    "@scure/base": ^1.1.3
+    "@types/debug": ^4.1.7
+    debug: ^4.3.4
+    pony-cause: ^2.1.10
+    semver: ^7.5.4
+    uuid: ^9.0.1
+  checksum: 01f2c71a8f06158d5335bfe96bfd2f3aa39ec6b2323c5d0ff1d3136071a3e8ff7c1804d640ba1d4e07f96f3e68a95ff7729ddfcd34b373e5fefd86d6ef12d034
   languageName: node
   linkType: hard
 
