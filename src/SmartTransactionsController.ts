@@ -196,12 +196,12 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       } = this.getNetworkClientById(selectedNetworkClientId);
       const isNewChainId = chainId !== this.config.chainId;
       this.configure({ chainId });
+      this.ethQuery = new EthQuery(provider);
       this.initializeSmartTransactionsForChainId();
       if (isNewChainId) {
         this.#ensureUniqueSmartTransactions();
       }
       this.checkPoll(this.state);
-      this.ethQuery = new EthQuery(provider);
     });
 
     this.subscribe((currentState: any) => this.checkPoll(currentState));
