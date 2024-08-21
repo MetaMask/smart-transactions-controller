@@ -455,16 +455,17 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       return; // Smart transaction not found, don't update anything.
     }
 
+    if (!isSafeDynamicKey(chainId)) {
+      return;
+    }
+
     this.update((state) => {
-      if (isSafeDynamicKey(chainId)) {
-        state.smartTransactionsState.smartTransactions[chainId][currentIndex] =
-          {
-            ...state.smartTransactionsState.smartTransactions[chainId][
-              currentIndex
-            ],
-            ...smartTransaction,
-          };
-      }
+      state.smartTransactionsState.smartTransactions[chainId][currentIndex] = {
+        ...state.smartTransactionsState.smartTransactions[chainId][
+          currentIndex
+        ],
+        ...smartTransaction,
+      };
     });
   }
 
