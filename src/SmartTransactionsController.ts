@@ -456,14 +456,14 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
 
     this.update((state) => {
-      if (
-        [chainId, currentIndex].every((key) => isSafeDynamicKey(String(key)))
-      ) {
-        const currentTransaction = cloneDeep(
-          state.smartTransactionsState.smartTransactions[chainId][currentIndex],
-        );
+      if (isSafeDynamicKey(chainId)) {
         state.smartTransactionsState.smartTransactions[chainId][currentIndex] =
-          Object.assign(currentTransaction, smartTransaction);
+          {
+            ...state.smartTransactionsState.smartTransactions[chainId][
+              currentIndex
+            ],
+            ...smartTransaction,
+          };
       }
     });
   }
