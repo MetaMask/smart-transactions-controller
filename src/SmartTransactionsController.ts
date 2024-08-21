@@ -456,12 +456,12 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
 
     this.update((state) => {
-      const currentTransaction = cloneDeep(
-        state.smartTransactionsState.smartTransactions[chainId][currentIndex],
-      );
       if (
         [chainId, currentIndex].every((key) => isSafeDynamicKey(String(key)))
       ) {
+        const currentTransaction = cloneDeep(
+          state.smartTransactionsState.smartTransactions[chainId][currentIndex],
+        );
         state.smartTransactionsState.smartTransactions[chainId][currentIndex] =
           Object.assign(currentTransaction, smartTransaction);
       }
@@ -675,8 +675,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
         if (this.#doesTransactionNeedConfirmation(txHash)) {
           this.#confirmExternalTransaction(
+            // TODO: Replace 'as' assertion with correct typing for `txMeta`
             txMeta as TransactionMeta,
             transactionReceipt,
+            // TODO: Replace 'as' assertion with correct typing for `baseFeePerGas`
             baseFeePerGas as Hex,
           );
         }
@@ -864,18 +866,16 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       console.error('provider error', error);
     }
 
-    const requiresNonce = !txParams?.nonce;
+    const requiresNonce = txParams && !txParams.nonce;
     let nonce;
     let nonceLock;
     let nonceDetails = {};
 
     if (requiresNonce) {
-      nonceLock = await this.#getNonceLock(txParams?.from as string);
+      nonceLock = await this.#getNonceLock(txParams.from);
       nonce = hexlify(nonceLock.nextNonce);
       nonceDetails = nonceLock.nonceDetails;
-      if (txParams) {
-        txParams.nonce ??= nonce;
-      }
+      txParams.nonce ??= nonce;
     }
     const submitTransactionResponse = {
       ...data,
@@ -1042,10 +1042,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       const {
         smartTransactionsState: { smartTransactions },
       } = this.state;
-      Object.keys(smartTransactions).forEach((chainId) => {
-        const chainIdHex: Hex = chainId as Hex;
+      (Object.keys(smartTransactions) as Hex[]).forEach((chainId) => {
         this.#wipeSmartTransactionsPerChainId({
-          chainId: chainIdHex,
+          chainId,
           addressLowerCase,
         });
       });
