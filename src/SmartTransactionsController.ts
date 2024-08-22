@@ -177,7 +177,17 @@ type SmartTransactionsControllerOptions = {
   supportedChainIds?: Hex[];
   getNonceLock: TransactionController['getNonceLock'];
   confirmExternalTransaction: TransactionController['confirmExternalTransaction'];
-  trackMetaMetricsEvent: any;
+  trackMetaMetricsEvent: (
+    event: {
+      event: MetaMetricsEventName;
+      category: MetaMetricsEventCategory;
+      properties?: ReturnType<typeof getSmartTransactionMetricsProperties>;
+      sensitiveProperties?: ReturnType<
+        typeof getSmartTransactionMetricsSensitiveProperties
+      >;
+    },
+    options?: { metaMetricsId?: string } & Record<string, boolean>,
+  ) => void;
   state?: Partial<SmartTransactionsControllerState>;
   messenger: SmartTransactionsControllerMessenger;
   getTransactions: (options?: GetTransactionsOptions) => TransactionMeta[];
