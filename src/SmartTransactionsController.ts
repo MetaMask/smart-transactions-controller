@@ -261,7 +261,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.#getMetaMetricsProps = getMetaMetricsProps;
 
     this.initializeSmartTransactionsForChainId();
-    this.#ensureUniqueSmartTransactions();
 
     this.messagingSystem.subscribe(
       'NetworkController:stateChange',
@@ -273,14 +272,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           'NetworkController:getNetworkClientById',
           selectedNetworkClientId,
         );
-        const isNewChainId = chainId !== this.#chainId;
         this.#chainId = chainId;
-        this.initializeSmartTransactionsForChainId();
-        if (isNewChainId) {
-          this.#ensureUniqueSmartTransactions();
-        }
-        this.checkPoll(this.state);
         this.#ethQuery = new EthQuery(provider);
+        this.initializeSmartTransactionsForChainId();
+        this.checkPoll(this.state);
       },
     );
 
@@ -323,32 +318,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           state.smartTransactionsState.smartTransactions[this.#chainId] ?? [];
       });
     }
-  }
-
-  // We fixed having duplicate smart transactions with the same uuid in a very rare edge case.
-  // This function resolves it for a few users who have this issue and once we see in logs
-  // that everything is fine, we can remove this function.
-  #ensureUniqueSmartTransactions() {
-    const {
-      smartTransactionsState: { smartTransactions },
-    } = this.state;
-    const chainId = ChainId.mainnet; // Smart Transactions are only available on Ethereum mainnet at the moment.
-    const smartTransactionsForChainId = smartTransactions[chainId];
-    if (!smartTransactionsForChainId) {
-      return;
-    }
-    const uniqueUUIDs = new Set();
-    const uniqueSmartTransactionsForChainId: SmartTransaction[] = [];
-    for (const transaction of smartTransactionsForChainId) {
-      if (!uniqueUUIDs.has(transaction.uuid)) {
-        uniqueUUIDs.add(transaction.uuid);
-        uniqueSmartTransactionsForChainId.push(transaction);
-      }
-    }
-    this.update((state) => {
-      state.smartTransactionsState.smartTransactions[chainId] =
-        uniqueSmartTransactionsForChainId;
-    });
   }
 
   async poll(interval?: number): Promise<void> {
