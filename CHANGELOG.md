@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0]
+### Uncategorized
+- feat: update controller to inherit from BaseControllerV2 ([#397](https://github.com/MetaMask/smart-transactions-controller/pull/397))
+
 ## [12.0.1]
 ### Fixed
 - Fix issue where this.ethQuery is sometimes unexpectedly undefined ([#405](https://github.com/MetaMask/smart-transactions-controller/pull/405))
@@ -330,7 +334,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v12.0.1...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.0.0...HEAD
+[13.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v12.0.1...v13.0.0
 [12.0.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v12.0.0...v12.0.1
 [12.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v11.0.0...v12.0.0
 [11.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v10.2.0...v11.0.0
