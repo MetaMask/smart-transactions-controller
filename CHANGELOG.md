@@ -8,7 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [13.0.0]
 ### Changed
-- feat: update controller to inherit from BaseControllerV2 ([#397](https://github.com/MetaMask/smart-transactions-controller/pull/397))
+- **BREAKING:** Updated `SmartTransactionsController` to inherit from `StaticIntervalPollingController` instead of `StaticIntervalPollingControllerV1` ([#397](https://github.com/MetaMask/smart-transactions-controller/pull/397)).
+  - The constructor for `SmartTransactionsController` now accepts a single options object instead of three separate arguments, with configuration options merged into this object.
+  - `SmartTransactionsController` now requires a `messenger` option (with the corresponding type `SmartTransactionsControllerMessenger` now available).
+  - The constructor no longer accepts `onNetworkStateChange`; instead, it subscribes to `NetworkController:stateChange`.
+  - The `getNetworkClientById` argument has been removed from the constructor and is now accessed through the messenger.
+  - The controller no longer subscribes to its own events; this is now managed via the messenger.
+  - Event emission is no longer handled by `EventEmitter`; the messenger is now used for emitting events.
+  - The `SmartTransactionsControllerConfig` type has been removed and replaced with `SmartTransactionsControllerOptions`.
+  - Added and exported the following types: `SmartTransactionsControllerMessenger`, `SmartTransactionsControllerState`, `SmartTransactionsControllerGetStateAction`, `SmartTransactionsControllerActions`, `SmartTransactionsControllerStateChangeEvent`, `SmartTransactionsControllerSmartTransactionEvent`, and `SmartTransactionsControllerEvents`.
 
 ## [12.0.1]
 ### Removed
