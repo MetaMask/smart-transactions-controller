@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [12.0.1]
-### CHANGED
+### Changed
 - Remove logic for ensuring uniqueness of smart transactions ([#404](https://github.com/MetaMask/smart-transactions-controller/pull/404))
   - This issue has been resolved in production.
 
