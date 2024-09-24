@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [13.1.0]
-### Uncategorized
+### Changed
 - Emit a new "smartTransactionConfirmationDone" event ([#424](https://github.com/MetaMask/smart-transactions-controller/pull/424))
-- Use a new API for a health check ([#411](https://github.com/MetaMask/smart-transactions-controller/pull/411))
-- Update release 12.0.1 CHANGELOG ([#413](https://github.com/MetaMask/smart-transactions-controller/pull/413))
+- Use a new API (Sentinel) for a health check ([#411](https://github.com/MetaMask/smart-transactions-controller/pull/411))
 
 ## [13.0.0]
 ### Changed
