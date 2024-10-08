@@ -16,6 +16,7 @@ export enum MetaMetricsEventName {
   StxConfirmationFailed = 'STX Confirmation Failed',
   ReceiveRequest = 'Receive Request',
 }
+
 export enum MetaMetricsEventCategory {
   Transactions = 'Transactions',
   Navigation = 'Navigation',
