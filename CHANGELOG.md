@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [13.2.0]
-### Uncategorized
-- Add MetaMetricsEvents ([#429](https://github.com/MetaMask/smart-transactions-controller/pull/429))
+### Added
+- Add metrics events for Receive and Request ([#429](https://github.com/MetaMask/smart-transactions-controller/pull/429))
+  - Add `ReceiveRequest` variant to `MetaMetricsEvents` enum
+  - Add `Navigation` variant to `MetaMetricsEventCategory` enum
 
 ## [13.1.0]
 ### Changed
