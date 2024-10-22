@@ -6,6 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.0]
+### Uncategorized
+- build(deps): bump @metamask/transaction-controller from 34.0.0 to 37.3.0 ([#446](https://github.com/MetaMask/smart-transactions-controller/pull/446))
+- build(deps): bump `@metamask/{base, polling}-controller` ([#448](https://github.com/MetaMask/smart-transactions-controller/pull/448))
+- build(deps): bump @metamask/network-controller from 20.0.0 to 21.1.0 ([#447](https://github.com/MetaMask/smart-transactions-controller/pull/447))
+- build(deps): bump @metamask/object-multiplex from 2.0.0 to 2.1.0 ([#442](https://github.com/MetaMask/smart-transactions-controller/pull/442))
+- build(deps): bump @metamask/eth-json-rpc-provider from 4.1.0 to 4.1.4 ([#441](https://github.com/MetaMask/smart-transactions-controller/pull/441))
+- build(deps-dev): bump @metamask/json-rpc-engine from 9.0.0 to 9.0.3 ([#440](https://github.com/MetaMask/smart-transactions-controller/pull/440))
+- build(deps): bump @metamask/keyring-api from 8.0.0 to 8.1.3 ([#437](https://github.com/MetaMask/smart-transactions-controller/pull/437))
+- build(deps): bump @metamask/eth-hd-keyring from 7.0.1 to 7.0.4 ([#439](https://github.com/MetaMask/smart-transactions-controller/pull/439))
+- build(deps): bump @metamask/message-manager from 10.0.0 to 10.1.1 ([#432](https://github.com/MetaMask/smart-transactions-controller/pull/432))
+- build(deps): bump @metamask/eth-simple-keyring from 6.0.1 to 6.0.5 ([#436](https://github.com/MetaMask/smart-transactions-controller/pull/436))
+- build(deps): bump @metamask/eth-sig-util from 7.0.2 to 7.0.3 ([#434](https://github.com/MetaMask/smart-transactions-controller/pull/434))
+- build(deps): bump path-to-regexp in the npm_and_yarn group ([#431](https://github.com/MetaMask/smart-transactions-controller/pull/431))
+- build(deps): bump @metamask/abi-utils from 2.0.2 to 2.0.4 ([#376](https://github.com/MetaMask/smart-transactions-controller/pull/376))
+- build(deps): bump @metamask/key-tree from 9.1.1 to 9.1.2 ([#377](https://github.com/MetaMask/smart-transactions-controller/pull/377))
+- build(deps): bump @metamask/controller-utils from 11.0.0 to 11.3.0 ([#420](https://github.com/MetaMask/smart-transactions-controller/pull/420))
+- build(deps): bump micromatch from 4.0.4 to 4.0.8 in the npm_and_yarn group, yarn dedupe ([#412](https://github.com/MetaMask/smart-transactions-controller/pull/412))
+- build(deps): bump @metamask/superstruct from 3.0.0 to 3.1.0 ([#370](https://github.com/MetaMask/smart-transactions-controller/pull/370))
+- build(deps): bump @metamask/rpc-errors from 6.3.0 to 6.4.0 ([#427](https://github.com/MetaMask/smart-transactions-controller/pull/427))
+
 ## [13.2.0]
 ### Added
 - Add metrics events for Receive and Request ([#429](https://github.com/MetaMask/smart-transactions-controller/pull/429))
@@ -356,7 +377,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.2.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v14.0.0...HEAD
+[14.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.2.0...v14.0.0
 [13.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.1.0...v13.2.0
 [13.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.0.0...v13.1.0
 [13.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v12.0.1...v13.0.0
