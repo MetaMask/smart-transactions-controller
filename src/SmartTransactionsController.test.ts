@@ -6,7 +6,7 @@ import {
 } from '@metamask/controller-utils';
 import {
   NetworkStatus,
-  RpcEndpointType,
+  type RpcEndpointType,
   type NetworkState,
 } from '@metamask/network-controller';
 import {
