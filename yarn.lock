@@ -2229,7 +2229,7 @@ __metadata:
     "@ethersproject/bytes": ^5.7.0
     "@lavamoat/allow-scripts": ^2.3.1
     "@metamask/auto-changelog": ^3.1.0
-    "@metamask/base-controller": ^6.0.0
+    "@metamask/base-controller": ^7.0.1
     "@metamask/controller-utils": ^11.0.0
     "@metamask/eslint-config": ^12.2.0
     "@metamask/eslint-config-jest": ^12.1.0
