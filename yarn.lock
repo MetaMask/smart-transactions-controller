@@ -1510,6 +1510,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/gas-fee-controller@npm:^21.0.0":
+  version: 21.0.0
+  resolution: "@metamask/gas-fee-controller@npm:21.0.0"
+  dependencies:
+    "@metamask/base-controller": ^7.0.1
+    "@metamask/controller-utils": ^11.3.0
+    "@metamask/eth-query": ^4.0.0
+    "@metamask/ethjs-unit": ^0.3.0
+    "@metamask/polling-controller": ^11.0.0
+    "@metamask/utils": ^9.1.0
+    "@types/bn.js": ^5.1.5
+    "@types/uuid": ^8.3.0
+    bn.js: ^5.2.1
+    uuid: ^8.3.2
+  peerDependencies:
+    "@metamask/network-controller": ^21.0.0
+  checksum: df6f8f95df83908fed68e5b0f0f46e14bade9de30dc6dc65f17fa61d5ddf6ab442e8d1f3258a3923ead348604ee3a477312b86ae7fb81dfa27a6a1a49df2c305
+  languageName: node
+  linkType: hard
+
 "@metamask/json-rpc-engine@npm:^10.0.0":
   version: 10.0.0
   resolution: "@metamask/json-rpc-engine@npm:10.0.0"
@@ -1647,6 +1667,7 @@ __metadata:
     "@metamask/eslint-config-typescript": ^12.1.0
     "@metamask/eth-json-rpc-provider": ^4.1.0
     "@metamask/eth-query": ^4.0.0
+    "@metamask/gas-fee-controller": ^21.0.0
     "@metamask/json-rpc-engine": ^9.0.0
     "@metamask/network-controller": ^21.1.0
     "@metamask/polling-controller": ^11.0.0
