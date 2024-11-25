@@ -7,13 +7,18 @@ import _ from 'lodash';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 import { API_BASE_URL, SENTINEL_API_BASE_URL_MAP } from './constants';
-import type { SmartTransaction, SmartTransactionsStatus } from './types';
+import type {
+  SmartTransaction,
+  SmartTransactionsStatus,
+  FeatureFlags,
+} from './types';
 import {
   APIType,
   SmartTransactionStatuses,
   SmartTransactionCancellationReason,
   SmartTransactionMinedTx,
   cancellationReasonToStatusMap,
+  ClientId,
 } from './types';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -262,4 +267,16 @@ export const getSmartTransactionMetricsSensitiveProperties = (
     account_type: smartTransaction.accountType,
     device_model: smartTransaction.deviceModel,
   };
+};
+
+export const getReturnTxHashAsap = (
+  clientId: ClientId,
+  smartTransactionsFeatureFlags: FeatureFlags['smartTransactions'],
+) => {
+  if (!clientId) {
+    return false;
+  }
+  return clientId === ClientId.Extension
+    ? smartTransactionsFeatureFlags?.extensionReturnTxHashAsap
+    : smartTransactionsFeatureFlags?.mobileReturnTxHashAsap;
 };

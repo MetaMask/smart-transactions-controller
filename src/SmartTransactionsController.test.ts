@@ -1829,6 +1829,8 @@ async function withController<ReturnValue>(
         deviceModel: 'ledger',
       });
     }),
+    getFeatureFlags: jest.fn(),
+    updateTransaction: jest.fn(),
     ...options,
   });
 
