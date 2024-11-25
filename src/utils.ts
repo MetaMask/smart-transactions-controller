@@ -273,9 +273,6 @@ export const getReturnTxHashAsap = (
   clientId: ClientId,
   smartTransactionsFeatureFlags: FeatureFlags['smartTransactions'],
 ) => {
-  if (!clientId) {
-    return false;
-  }
   return clientId === ClientId.Extension
     ? smartTransactionsFeatureFlags?.extensionReturnTxHashAsap
     : smartTransactionsFeatureFlags?.mobileReturnTxHashAsap;
