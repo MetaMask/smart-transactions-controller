@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [15.0.0]
+### Uncategorized
+- chore: Recategorize controllers as peer dependencies ([#472](https://github.com/MetaMask/smart-transactions-controller/pull/472))
+- chore: Update to NetworkController v22 (and related packages) ([#471](https://github.com/MetaMask/smart-transactions-controller/pull/471))
+- Fix tsconfig to emit JS files in addition to declarations ([#470](https://github.com/MetaMask/smart-transactions-controller/pull/470))
+- chore: Fix development `peerDependency` warnings ([#468](https://github.com/MetaMask/smart-transactions-controller/pull/468))
+- Remove test-helpers from build ([#459](https://github.com/MetaMask/smart-transactions-controller/pull/459))
+- Bump @metamask/eth-json-rpc-provider to ^4.1.6 ([#460](https://github.com/MetaMask/smart-transactions-controller/pull/460))
+- Standardize tsconfig files ([#458](https://github.com/MetaMask/smart-transactions-controller/pull/458))
+- chore(devdeps): @lavamoat/allow-scripts@^2.3.1->^3.2.1 ([#338](https://github.com/MetaMask/smart-transactions-controller/pull/338))
+- yarn.lock: de-dedupe @metamask/utils ([#453](https://github.com/MetaMask/smart-transactions-controller/pull/453))
+
 ## [14.0.0]
 ### Changed
 - **BREAKING** Update `@metamask/polling-controller` from `^8.0.0` to `^11.0.0` ([#448](https://github.com/MetaMask/smart-transactions-controller/pull/448))
@@ -364,7 +376,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v14.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v15.0.0...HEAD
+[15.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.2.0...v14.0.0
 [13.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.1.0...v13.2.0
 [13.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.0.0...v13.1.0
