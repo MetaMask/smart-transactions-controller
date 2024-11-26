@@ -5,7 +5,7 @@ import { BigNumber } from 'bignumber.js';
 import jsonDiffer from 'fast-json-patch';
 import _ from 'lodash';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import packageJson from '../package.json';
 import { API_BASE_URL, SENTINEL_API_BASE_URL_MAP } from './constants';
 import type { SmartTransaction, SmartTransactionsStatus } from './types';
 import {
@@ -15,9 +15,6 @@ import {
   SmartTransactionMinedTx,
   cancellationReasonToStatusMap,
 } from './types';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import packageJson from '../package.json';
 
 export function isSmartTransactionPending(smartTransaction: SmartTransaction) {
   return smartTransaction.status === SmartTransactionStatuses.PENDING;
