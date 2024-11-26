@@ -7,16 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [15.0.0]
-### Uncategorized
-- chore: Recategorize controllers as peer dependencies ([#472](https://github.com/MetaMask/smart-transactions-controller/pull/472))
-- chore: Update to NetworkController v22 (and related packages) ([#471](https://github.com/MetaMask/smart-transactions-controller/pull/471))
-- Fix tsconfig to emit JS files in addition to declarations ([#470](https://github.com/MetaMask/smart-transactions-controller/pull/470))
-- chore: Fix development `peerDependency` warnings ([#468](https://github.com/MetaMask/smart-transactions-controller/pull/468))
+### Changed
+- **BREAKING**: Recategorize controllers as peer dependencies ([#472](https://github.com/MetaMask/smart-transactions-controller/pull/472))
+  - The following packages have been removed as dependencies, and added as peer dependencies:
+    - `@metamask/network-controller@^22.0.0`
+    - `@metamask/transaction-controller@^38.0.0`
+  - Note that these versions have also been updated
+    - `@metamask/network-controller` updated from v21.1.0 to v22.0.0 ([#471](https://github.com/MetaMask/smart-transactions-controller/pull/471))
+    - `@metamask/transaction-controller` updated from v37.3.0 to v38.0.0 ([#471](https://github.com/MetaMask/smart-transactions-controller/pull/471))
+- Update `@metamask/polling-controller` from v11.0.0 to v12.0.0 ([#471](https://github.com/MetaMask/smart-transactions-controller/pull/471))
 - Remove test-helpers from build ([#459](https://github.com/MetaMask/smart-transactions-controller/pull/459))
-- Bump @metamask/eth-json-rpc-provider to ^4.1.6 ([#460](https://github.com/MetaMask/smart-transactions-controller/pull/460))
-- Standardize tsconfig files ([#458](https://github.com/MetaMask/smart-transactions-controller/pull/458))
-- chore(devdeps): @lavamoat/allow-scripts@^2.3.1->^3.2.1 ([#338](https://github.com/MetaMask/smart-transactions-controller/pull/338))
-- yarn.lock: de-dedupe @metamask/utils ([#453](https://github.com/MetaMask/smart-transactions-controller/pull/453))
+- Bump `@metamask/eth-json-rpc-provider` from `^4.1.0` to `^4.1.6` ([#460](https://github.com/MetaMask/smart-transactions-controller/pull/460))
 
 ## [14.0.0]
 ### Changed
