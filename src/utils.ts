@@ -5,6 +5,10 @@ import { BigNumber } from 'bignumber.js';
 import jsonDiffer from 'fast-json-patch';
 import _ from 'lodash';
 
+// Ignoring TypeScript errors here because this import is disallowed for production builds, because
+// the `package.json` file is above the root directory.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import packageJson from '../package.json';
 import { API_BASE_URL, SENTINEL_API_BASE_URL_MAP } from './constants';
 import type { SmartTransaction, SmartTransactionsStatus } from './types';
