@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- This package can now be used in ESM environments as well as CommonJS ([#469](https://github.com/MetaMask/smart-transactions-controller/pull/469))
+
 ### Changed
 
 - **BREAKING:** Bump peer dependency on `@metamask/network-controller` to `^24.0.0` ([#519](https://github.com/MetaMask/smart-transactions-controller/pull/519))
+- **BREAKING:** Disallow subpath exports ([#469](https://github.com/MetaMask/smart-transactions-controller/pull/469))
 
 ## [16.5.0]
 
