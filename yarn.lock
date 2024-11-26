@@ -1672,6 +1672,7 @@ __metadata:
     "@metamask/network-controller": ^21.1.0
     "@metamask/polling-controller": ^11.0.0
     "@metamask/transaction-controller": ^37.3.0
+    "@ts-bridge/cli": ^0.6.0
     "@types/jest": ^26.0.24
     "@types/lodash": ^4.14.194
     "@types/node": ^18.19.17
@@ -2062,6 +2063,30 @@ __metadata:
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
   checksum: ad87447820dd3f24825d2d947ebc03072b20a42bfc96cbafec16bff8bbda6c1a81fcb0be56d5b21968560c5359a0af4038a68ba150c3e1694fe4c109a063bed8
+  languageName: node
+  linkType: hard
+
+"@ts-bridge/cli@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@ts-bridge/cli@npm:0.6.0"
+  dependencies:
+    "@ts-bridge/resolver": ^0.2.0
+    chalk: ^5.3.0
+    cjs-module-lexer: ^1.3.1
+    yargs: ^17.7.2
+  peerDependencies:
+    typescript: ">=4.8.0"
+  bin:
+    ts-bridge: ./dist/index.js
+    tsbridge: ./dist/index.js
+  checksum: b4ba624df897ac44d682d68ed281ca4a11d7d91321fd2728e1805a428c0c7c90fbaa5c59873706072232967f89a57a61aa63b49f738630b48c22b3abf5221c90
+  languageName: node
+  linkType: hard
+
+"@ts-bridge/resolver@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@ts-bridge/resolver@npm:0.2.0"
+  checksum: 3d47ca4f0367a193ed6a19fe1ac36a056547e94e28377869e009a216b2f24a9e5efe90d90de22fd1cf22fa36b84e80f490f328d328cde7675795a19465bf98c4
   languageName: node
   linkType: hard
 
@@ -3030,6 +3055,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "chalk@npm:5.3.0"
+  checksum: 623922e077b7d1e9dedaea6f8b9e9352921f8ae3afe739132e0e00c275971bdd331268183b2628cf4ab1727c45ea1f28d7e24ac23ce1db1eb653c414ca8a5a80
+  languageName: node
+  linkType: hard
+
 "char-regex@npm:^1.0.2":
   version: 1.0.2
   resolution: "char-regex@npm:1.0.2"
@@ -3055,6 +3087,13 @@ __metadata:
   version: 1.3.1
   resolution: "cjs-module-lexer@npm:1.3.1"
   checksum: 75f20ac264a397ea5c63f9c2343a51ab878043666468f275e94862f7180ec1d764a400ec0c09085dcf0db3193c74a8b571519abd2bf4be0d2be510d1377c8d4b
+  languageName: node
+  linkType: hard
+
+"cjs-module-lexer@npm:^1.3.1":
+  version: 1.4.1
+  resolution: "cjs-module-lexer@npm:1.4.1"
+  checksum: 2556807a99aec1f9daac60741af96cd613a707f343174ae7967da46402c91dced411bf830d209f2e93be4cecea46fc75cecf1f17c799d7d8a9e1dd6204bfcd22
   languageName: node
   linkType: hard
 
@@ -8260,7 +8299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:17.7.2, yargs@npm:^17.0.1, yargs@npm:^17.3.1":
+"yargs@npm:17.7.2, yargs@npm:^17.0.1, yargs@npm:^17.3.1, yargs@npm:^17.7.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:

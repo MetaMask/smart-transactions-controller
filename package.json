@@ -7,15 +7,28 @@
     "url": "https://github.com/MetaMask/smart-transactions-controller.git"
   },
   "license": "SEE LICENSE IN LICENSE",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "files": [
-    "dist/"
+    "dist"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "build:clean": "rm -rf dist && yarn build",
-    "build:link": "yarn build && cd dist && yarn link && rm -rf node_modules && cd ..",
+    "build": "ts-bridge --project tsconfig.build.json --clean",
     "lint": "yarn lint:eslint && yarn lint:misc --check",
     "lint:eslint": "eslint . --cache --ext js,ts",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
@@ -36,6 +49,7 @@
     "@metamask/network-controller": "^21.1.0",
     "@metamask/polling-controller": "^11.0.0",
     "@metamask/transaction-controller": "^37.3.0",
+    "@ts-bridge/cli": "^0.6.0",
     "bignumber.js": "^9.0.1",
     "events": "^3.3.0",
     "fast-json-patch": "^3.1.0",
