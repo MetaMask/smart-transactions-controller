@@ -17,8 +17,8 @@ import {
 import nock from 'nock';
 import * as sinon from 'sinon';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+import packageJson from '../package.json';
+import { advanceTime, flushPromises, getFakeProvider } from '../tests/helpers';
 import { API_BASE_URL, SENTINEL_API_BASE_URL_MAP } from './constants';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
@@ -30,11 +30,9 @@ import type {
   SmartTransactionsControllerActions,
   SmartTransactionsControllerEvents,
 } from './SmartTransactionsController';
-import { advanceTime, flushPromises, getFakeProvider } from './test-helpers';
 import type { SmartTransaction, UnsignedTransaction, Hex } from './types';
 import { SmartTransactionStatuses, ClientId } from './types';
 import * as utils from './utils';
-import packageJson from '../package.json';
 
 jest.mock('@ethersproject/bytes', () => ({
   ...jest.requireActual('@ethersproject/bytes'),
