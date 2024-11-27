@@ -531,7 +531,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         cancelledNonceIndex > -1
           ? currentSmartTransactions
               .slice(0, cancelledNonceIndex)
-              // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
               .concat(currentSmartTransactions.slice(cancelledNonceIndex + 1))
               .concat(historifiedSmartTransaction)
           : currentSmartTransactions.concat(historifiedSmartTransaction);
