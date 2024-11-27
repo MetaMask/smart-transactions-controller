@@ -1662,7 +1662,7 @@ __metadata:
     "@metamask/json-rpc-engine": ^10.0.1
     "@metamask/network-controller": ^22.0.0
     "@metamask/polling-controller": ^12.0.0
-    "@metamask/transaction-controller": ^38.0.0
+    "@metamask/transaction-controller": ^41.0.0
     "@types/jest": ^26.0.24
     "@types/lodash": ^4.14.194
     "@types/node": ^18.19.17
@@ -1691,7 +1691,7 @@ __metadata:
     typescript: ~4.8.4
   peerDependencies:
     "@metamask/network-controller": ^22.0.0
-    "@metamask/transaction-controller": ^38.0.0
+    "@metamask/transaction-controller": ^41.0.0
   peerDependenciesMeta:
     "@metamask/accounts-controller":
       optional: true
@@ -1714,9 +1714,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/transaction-controller@npm:^38.0.0":
-  version: 38.3.0
-  resolution: "@metamask/transaction-controller@npm:38.3.0"
+"@metamask/transaction-controller@npm:^41.0.0":
+  version: 41.0.0
+  resolution: "@metamask/transaction-controller@npm:41.0.0"
   dependencies:
     "@ethereumjs/common": ^3.2.0
     "@ethereumjs/tx": ^4.2.0
@@ -1725,7 +1725,7 @@ __metadata:
     "@ethersproject/contracts": ^5.7.0
     "@ethersproject/providers": ^5.7.0
     "@metamask/base-controller": ^7.0.2
-    "@metamask/controller-utils": ^11.4.2
+    "@metamask/controller-utils": ^11.4.3
     "@metamask/eth-query": ^4.0.0
     "@metamask/metamask-eth-abis": ^3.1.1
     "@metamask/nonce-tracker": ^6.0.0
@@ -1739,11 +1739,11 @@ __metadata:
     uuid: ^8.3.2
   peerDependencies:
     "@babel/runtime": ^7.23.9
-    "@metamask/accounts-controller": ^18.0.0
+    "@metamask/accounts-controller": ^20.0.0
     "@metamask/approval-controller": ^7.0.0
     "@metamask/gas-fee-controller": ^22.0.0
     "@metamask/network-controller": ^22.0.0
-  checksum: 81cb06947d833c04f35d7e987d4606a45a1a0b985b244c70c1896370a17264bcc4d802dd38d2a56fae36ce162303e050fc04094ec85cbfb9d44b4621f4237041
+  checksum: 1d5f2ceb738d9ab4cbb563c31cb3d3a78b682ba0cd81916a8703618fff8d03e05dad2c2bda87ca2f0566b3298fa462c226103a285c3690f0491cbd6a9dd247cf
   languageName: node
   linkType: hard
 
