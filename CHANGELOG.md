@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [16.0.0]
+
 ## [15.0.0]
 ### Changed
 - **BREAKING**: Recategorize controllers as peer dependencies ([#472](https://github.com/MetaMask/smart-transactions-controller/pull/472))
@@ -377,7 +379,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v15.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.0.0...HEAD
+[16.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.2.0...v14.0.0
 [13.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.1.0...v13.2.0
