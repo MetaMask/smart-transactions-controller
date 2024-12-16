@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [15.1.0]
-### Uncategorized
-- Update constants.ts to add bsc for smart transactions ([#483](https://github.com/MetaMask/smart-transactions-controller/pull/483))
-- chore: Remove unnecessary `events` dependency ([#473](https://github.com/MetaMask/smart-transactions-controller/pull/473))
-- Update CHANGELOG.md ([#477](https://github.com/MetaMask/smart-transactions-controller/pull/477))
+### Changed
+- Update constants.ts to add a BSC url for smart transactions ([#483](https://github.com/MetaMask/smart-transactions-controller/pull/483))
+
+### Removed
+- Remove unnecessary `events` dependency ([#473](https://github.com/MetaMask/smart-transactions-controller/pull/473))
 
 ## [15.0.0]
 ### Changed
