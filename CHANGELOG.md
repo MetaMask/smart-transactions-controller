@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **BREAKING** Update `@metamask/transaction-controller` peer dependency from `^38.0.0` to `^42.0.0` ([#482](https://github.com/MetaMask/smart-transactions-controller/pull/482))
 
+## [15.1.0]
+### Changed
+- Update constants.ts to add a BSC url for smart transactions ([#483](https://github.com/MetaMask/smart-transactions-controller/pull/483))
+
+### Removed
+- Remove unnecessary `events` dependency ([#473](https://github.com/MetaMask/smart-transactions-controller/pull/473))
+
 ## [15.0.0]
 ### Changed
 - **BREAKING**: Recategorize controllers as peer dependencies ([#472](https://github.com/MetaMask/smart-transactions-controller/pull/472))
@@ -380,7 +387,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v15.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v15.1.0...HEAD
+[15.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v15.0.0...v15.1.0
 [15.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.2.0...v14.0.0
 [13.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v13.1.0...v13.2.0
