@@ -1267,8 +1267,12 @@ describe('SmartTransactionsController', () => {
               txParams: {
                 from: '0x123',
               },
+              error: {
+                message: 'Smart transaction failed with status: cancelled',
+                name: 'SmartTransactionFailed',
+              },
             },
-            'Smart transaction cancelled',
+            'Smart transaction status: cancelled',
           );
         },
       );
