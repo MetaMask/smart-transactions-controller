@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.0.0]
 
-### Uncategorized
-
-- chore: bump workflow actions to current latest versions ([#486](https://github.com/MetaMask/smart-transactions-controller/pull/486))
-
 ### Changed
 
 - **BREAKING** Update `@metamask/transaction-controller` peer dependency from `^38.0.0` to `^42.0.0` ([#482](https://github.com/MetaMask/smart-transactions-controller/pull/482))
