@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.0.1]
 
-### Uncategorized
+### Fixed
 
-- fix: Extend definition of when a regular tx is marked as failed, clean up unsupported statuses ([#485](https://github.com/MetaMask/smart-transactions-controller/pull/485))
+- Extend definition of when a regular tx is marked as failed based on a smart transaction status, clean up unsupported statuses ([#485](https://github.com/MetaMask/smart-transactions-controller/pull/485))
 
 ## [16.0.0]
 
