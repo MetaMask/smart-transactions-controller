@@ -27,7 +27,6 @@ export enum SmartTransactionCancellationReason {
   INVALID_NONCE = 'invalid_nonce',
   USER_CANCELLED = 'user_cancelled',
   NOT_CANCELLED = 'not_cancelled',
-  PREVIOUS_TX_CANCELLED = 'previous_tx_cancelled',
 }
 
 export enum SmartTransactionStatuses {
@@ -53,8 +52,6 @@ export const cancellationReasonToStatusMap = {
   [SmartTransactionCancellationReason.DEADLINE_MISSED]:
     SmartTransactionStatuses.CANCELLED,
   [SmartTransactionCancellationReason.INVALID_NONCE]:
-    SmartTransactionStatuses.CANCELLED,
-  [SmartTransactionCancellationReason.PREVIOUS_TX_CANCELLED]:
     SmartTransactionStatuses.CANCELLED,
   [SmartTransactionCancellationReason.USER_CANCELLED]:
     SmartTransactionStatuses.CANCELLED_USER_CANCELLED,

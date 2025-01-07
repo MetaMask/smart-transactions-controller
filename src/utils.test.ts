@@ -242,17 +242,6 @@ describe('src/utils.js', () => {
         SmartTransactionStatuses.PENDING,
       );
     });
-
-    it('returns status "cancelled" if the "previous_tx_cancelled" cancellationReason is provided', () => {
-      const statusResponse = {
-        ...createStatusResponse(),
-        cancellationReason:
-          SmartTransactionCancellationReason.PREVIOUS_TX_CANCELLED,
-      };
-      expect(utils.calculateStatus(statusResponse)).toStrictEqual(
-        SmartTransactionStatuses.CANCELLED,
-      );
-    });
   });
 
   describe('getStxProcessingTime', () => {

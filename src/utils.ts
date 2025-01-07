@@ -79,7 +79,6 @@ export const calculateStatus = (stxStatus: SmartTransactionsStatus) => {
     SmartTransactionCancellationReason.DEADLINE_MISSED,
     SmartTransactionCancellationReason.INVALID_NONCE,
     SmartTransactionCancellationReason.USER_CANCELLED,
-    SmartTransactionCancellationReason.PREVIOUS_TX_CANCELLED,
   ];
   if (stxStatus?.minedTx === SmartTransactionMinedTx.NOT_MINED) {
     if (
