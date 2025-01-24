@@ -337,7 +337,8 @@ describe('SmartTransactionsController', () => {
     nock.cleanAll();
   });
 
-  it('initializes with default state', async () => {
+  // update test name to reflect the new persistence enabled state
+  it('initializes with default state and persistence enabled', async () => {
     const defaultState = getDefaultSmartTransactionsControllerState();
     await withController(({ controller }) => {
       expect(controller.state).toStrictEqual({
@@ -349,6 +350,40 @@ describe('SmartTransactionsController', () => {
           },
         },
       });
+      // update to check the persist value
+      expect(controller.metadata.smartTransactionsState.persist).toBe(true);
+    });
+  });
+
+  // Tests minimal state update path, focuses on persistence behavior change
+  it('persists smart transactions state when updated', async () => {
+    // Verifies that smart transactions state is persisted when updated
+
+    // withController is a helper function that creates a controller instance
+    // and provides a callback function to interact with it
+    await withController(({ controller }) => {
+      // Represents minimal viable transaction for testing
+      // Uses actual enum values and types from codebase
+      const txn = {
+        uuid: 'test-uuid',
+        status: SmartTransactionStatuses.PENDING,
+        cancellable: true,
+        chainId: ChainId.mainnet,
+      };
+
+      // Uses updateState to modify protected state
+      // Updates mainnet chain transactions array with the new transaction
+      controller.updateState((state) => {
+        state.smartTransactionsState.smartTransactions[ChainId.mainnet] = [txn];
+      });
+
+      // Verifies transaction was persisted
+      // Uses strict equality to ensure exact state match
+      expect(
+        controller.state.smartTransactionsState.smartTransactions[
+          ChainId.mainnet
+        ],
+      ).toStrictEqual([txn]);
     });
   });
 

@@ -72,7 +72,7 @@ const controllerName = 'SmartTransactionsController';
 
 const controllerMetadata = {
   smartTransactionsState: {
-    persist: false,
+    persist: true,
     anonymous: true,
   },
 };
@@ -1135,5 +1135,9 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       state.smartTransactionsState.smartTransactions[chainId] =
         newSmartTransactionsForSelectedChain;
     });
+  }
+
+  public updateState(stateMutator: (state: any) => void) {
+    this.update(stateMutator);
   }
 }
