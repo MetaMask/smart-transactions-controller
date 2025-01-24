@@ -355,36 +355,44 @@ describe('SmartTransactionsController', () => {
     });
   });
 
-  // Tests minimal state update path, focuses on persistence behavior change
-  it('persists smart transactions state when updated', async () => {
-    // Verifies that smart transactions state is persisted when updated
+  it('persists smart transactions state across browser sessions', async () => {
+    // Create initial state with transaction
+    const initialState = getDefaultSmartTransactionsControllerState();
+    // Create minimal test transaction with required properties
+    const txn = {
+      uuid: 'test-uuid',
+      status: SmartTransactionStatuses.PENDING,
+      cancellable: true,
+      chainId: ChainId.mainnet,
+    };
+    initialState.smartTransactionsState.smartTransactions[ChainId.mainnet] = [
+      txn,
+    ];
 
-    // withController is a helper function that creates a controller instance
-    // and provides a callback function to interact with it
-    await withController(({ controller }) => {
-      // Represents minimal viable transaction for testing
-      // Uses actual enum values and types from codebase
-      const txn = {
-        uuid: 'test-uuid',
-        status: SmartTransactionStatuses.PENDING,
-        cancellable: true,
-        chainId: ChainId.mainnet,
-      };
+    // First session with initial state
+    await withController(
+      { options: { state: initialState } },
+      async ({ controller }) => {
+        // Verify complete state matches including all properties and types
+        expect(
+          controller.state.smartTransactionsState.smartTransactions[
+            ChainId.mainnet
+          ],
+        ).toStrictEqual([txn]);
+      },
+    );
 
-      // Uses updateState to modify protected state
-      // Updates mainnet chain transactions array with the new transaction
-      controller.updateState((state) => {
-        state.smartTransactionsState.smartTransactions[ChainId.mainnet] = [txn];
-      });
-
-      // Verifies transaction was persisted
-      // Uses strict equality to ensure exact state match
-      expect(
-        controller.state.smartTransactionsState.smartTransactions[
-          ChainId.mainnet
-        ],
-      ).toStrictEqual([txn]);
-    });
+    // Second session should restore state
+    await withController(
+      { options: { state: initialState } },
+      async ({ controller }) => {
+        expect(
+          controller.state.smartTransactionsState.smartTransactions[
+            ChainId.mainnet
+          ],
+        ).toStrictEqual([txn]);
+      },
+    );
   });
 
   describe('onNetworkChange', () => {
