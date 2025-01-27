@@ -1136,8 +1136,4 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         newSmartTransactionsForSelectedChain;
     });
   }
-
-  public updateState(stateMutator: (state: any) => void) {
-    this.update(stateMutator);
-  }
 }
