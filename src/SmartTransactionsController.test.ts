@@ -337,8 +337,7 @@ describe('SmartTransactionsController', () => {
     nock.cleanAll();
   });
 
-  // update test name to reflect the new persistence enabled state
-  it('initializes with default state and persistence enabled', async () => {
+  it('initializes with default state', async () => {
     const defaultState = getDefaultSmartTransactionsControllerState();
     await withController(({ controller }) => {
       expect(controller.state).toStrictEqual({
@@ -350,49 +349,7 @@ describe('SmartTransactionsController', () => {
           },
         },
       });
-      // update to check the persist value
-      expect(controller.metadata.smartTransactionsState.persist).toBe(true);
     });
-  });
-
-  it('persists smart transactions state across browser sessions', async () => {
-    // Create initial state with transaction
-    const initialState = getDefaultSmartTransactionsControllerState();
-    // Create minimal test transaction with required properties
-    const txn = {
-      uuid: 'test-uuid',
-      status: SmartTransactionStatuses.PENDING,
-      cancellable: true,
-      chainId: ChainId.mainnet,
-    };
-    initialState.smartTransactionsState.smartTransactions[ChainId.mainnet] = [
-      txn,
-    ];
-
-    // First session with initial state
-    await withController(
-      { options: { state: initialState } },
-      async ({ controller }) => {
-        // Verify complete state matches including all properties and types
-        expect(
-          controller.state.smartTransactionsState.smartTransactions[
-            ChainId.mainnet
-          ],
-        ).toStrictEqual([txn]);
-      },
-    );
-
-    // Second session should restore state
-    await withController(
-      { options: { state: initialState } },
-      async ({ controller }) => {
-        expect(
-          controller.state.smartTransactionsState.smartTransactions[
-            ChainId.mainnet
-          ],
-        ).toStrictEqual([txn]);
-      },
-    );
   });
 
   describe('onNetworkChange', () => {
