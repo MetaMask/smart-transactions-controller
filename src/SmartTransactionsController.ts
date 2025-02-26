@@ -209,7 +209,7 @@ type SmartTransactionsControllerOptions = {
 };
 
 export type SmartTransactionsControllerPollingInput = {
-  networkClientId: string;
+  chainIds: Hex[];
 };
 
 export default class SmartTransactionsController extends StaticIntervalPollingController<SmartTransactionsControllerPollingInput>()<
@@ -254,8 +254,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         ...(this.#clientId && { 'X-Client-Id': this.#clientId }),
       },
     };
-
-    console.log('fetching ...........', request, fetchOptions);
 
     return handleFetch(request, fetchOptions);
   }
@@ -324,20 +322,21 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   }
 
   async _executePoll({
-    networkClientId,
+    chainIds,
   }: SmartTransactionsControllerPollingInput): Promise<void> {
-    console.log('executing poll ...........', networkClientId);
     // if this is going to be truly UI driven polling we shouldn't really reach here
     // with a networkClientId that is not supported, but for now I'll add a check in case
     // wondering if we should add some kind of predicate to the polling controller to check whether
     // we should poll or not
-    const chainId = this.#getChainId({ networkClientId });
-    console.log('chainId .........', chainId);
-    if (!this.#supportedChainIds.includes(chainId)) {
+    // const chainId = this.#getChainId({ networkClientId });
+
+    const filteredChainIds = chainIds.filter((chainId) =>
+      this.#supportedChainIds.includes(chainId),
+    );
+    if (filteredChainIds.length === 0) {
       return Promise.resolve();
     }
-    console.log('executing updateSmartTransactions ...........');
-    return this.updateSmartTransactions({ networkClientId });
+    return this.updateSmartTransactions({ chainIds: filteredChainIds });
   }
 
   checkPoll({
@@ -598,45 +597,38 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
   }
 
-  async updateSmartTransactions({
-    networkClientId,
-  }: {
-    networkClientId?: NetworkClientId;
-  } = {}): Promise<void> {
+  async updateSmartTransactions(
+    {
+      chainIds,
+    }: {
+      chainIds: Hex[];
+    } = {
+      chainIds: this.#getChainIds(),
+    },
+  ): Promise<void> {
     const {
       smartTransactionsState: { smartTransactions },
     } = this.state;
 
-    console.log('smartTransactions .........', smartTransactions);
-
     // Iterate over each chain group directly
     for (const [chainId, transactions] of Object.entries(smartTransactions)) {
+      if (chainIds && !chainIds.includes(chainId as Hex)) {
+        continue;
+      }
       // Filter pending transactions and map them to the desired shape
       const pendingTransactions = transactions
         .filter(isSmartTransactionPending)
         .map((tx) => {
           // Use the transaction's chainId (from the key) to derive a networkClientId
-          let networkClientIdToUse = networkClientId;
-          if (tx.chainId) {
-            const configuration = this.messagingSystem.call(
-              'NetworkController:getState',
-            );
-
-            networkClientIdToUse =
-              configuration?.networkConfigurationsByChainId[chainId as Hex]
-                ?.rpcEndpoints?.[
-                configuration.networkConfigurationsByChainId[chainId as Hex]
-                  .defaultRpcEndpointIndex
-              ]?.networkClientId;
-          }
+          const networkClientIdToUse = this.#getNetworkClientId({
+            chainId: chainId as Hex,
+          });
           return {
             uuid: tx.uuid,
             networkClientId: networkClientIdToUse,
             chainId: tx.chainId as Hex, // same as the key, but explicit on the transaction
           };
         });
-
-      console.log('pendingTransactions .........', pendingTransactions);
 
       if (pendingTransactions.length > 0) {
         // Since each group is per chain, all transactions share the same chainId.
@@ -774,7 +766,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       chainId: Hex;
     }[],
   ): Promise<Record<string, SmartTransactionsStatus>> {
-    console.log('INSIDE FETCH .......');
     // Since transactions come from the same chain group, take the chainId from the first one.
     const { chainId } = transactions[0];
 
@@ -792,13 +783,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       APIType.BATCH_STATUS,
       chainId,
     )}?${params.toString()}`;
-    console.log('url .........', url);
     const data = (await this.#fetch(url)) as Record<
       string,
       SmartTransactionsStatus
     >;
-
-    console.log('data .........', data);
 
     // Process each returned status
     for (const [uuid, stxStatus] of Object.entries(data)) {
@@ -1024,6 +1012,36 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
 
     return this.#chainId;
+  }
+
+  #getChainIds(): Hex[] {
+    const { networkConfigurationsByChainId } = this.messagingSystem.call(
+      'NetworkController:getState',
+    );
+    return Object.keys(networkConfigurationsByChainId).filter(
+      (chainId): chainId is Hex =>
+        this.#supportedChainIds.includes(chainId as Hex),
+    );
+  }
+
+  #getNetworkClientId({ chainId }: { chainId: string }): string {
+    const { networkConfigurationsByChainId } = this.messagingSystem.call(
+      'NetworkController:getState',
+    );
+    return networkConfigurationsByChainId[chainId as Hex].rpcEndpoints[
+      networkConfigurationsByChainId[chainId as Hex].defaultRpcEndpointIndex
+    ].networkClientId;
+  }
+
+  #getNetworkClientIds(): string[] {
+    const { networkConfigurationsByChainId } = this.messagingSystem.call(
+      'NetworkController:getState',
+    );
+    return Object.values(networkConfigurationsByChainId).map(
+      (chainConfig) =>
+        chainConfig.rpcEndpoints[chainConfig.defaultRpcEndpointIndex]
+          .networkClientId,
+    );
   }
 
   #getEthQuery({

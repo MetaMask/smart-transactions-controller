@@ -1612,7 +1612,7 @@ describe('SmartTransactionsController', () => {
             .mockImplementation(async () => Promise.resolve({}));
 
           const mainnetPollingToken = controller.startPolling({
-            networkClientId: NetworkType.mainnet,
+            chainIds: [ChainId.mainnet],
           });
 
           await advanceTime({ clock, duration: 0 });
@@ -1642,51 +1642,51 @@ describe('SmartTransactionsController', () => {
             fetchHeaders,
           );
 
-          // controller.startPolling({ networkClientId: NetworkType.sepolia });
-          // await advanceTime({ clock, duration: 0 });
+          controller.startPolling({ chainIds: [ChainId.sepolia] });
+          await advanceTime({ clock, duration: 0 });
 
-          // expect(handleFetchSpy).toHaveBeenNthCalledWith(
-          //   3,
-          //   `${API_BASE_URL}/networks/${convertHexToDecimal(
-          //     ChainId.sepolia,
-          //   )}/batchStatus?uuids=uuid2`,
-          //   fetchHeaders,
-          // );
+          expect(handleFetchSpy).toHaveBeenNthCalledWith(
+            3,
+            `${API_BASE_URL}/networks/${convertHexToDecimal(
+              ChainId.sepolia,
+            )}/batchStatus?uuids=uuid2`,
+            fetchHeaders,
+          );
 
-          // await advanceTime({ clock, duration: DEFAULT_INTERVAL });
+          await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
-          // expect(handleFetchSpy).toHaveBeenNthCalledWith(
-          //   5,
-          //   `${API_BASE_URL}/networks/${convertHexToDecimal(
-          //     ChainId.sepolia,
-          //   )}/batchStatus?uuids=uuid2`,
-          //   fetchHeaders,
-          // );
+          expect(handleFetchSpy).toHaveBeenNthCalledWith(
+            5,
+            `${API_BASE_URL}/networks/${convertHexToDecimal(
+              ChainId.sepolia,
+            )}/batchStatus?uuids=uuid2`,
+            fetchHeaders,
+          );
 
           // stop the mainnet polling
-          // controller.stopPollingByPollingToken(mainnetPollingToken);
+          controller.stopPollingByPollingToken(mainnetPollingToken);
 
           // cycle two polling intervals
-          // await advanceTime({ clock, duration: DEFAULT_INTERVAL });
+          await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
-          // await advanceTime({ clock, duration: DEFAULT_INTERVAL });
+          await advanceTime({ clock, duration: DEFAULT_INTERVAL });
 
           // check that the mainnet polling has stopped while the sepolia polling continues
-          // expect(handleFetchSpy).toHaveBeenNthCalledWith(
-          //   6,
-          //   `${API_BASE_URL}/networks/${convertHexToDecimal(
-          //     ChainId.sepolia,
-          //   )}/batchStatus?uuids=uuid2`,
-          //   fetchHeaders,
-          // );
+          expect(handleFetchSpy).toHaveBeenNthCalledWith(
+            6,
+            `${API_BASE_URL}/networks/${convertHexToDecimal(
+              ChainId.sepolia,
+            )}/batchStatus?uuids=uuid2`,
+            fetchHeaders,
+          );
 
-          // expect(handleFetchSpy).toHaveBeenNthCalledWith(
-          //   7,
-          //   `${API_BASE_URL}/networks/${convertHexToDecimal(
-          //     ChainId.sepolia,
-          //   )}/batchStatus?uuids=uuid2`,
-          //   fetchHeaders,
-          // );
+          expect(handleFetchSpy).toHaveBeenNthCalledWith(
+            7,
+            `${API_BASE_URL}/networks/${convertHexToDecimal(
+              ChainId.sepolia,
+            )}/batchStatus?uuids=uuid2`,
+            fetchHeaders,
+          );
         },
       );
     });
