@@ -95,7 +95,7 @@ describe('src/utils.js', () => {
 
     it('returns a URL for smart transactions API liveness on Base', () => {
       const baseChainIdHex = '0x2105';
-      const baseChainIdDec = parseInt(baseChainIdHex, 16); // update ChainId in @metamask/controller-utils to include baseChainId
+      const baseChainIdDec = parseInt(baseChainIdHex, 16);
       expect(utils.getAPIRequestURL(APIType.LIVENESS, baseChainIdHex)).toBe(
         `${SENTINEL_API_BASE_URL_MAP[baseChainIdDec]}/network`,
       );
