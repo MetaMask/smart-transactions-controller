@@ -93,7 +93,6 @@ describe('src/utils.js', () => {
       );
     });
 
-    // Add our new test case for baseChainId
     it('returns a URL for smart transactions API liveness on Base', () => {
       const baseChainIdHex = '0x2105';
       const baseChainIdDec = parseInt(baseChainIdHex, 16); // update ChainId in @metamask/controller-utils to include baseChainId
@@ -101,7 +100,6 @@ describe('src/utils.js', () => {
         `${SENTINEL_API_BASE_URL_MAP[baseChainIdDec]}/network`,
       );
     });
-    // Add test cases for BSC and Ethereum Sepolia?
   });
 
   describe('isSmartTransactionStatusResolved', () => {
