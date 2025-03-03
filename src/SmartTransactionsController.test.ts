@@ -437,6 +437,21 @@ describe('SmartTransactionsController', () => {
         },
       );
     });
+
+    it('calls updateSmartTransactions if there is a timeoutHandle and pending transactions', async () => {
+      await withController(({ controller }) => {
+        const updateSmartTransactionsSpy = jest.spyOn(
+          controller,
+          'updateSmartTransactions',
+        );
+
+        controller.timeoutHandle = setTimeout(() => ({}));
+
+        controller.poll(1000);
+
+        expect(updateSmartTransactionsSpy).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('updateSmartTransactions', () => {
@@ -1687,6 +1702,57 @@ describe('SmartTransactionsController', () => {
             )}/batchStatus?uuids=uuid2`,
             fetchHeaders,
           );
+        },
+      );
+    });
+
+    it('does not poll for chains that are not supported', async () => {
+      // mock this to a noop because it causes an extra fetch call to the API upon state changes
+      jest
+        .spyOn(SmartTransactionsController.prototype, 'checkPoll')
+        .mockImplementation(() => undefined);
+      await withController(
+        {
+          options: {
+            // pending transactions in state are required to test polling
+            state: {
+              smartTransactionsState: {
+                ...getDefaultSmartTransactionsControllerState()
+                  .smartTransactionsState,
+                smartTransactions: {
+                  [ChainId.mainnet]: [
+                    {
+                      uuid: 'uuid1',
+                      status: 'pending',
+                      cancellable: true,
+                      chainId: ChainId.mainnet,
+                    },
+                  ],
+                  [ChainId.sepolia]: [
+                    {
+                      uuid: 'uuid2',
+                      status: 'pending',
+                      cancellable: true,
+                      chainId: ChainId.sepolia,
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        async ({ controller }) => {
+          const handleFetchSpy = jest
+            .spyOn(utils, 'handleFetch')
+            .mockImplementation(async () => Promise.resolve({}));
+
+          controller.startPolling({
+            chainIds: ['notSupportedChainId' as Hex],
+          });
+
+          await advanceTime({ clock, duration: 0 });
+
+          expect(handleFetchSpy).not.toHaveBeenCalled();
         },
       );
     });

@@ -333,6 +333,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const filteredChainIds = chainIds.filter((chainId) =>
       this.#supportedChainIds.includes(chainId),
     );
+
     if (filteredChainIds.length === 0) {
       return Promise.resolve();
     }
@@ -770,7 +771,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const { chainId } = transactions[0];
 
     // Build query parameters with all UUIDs
-    const uuids = transactions.map((t) => t.uuid);
+    const uuids = transactions.map((tx) => tx.uuid);
     const params = new URLSearchParams({ uuids: uuids.join(',') });
 
     // Get the ethQuery for the first transaction's networkClientId
@@ -1031,17 +1032,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     return networkConfigurationsByChainId[chainId as Hex].rpcEndpoints[
       networkConfigurationsByChainId[chainId as Hex].defaultRpcEndpointIndex
     ].networkClientId;
-  }
-
-  #getNetworkClientIds(): string[] {
-    const { networkConfigurationsByChainId } = this.messagingSystem.call(
-      'NetworkController:getState',
-    );
-    return Object.values(networkConfigurationsByChainId).map(
-      (chainConfig) =>
-        chainConfig.rpcEndpoints[chainConfig.defaultRpcEndpointIndex]
-          .networkClientId,
-    );
   }
 
   #getEthQuery({
