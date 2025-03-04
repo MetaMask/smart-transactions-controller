@@ -9,11 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.1.0]
 
-### Uncategorized
+### Added
 
-- feat: add Base Sentinel endpoint to STX controller ([#500](https://github.com/MetaMask/smart-transactions-controller/pull/500))
-- chore: add workflow_dispatch to security-code-scanner ([#499](https://github.com/MetaMask/smart-transactions-controller/pull/499))
-- Fix: SmartTransactionsController `state` should persist ([#493](https://github.com/MetaMask/smart-transactions-controller/pull/493))
+- Add Base Sentinel endpoint to STX controller ([#500](https://github.com/MetaMask/smart-transactions-controller/pull/500))
+
+### Changed
+
+- Add workflow_dispatch to security-code-scanner ([#499](https://github.com/MetaMask/smart-transactions-controller/pull/499))
+- SmartTransactionsController `state` should persist ([#493](https://github.com/MetaMask/smart-transactions-controller/pull/493))
+  After opening your browser smart transactions should be preserved.
 
 ## [16.0.1]
 
