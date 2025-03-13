@@ -328,9 +328,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     // with a networkClientId that is not supported, but for now I'll add a check in case
     // wondering if we should add some kind of predicate to the polling controller to check whether
     // we should poll or not
-    // const chainId = this.#getChainId({ networkClientId });
-
-    const filteredChainIds = chainIds.filter((chainId) =>
+    const filteredChainIds = (chainIds ?? []).filter((chainId) =>
       this.#supportedChainIds.includes(chainId),
     );
 
@@ -343,10 +341,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   checkPoll({
     smartTransactionsState: { smartTransactions },
   }: SmartTransactionsControllerState) {
-    const allChainsCurrentTransactions =
+    const smartTransactionsForAllChains =
       Object.values(smartTransactions).flat();
-    const currentSmartTransactions = allChainsCurrentTransactions;
-    const pendingTransactions = currentSmartTransactions?.filter(
+
+    const pendingTransactions = smartTransactionsForAllChains?.filter(
       isSmartTransactionPending,
     );
     if (!this.timeoutHandle && pendingTransactions?.length > 0) {
@@ -619,15 +617,15 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       // Filter pending transactions and map them to the desired shape
       const pendingTransactions = transactions
         .filter(isSmartTransactionPending)
-        .map((tx) => {
+        .map((pendingSmartTransaction) => {
           // Use the transaction's chainId (from the key) to derive a networkClientId
           const networkClientIdToUse = this.#getNetworkClientId({
             chainId: chainId as Hex,
           });
           return {
-            uuid: tx.uuid,
+            uuid: pendingSmartTransaction.uuid,
             networkClientId: networkClientIdToUse,
-            chainId: tx.chainId as Hex, // same as the key, but explicit on the transaction
+            chainId: pendingSmartTransaction.chainId as Hex, // same as the key, but explicit on the transaction
           };
         });
 
@@ -1108,11 +1106,15 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const {
       smartTransactionsState: { smartTransactions },
     } = this.state;
-    const currentSmartTransactions = Object.values(smartTransactions).flat();
-    if (!currentSmartTransactions || currentSmartTransactions.length === 0) {
+    const smartTransactionsForAllChains =
+      Object.values(smartTransactions).flat();
+    if (
+      !smartTransactionsForAllChains ||
+      smartTransactionsForAllChains.length === 0
+    ) {
       return [];
     }
-    return currentSmartTransactions;
+    return smartTransactionsForAllChains;
   }
 
   getTransactions({
