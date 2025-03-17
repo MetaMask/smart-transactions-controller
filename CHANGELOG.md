@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.2.0]
 
-### Uncategorized
+### Added
 
-- Feat/multichained smart transactions ([#498](https://github.com/MetaMask/smart-transactions-controller/pull/498))
-- fix: improve changelog linting to prevent formatting issues ([#502](https://github.com/MetaMask/smart-transactions-controller/pull/502))
+- Added multi-chain smart transaction support ([#498](https://github.com/MetaMask/smart-transactions-controller/pull/498))
+
+### Fixed
+
+- Improve changelog linting to prevent formatting issues ([#502](https://github.com/MetaMask/smart-transactions-controller/pull/502))
 
 ## [16.1.0]
 
