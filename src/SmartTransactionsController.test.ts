@@ -2222,6 +2222,10 @@ async function withController<ReturnValue>(
     getFeatureFlags: jest.fn(),
     updateTransaction: jest.fn(),
     ...options,
+    getRemoteFeatureFlags:
+      options?.getRemoteFeatureFlags ??
+      (() => ({ transactionsTxHashInAnalytics: false })),
+    getParticipateInMetrics: options?.getParticipateInMetrics ?? (() => false),
   });
 
   function triggerNetworStateChange(state: NetworkState) {

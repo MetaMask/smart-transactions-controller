@@ -38,6 +38,8 @@ describe('default export', () => {
       getFeatureFlags: jest.fn(),
       updateTransaction: jest.fn(),
       clientId: ClientId.Extension,
+      getRemoteFeatureFlags: () => ({ transactionsTxHashInAnalytics: false }),
+      getParticipateInMetrics: () => false,
     });
     expect(controller).toBeInstanceOf(SmartTransactionsController);
     jest.clearAllTimers();

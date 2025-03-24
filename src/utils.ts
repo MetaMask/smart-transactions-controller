@@ -256,19 +256,43 @@ export const getSmartTransactionMetricsProperties = (
   };
 };
 
+type SmartTransactionSensitiveProperties = {
+  token_from_symbol?: string;
+  token_to_symbol?: string;
+  account_hardware_type?: string;
+  account_type?: string;
+  device_model?: string;
+  transaction_hash?: string;
+};
+
 export const getSmartTransactionMetricsSensitiveProperties = (
   smartTransaction: SmartTransaction,
-) => {
+  getRemoteFeatureFlags?: () => { transactionsTxHashInAnalytics?: boolean },
+  getParticipateInMetrics?: () => boolean,
+): SmartTransactionSensitiveProperties => {
   if (!smartTransaction) {
     return {};
   }
-  return {
+
+  const sensitiveProperties: SmartTransactionSensitiveProperties = {
     token_from_symbol: smartTransaction.sourceTokenSymbol,
     token_to_symbol: smartTransaction.destinationTokenSymbol,
     account_hardware_type: smartTransaction.accountHardwareType,
     account_type: smartTransaction.accountType,
     device_model: smartTransaction.deviceModel,
   };
+
+  // Add transaction hash if feature flag is enabled and user has opted in
+  if (
+    getRemoteFeatureFlags?.()?.transactionsTxHashInAnalytics &&
+    getParticipateInMetrics?.() &&
+    smartTransaction.statusMetadata?.minedHash
+  ) {
+    sensitiveProperties.transaction_hash =
+      smartTransaction.statusMetadata.minedHash;
+  }
+
+  return sensitiveProperties;
 };
 
 export const getReturnTxHashAsap = (
