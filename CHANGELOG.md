@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.3.0]
 
-### Uncategorized
+### Added
 
-- Support batch transactions during submit, save txHashes ([#504](https://github.com/MetaMask/smart-transactions-controller/pull/504))
+- Support batch transactions during submit ([#504](https://github.com/MetaMask/smart-transactions-controller/pull/504))
 
 ## [16.2.0]
 
