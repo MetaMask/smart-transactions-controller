@@ -207,7 +207,6 @@ type SmartTransactionsControllerOptions = {
   getFeatureFlags: () => FeatureFlags;
   updateTransaction: (transaction: TransactionMeta, note: string) => void;
   getRemoteFeatureFlags: () => { transactionsTxHashInAnalytics?: boolean };
-  getParticipateInMetrics: () => boolean;
 };
 
 export type SmartTransactionsControllerPollingInput = {
@@ -249,8 +248,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #getRemoteFeatureFlags: () => { transactionsTxHashInAnalytics?: boolean };
 
-  #getParticipateInMetrics: () => boolean;
-
   /* istanbul ignore next */
   async #fetch(request: string, options?: RequestInit) {
     const fetchOptions = {
@@ -279,7 +276,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     getFeatureFlags,
     updateTransaction,
     getRemoteFeatureFlags,
-    getParticipateInMetrics,
   }: SmartTransactionsControllerOptions) {
     super({
       name: controllerName,
@@ -328,7 +324,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       (currentState) => this.checkPoll(currentState),
     );
     this.#getRemoteFeatureFlags = getRemoteFeatureFlags;
-    this.#getParticipateInMetrics = getParticipateInMetrics;
   }
 
   async _executePoll({
@@ -422,7 +417,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       sensitiveProperties: getSmartTransactionMetricsSensitiveProperties(
         updatedSmartTransaction,
         this.#getRemoteFeatureFlags,
-        this.#getParticipateInMetrics,
       ),
     });
   }
@@ -748,7 +742,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           sensitiveProperties: getSmartTransactionMetricsSensitiveProperties(
             smartTransaction,
             this.#getRemoteFeatureFlags,
-            this.#getParticipateInMetrics,
           ),
         });
         this.#updateSmartTransaction(

@@ -2225,7 +2225,6 @@ async function withController<ReturnValue>(
     getRemoteFeatureFlags:
       options?.getRemoteFeatureFlags ??
       (() => ({ transactionsTxHashInAnalytics: false })),
-    getParticipateInMetrics: options?.getParticipateInMetrics ?? (() => false),
   });
 
   function triggerNetworStateChange(state: NetworkState) {

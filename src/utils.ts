@@ -268,7 +268,6 @@ type SmartTransactionSensitiveProperties = {
 export const getSmartTransactionMetricsSensitiveProperties = (
   smartTransaction: SmartTransaction,
   getRemoteFeatureFlags?: () => { transactionsTxHashInAnalytics?: boolean },
-  getParticipateInMetrics?: () => boolean,
 ): SmartTransactionSensitiveProperties => {
   if (!smartTransaction) {
     return {};
@@ -285,7 +284,6 @@ export const getSmartTransactionMetricsSensitiveProperties = (
   // Add transaction hash if feature flag is enabled and user has opted in
   if (
     getRemoteFeatureFlags?.()?.transactionsTxHashInAnalytics &&
-    getParticipateInMetrics?.() &&
     smartTransaction.statusMetadata?.minedHash
   ) {
     sensitiveProperties.transaction_hash =
