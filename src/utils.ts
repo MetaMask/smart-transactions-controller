@@ -1,5 +1,5 @@
 import { TransactionFactory } from '@ethereumjs/tx';
-import { bytesToHex } from '@ethereumjs/util';
+import { bytesToHex, hexToBytes } from '@ethereumjs/util';
 import { hexlify } from '@ethersproject/bytes';
 import type { TransactionMeta } from '@metamask/transaction-controller';
 import { TransactionStatus } from '@metamask/transaction-controller';
@@ -224,13 +224,15 @@ export const incrementNonceInHex = (nonceInHex: string): string => {
   return hexlify(Number(nonceInDec) + 1);
 };
 
-export const getTxHash = (signedTxHex: any) => {
+export const getTxHash = (signedTxHex: string) => {
   if (!signedTxHex) {
     return '';
   }
+  const hexWithoutPrefix = signedTxHex.startsWith('0x')
+    ? signedTxHex.slice(2)
+    : signedTxHex;
   const txHashBytes = TransactionFactory.fromSerializedData(
-    // eslint-disable-next-line no-restricted-globals
-    Uint8Array.from(Buffer.from(signedTxHex.slice(2), 'hex')),
+    hexToBytes(`0x${hexWithoutPrefix}`),
   ).hash();
   return bytesToHex(txHashBytes);
 };
