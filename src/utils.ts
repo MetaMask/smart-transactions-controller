@@ -1,5 +1,5 @@
 import { TransactionFactory } from '@ethereumjs/tx';
-import { bytesToHex } from '@ethereumjs/util';
+import { bytesToHex, hexToBytes } from '@ethereumjs/util';
 import { hexlify } from '@ethersproject/bytes';
 import type { TransactionMeta } from '@metamask/transaction-controller';
 import { TransactionStatus } from '@metamask/transaction-controller';
@@ -224,13 +224,20 @@ export const incrementNonceInHex = (nonceInHex: string): string => {
   return hexlify(Number(nonceInDec) + 1);
 };
 
-export const getTxHash = (signedTxHex: any) => {
+export const getTxHash = (signedTxHex: string) => {
   if (!signedTxHex) {
     return '';
   }
+  // First normalize the entire string to lowercase
+  const normalizedInput = signedTxHex.toLowerCase();
+  // Then remove 0x prefix if it exists
+  const hexWithoutPrefix = normalizedInput.startsWith('0x')
+    ? normalizedInput.slice(2)
+    : normalizedInput;
+  // Add single 0x prefix
+  const prefixedHex = `0x${hexWithoutPrefix}`;
   const txHashBytes = TransactionFactory.fromSerializedData(
-    // eslint-disable-next-line no-restricted-globals
-    Buffer.from(signedTxHex.slice(2), 'hex'),
+    hexToBytes(prefixedHex),
   ).hash();
   return bytesToHex(txHashBytes);
 };
@@ -256,19 +263,41 @@ export const getSmartTransactionMetricsProperties = (
   };
 };
 
+type SmartTransactionSensitiveProperties = {
+  token_from_symbol?: string;
+  token_to_symbol?: string;
+  account_hardware_type?: string;
+  account_type?: string;
+  device_model?: string;
+  transaction_hash?: string;
+};
+
 export const getSmartTransactionMetricsSensitiveProperties = (
   smartTransaction: SmartTransaction,
-) => {
+  getRemoteFeatureFlags?: () => { transactionsTxHashInAnalytics?: boolean },
+): SmartTransactionSensitiveProperties => {
   if (!smartTransaction) {
     return {};
   }
-  return {
+
+  const sensitiveProperties: SmartTransactionSensitiveProperties = {
     token_from_symbol: smartTransaction.sourceTokenSymbol,
     token_to_symbol: smartTransaction.destinationTokenSymbol,
     account_hardware_type: smartTransaction.accountHardwareType,
     account_type: smartTransaction.accountType,
     device_model: smartTransaction.deviceModel,
   };
+
+  // Add transaction hash if feature flag is enabled and user has opted in
+  if (
+    getRemoteFeatureFlags?.()?.transactionsTxHashInAnalytics &&
+    smartTransaction.statusMetadata?.minedHash
+  ) {
+    sensitiveProperties.transaction_hash =
+      smartTransaction.statusMetadata.minedHash;
+  }
+
+  return sensitiveProperties;
 };
 
 export const getReturnTxHashAsap = (

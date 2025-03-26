@@ -206,6 +206,7 @@ type SmartTransactionsControllerOptions = {
   getMetaMetricsProps: () => Promise<MetaMetricsProps>;
   getFeatureFlags: () => FeatureFlags;
   updateTransaction: (transaction: TransactionMeta, note: string) => void;
+  getRemoteFeatureFlags: () => { transactionsTxHashInAnalytics?: boolean };
 };
 
 export type SmartTransactionsControllerPollingInput = {
@@ -245,6 +246,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #updateTransaction: SmartTransactionsControllerOptions['updateTransaction'];
 
+  #getRemoteFeatureFlags: () => { transactionsTxHashInAnalytics?: boolean };
+
   /* istanbul ignore next */
   async #fetch(request: string, options?: RequestInit) {
     const fetchOptions = {
@@ -272,6 +275,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     getMetaMetricsProps,
     getFeatureFlags,
     updateTransaction,
+    getRemoteFeatureFlags,
   }: SmartTransactionsControllerOptions) {
     super({
       name: controllerName,
@@ -319,6 +323,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       `${controllerName}:stateChange`,
       (currentState) => this.checkPoll(currentState),
     );
+    this.#getRemoteFeatureFlags = getRemoteFeatureFlags;
   }
 
   async _executePoll({
@@ -411,6 +416,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       properties: getSmartTransactionMetricsProperties(updatedSmartTransaction),
       sensitiveProperties: getSmartTransactionMetricsSensitiveProperties(
         updatedSmartTransaction,
+        this.#getRemoteFeatureFlags,
       ),
     });
   }
@@ -733,8 +739,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
           event: MetaMetricsEventName.StxConfirmed,
           category: MetaMetricsEventCategory.Transactions,
           properties: getSmartTransactionMetricsProperties(smartTransaction),
-          sensitiveProperties:
-            getSmartTransactionMetricsSensitiveProperties(smartTransaction),
+          sensitiveProperties: getSmartTransactionMetricsSensitiveProperties(
+            smartTransaction,
+            this.#getRemoteFeatureFlags,
+          ),
         });
         this.#updateSmartTransaction(
           { ...smartTransaction, confirmed: true },
