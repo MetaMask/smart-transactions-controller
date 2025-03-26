@@ -228,11 +228,16 @@ export const getTxHash = (signedTxHex: string) => {
   if (!signedTxHex) {
     return '';
   }
-  const hexWithoutPrefix = signedTxHex.startsWith('0x')
-    ? signedTxHex.slice(2)
-    : signedTxHex;
+  // First normalize the entire string to lowercase
+  const normalizedInput = signedTxHex.toLowerCase();
+  // Then remove 0x prefix if it exists
+  const hexWithoutPrefix = normalizedInput.startsWith('0x')
+    ? normalizedInput.slice(2)
+    : normalizedInput;
+  // Add single 0x prefix
+  const prefixedHex = `0x${hexWithoutPrefix}`;
   const txHashBytes = TransactionFactory.fromSerializedData(
-    hexToBytes(`0x${hexWithoutPrefix}`),
+    hexToBytes(prefixedHex),
   ).hash();
   return bytesToHex(txHashBytes);
 };

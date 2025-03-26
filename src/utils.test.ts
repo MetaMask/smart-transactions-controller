@@ -356,6 +356,11 @@ describe('src/utils.js', () => {
   });
 
   describe('getTxHash', () => {
+    /**
+     * Core functionality test - verifies that the function correctly generates
+     * a deterministic hash from a valid signed transaction. This is the primary
+     * use case for transaction tracking in MetaMetrics.
+     */
     it('returns a transaction hash from a signed transaction', () => {
       const expectedTxHash =
         '0x0302b75dfb9fd9eb34056af031efcaee2a8cbd799ea054a85966165cd82a7356';
@@ -363,16 +368,68 @@ describe('src/utils.js', () => {
       expect(txHash).toBe(expectedTxHash);
     });
 
+    /**
+     * Safety check - ensures the function handles empty input gracefully
+     * instead of throwing errors. Important for defensive programming and
+     * preventing crashes when tracking transaction hashes.
+     */
     it('returns an empty string if there is no signed transaction', () => {
       const expectedTxHash = '';
       const txHash = utils.getTxHash('');
       expect(txHash).toBe(expectedTxHash);
     });
 
+    /**
+     * Error handling test - verifies that malformed transaction data
+     * results in appropriate error messaging rather than silent failures
+     * or incorrect hash generation.
+     */
     it('throws an error with an incorrect signed transaction', () => {
       expect(() => {
         utils.getTxHash('0x0302b75dfb9fd9eb34056af0');
       }).toThrow('kzg instance required to instantiate blob tx');
+    });
+
+    /**
+     * Format handling test - ensures the function works correctly with both
+     * prefixed (0x) and unprefixed hex strings. This is crucial as transaction
+     * data might come in either format from different parts of the system.
+     */
+    it('handles transaction hex without 0x prefix', () => {
+      const withPrefix = createSignedTransaction();
+      const withoutPrefix = createSignedTransaction().slice(2);
+      expect(utils.getTxHash(withPrefix)).toBe(utils.getTxHash(withoutPrefix));
+    });
+
+    /**
+     * Consistency test - verifies that the function generates the same hash
+     * regardless of hex string casing. This ensures reliable transaction
+     * tracking even if the hex representation varies across the system.
+     */
+    it('maintains consistent hash with different string representations', () => {
+      const original = createSignedTransaction();
+      // Convert to upper/lower case but preserve the 0x prefix
+      const upperCase = `0x${original.slice(2).toUpperCase()}`;
+      const lowerCase = `0x${original.slice(2).toLowerCase()}`;
+      const hash = utils.getTxHash(original);
+
+      expect(utils.getTxHash(upperCase)).toBe(hash);
+      expect(utils.getTxHash(lowerCase)).toBe(hash);
+    });
+
+    /**
+     * Case insensitivity test - verifies that the function handles both uppercase
+     * and lowercase hex characters correctly by normalizing the input. This is
+     * important because hex strings might be represented in different cases
+     * across the system, but should still produce the same hash.
+     */
+    it('maintains consistent hash regardless of hex string case', () => {
+      const original = createSignedTransaction();
+      // Convert the middle portion to uppercase, keeping 0x prefix lowercase
+      const mixedCase = `0x${original.slice(2).toUpperCase()}`;
+      const hash = utils.getTxHash(original);
+
+      expect(utils.getTxHash(mixedCase)).toBe(hash);
     });
   });
 
