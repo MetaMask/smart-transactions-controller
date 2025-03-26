@@ -230,7 +230,7 @@ export const getTxHash = (signedTxHex: any) => {
   }
   const txHashBytes = TransactionFactory.fromSerializedData(
     // eslint-disable-next-line no-restricted-globals
-    Buffer.from(signedTxHex.slice(2), 'hex'),
+    Uint8Array.from(Buffer.from(signedTxHex.slice(2), 'hex')),
   ).hash();
   return bytesToHex(txHashBytes);
 };
