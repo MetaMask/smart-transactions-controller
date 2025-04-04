@@ -842,7 +842,7 @@ describe('SmartTransactionsController', () => {
           expect(createdSmartTransaction.type).toBe('swap');
 
           // Verify nonceDetails were passed correctly
-          expect(createdSmartTransaction.nonceDetails).toEqual({
+          expect(createdSmartTransaction.nonceDetails).toStrictEqual({
             test: 'nonce details',
           });
         },
