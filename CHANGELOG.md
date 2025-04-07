@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.3.1]
 
-### Uncategorized
+### Fixed
 
-- fix: Improve error handling and monitoring ([#508](https://github.com/MetaMask/smart-transactions-controller/pull/508))
+- Improve error handling and monitoring ([#508](https://github.com/MetaMask/smart-transactions-controller/pull/508))
 
 ## [16.3.0]
 
