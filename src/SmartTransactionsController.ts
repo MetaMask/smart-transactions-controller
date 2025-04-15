@@ -622,23 +622,24 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       if (chainIds && !chainIds.includes(chainId as Hex)) {
         continue;
       }
-      // Filter pending transactions and map them to the desired shape
+
+      // Filter pending transactions for this chainId
       const pendingTransactions = transactions
         .filter(isSmartTransactionPending)
         .map((pendingSmartTransaction) => {
-          // Use the transaction's chainId (from the key) to derive a networkClientId
+          // Use the transaction's chainId to derive a networkClientId
           const networkClientIdToUse = this.#getNetworkClientId({
             chainId: chainId as Hex,
           });
           return {
             uuid: pendingSmartTransaction.uuid,
             networkClientId: networkClientIdToUse,
-            chainId: pendingSmartTransaction.chainId as Hex, // same as the key, but explicit on the transaction
+            chainId: chainId as Hex,
           };
         });
 
       if (pendingTransactions.length > 0) {
-        // Since each group is per chain, all transactions share the same chainId.
+        // Fetch status updates for all pending transactions on this chain
         await this.fetchSmartTransactionsStatus(pendingTransactions);
       }
     }

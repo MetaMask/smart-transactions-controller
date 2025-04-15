@@ -1578,6 +1578,76 @@ describe('SmartTransactionsController', () => {
       );
     });
 
+    it('iterates over transactions from all networks when updating statuses', async () => {
+      // Setup: Create controller with pending transactions on two different networks
+      const mainnetPendingTx = {
+        uuid: 'mainnet-tx',
+        status: SmartTransactionStatuses.PENDING,
+        chainId: ChainId.mainnet,
+        networkClientId: NetworkType.mainnet,
+      };
+
+      const sepoliaPendingTx = {
+        uuid: 'sepolia-tx',
+        status: SmartTransactionStatuses.PENDING,
+        chainId: ChainId.sepolia,
+        networkClientId: NetworkType.sepolia,
+      };
+
+      await withController(
+        {
+          options: {
+            supportedChainIds: [ChainId.mainnet, ChainId.sepolia],
+            state: {
+              smartTransactionsState: {
+                ...getDefaultSmartTransactionsControllerState()
+                  .smartTransactionsState,
+                smartTransactions: {
+                  [ChainId.mainnet]: [mainnetPendingTx] as SmartTransaction[],
+                  [ChainId.sepolia]: [sepoliaPendingTx] as SmartTransaction[],
+                },
+              },
+            },
+          },
+        },
+        async ({ controller }) => {
+          // Mock the API responses for both networks
+          nock(API_BASE_URL)
+            .get(`/networks/1/batchStatus?uuids=mainnet-tx`)
+            .reply(200, { 'mainnet-tx': {} });
+
+          nock(API_BASE_URL)
+            .get(`/networks/11155111/batchStatus?uuids=sepolia-tx`)
+            .reply(200, { 'sepolia-tx': {} });
+
+          const fetchStatusSpy = jest.spyOn(
+            controller,
+            'fetchSmartTransactionsStatus',
+          );
+
+          // Call updateSmartTransactions
+          await controller.updateSmartTransactions();
+
+          // Verify both calls were made with correct parameters
+          expect(fetchStatusSpy).toHaveBeenCalledTimes(2);
+          expect(fetchStatusSpy).toHaveBeenNthCalledWith(1, [
+            expect.objectContaining({
+              uuid: 'mainnet-tx',
+              chainId: ChainId.mainnet,
+              networkClientId: NetworkType.mainnet,
+            }),
+          ]);
+          expect(fetchStatusSpy).toHaveBeenNthCalledWith(2, [
+            expect.objectContaining({
+              uuid: 'sepolia-tx',
+              chainId: ChainId.sepolia,
+              networkClientId: NetworkType.sepolia,
+            }),
+          ]);
+        },
+      );
+    });
+
     it('does not call updateTransaction when smart transaction is cancelled but returnTxHashAsap is false', async () => {
       const mockUpdateTransaction = jest.fn();
       await withController(
