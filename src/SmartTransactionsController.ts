@@ -836,6 +836,146 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     };
   }
 
+/**
+ * Extracts a readable revert reason from an error message
+ * 
+ * @param errorMessage - The full error message
+ * @returns The extracted revert reason or null if not found
+ * @private
+ */
+#extractRevertReason(errorMessage: string): string | null {
+  // Common patterns in revert messages
+  const patterns = [
+    /execution reverted: (.*?)($|\s|\.)/i,
+    /reason string "(.*?)"/i,
+    /revert: (.*?)($|\s|\.)/i,
+    /revert with reason "(.*?)"/i,
+    /already claimed/i, // Special case for our specific scenario
+  ];
+  
+  for (const pattern of patterns) {
+    const match = errorMessage.match(pattern);
+    if (match) {
+      // For the "already claimed" special case or similar
+      if (pattern.toString().includes('already claimed')) {
+        return 'Already claimed';
+      }
+      return match[1];
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Checks if there are any pending duplicate transactions that would likely fail
+ * 
+ * @param params - Parameters to check for duplicates
+ * @param params.from - The address sending the transaction
+ * @param params.to - The address receiving the transaction
+ * @param params.data - The transaction data (function call and parameters)
+ * @param params.value - The transaction value in wei (optional)
+ * @param params.chainId - The chain ID (used indirectly through EthQuery)
+ * @param params.networkClientId - The network client ID (optional)
+ * @returns An object indicating if duplicates were found and the reason
+ */
+async checkForPotentialDuplicates({
+  from,
+  to,
+  data,
+  value,
+  chainId,
+  networkClientId,
+}: {
+  from: string;
+  to: string;
+  data: string;
+  value?: string;
+  chainId: Hex;
+  networkClientId?: NetworkClientId;
+}): Promise<{ hasDuplicates: boolean; reason?: string }> {
+  // log at start of function
+  console.log('checkForPotentialDuplicates called with', {
+    from: from?.substring(0, 10),
+    to: to?.substring(0, 10),
+    data: data?.substring(0, 10),
+    chainId
+  });
+  
+  // Normalize addresses for comparison
+  const normalizedFrom = from.toLowerCase();
+  const normalizedTo = to.toLowerCase();
+  
+  // 1. Check for pending local transactions with matching parameters
+  const currentSmartTransactions = this.#getCurrentSmartTransactions();
+  
+  // log for current transactions
+  console.log('Current smart transactions count:', currentSmartTransactions.length);
+  
+  const pendingDuplicates = currentSmartTransactions.filter(
+    (tx) => 
+      isSmartTransactionPending(tx) && 
+      tx.txParams?.from?.toLowerCase() === normalizedFrom &&
+      tx.txParams?.to?.toLowerCase() === normalizedTo &&
+      tx.txParams?.data === data
+  );
+
+  // log for pending duplicates
+  console.log('Pending duplicates found:', pendingDuplicates.length);
+
+  if (pendingDuplicates.length > 0) {
+    const result = { 
+      hasDuplicates: true, 
+      reason: 'Similar transaction is already pending'
+    };
+    console.log('checkForPotentialDuplicates result (from pending):', result);
+    return result;
+  }
+
+  // 2. Optional transaction simulation to detect potential reverts
+  // Only do this if we have a provider available
+  try {
+    console.log('About to get ethQuery and simulate transaction');
+    const ethQuery = this.#getEthQuery({ networkClientId });
+    
+    // Use eth_call to simulate the transaction
+    console.log('Simulating transaction with eth_call');
+    await query(ethQuery, 'call', [{
+      from: normalizedFrom,
+      to: normalizedTo,
+      data,
+      value: value || '0x0'
+    }, 'latest']);
+    
+    // If we get here, the simulation was successful
+    const result = { hasDuplicates: false };
+    console.log('checkForPotentialDuplicates result (no issues):', result);
+    return result;
+  } catch (error) {
+    // If the simulation fails, it suggests the transaction would revert
+    // Extract a user-friendly error message
+    console.log('Transaction simulation failed with error:', error);
+    let errorMessage = 'Transaction simulation failed';
+    
+    if (error instanceof Error) {
+      // Try to extract a reason from the error message
+      const revertReason = this.#extractRevertReason(error.message);
+      if (revertReason) {
+        errorMessage = `Transaction would fail: ${revertReason}`;
+      } else {
+        errorMessage = `Transaction would fail: ${error.message}`;
+      }
+    }
+    
+    const result = { 
+      hasDuplicates: true, 
+      reason: errorMessage
+    };
+    console.log('checkForPotentialDuplicates result (from simulation):', result);
+    return result;
+  }
+}
+
   clearFees(): Fees {
     const fees = {
       approvalTxFees: null,
