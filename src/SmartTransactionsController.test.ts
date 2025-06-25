@@ -2455,32 +2455,6 @@ describe('SmartTransactionsController', () => {
       );
     });
 
-    it('traces fetchSmartTransactionsStatus API call with expected name', async () => {
-      const traceCallback = createTraceCallback();
-
-      await withController(
-        {
-          options: {
-            trace: traceCallback,
-          },
-        },
-        async ({ controller }) => {
-          nock(API_BASE_URL)
-            .get(`/networks/${ethereumChainIdDec}/batchStatus?uuids=uuid1`)
-            .reply(200, createPendingBatchStatusApiResponse());
-
-          await controller.fetchSmartTransactionsStatus([
-            { uuid: 'uuid1', chainId: ChainId.mainnet },
-          ]);
-
-          expect(traceCallback).toHaveBeenCalledWith(
-            { name: 'SmartTransactions:fetchStatus' },
-            expect.any(Function),
-          );
-        },
-      );
-    });
-
     it('traces cancelSmartTransaction API call with expected name', async () => {
       const traceCallback = createTraceCallback();
 

@@ -796,10 +796,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       APIType.BATCH_STATUS,
       chainId,
     )}?${params.toString()}`;
-    const data = (await this.#trace(
-      { name: 'SmartTransactions:fetchStatus' },
-      async () => await this.#fetch(url),
-    )) as Record<string, SmartTransactionsStatus>;
+    const data = (await this.#fetch(url)) as Record<
+      string,
+      SmartTransactionsStatus
+    >;
 
     // Process each returned status
     for (const [uuid, stxStatus] of Object.entries(data)) {
