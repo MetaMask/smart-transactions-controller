@@ -22,7 +22,11 @@ import * as sinon from 'sinon';
 
 import packageJson from '../package.json';
 import { advanceTime, flushPromises, getFakeProvider } from '../tests/helpers';
-import { API_BASE_URL, SENTINEL_API_BASE_URL_MAP } from './constants';
+import {
+  API_BASE_URL,
+  SENTINEL_API_BASE_URL_MAP,
+  SmartTransactionsTraceName,
+} from './constants';
 import SmartTransactionsController, {
   DEFAULT_INTERVAL,
   getDefaultSmartTransactionsControllerState,
@@ -2413,7 +2417,7 @@ describe('SmartTransactionsController', () => {
           await controller.getFees(tradeTx);
 
           expect(traceCallback).toHaveBeenCalledWith(
-            { name: 'SmartTransactions:getFees' },
+            { name: SmartTransactionsTraceName.GetFees },
             expect.any(Function),
           );
         },
@@ -2448,7 +2452,7 @@ describe('SmartTransactionsController', () => {
           });
 
           expect(traceCallback).toHaveBeenCalledWith(
-            { name: 'SmartTransactions:submitTransactions' },
+            { name: SmartTransactionsTraceName.SubmitTransactions },
             expect.any(Function),
           );
         },
@@ -2473,7 +2477,7 @@ describe('SmartTransactionsController', () => {
           await controller.cancelSmartTransaction('uuid1');
 
           expect(traceCallback).toHaveBeenCalledWith(
-            { name: 'SmartTransactions:cancelTransaction' },
+            { name: SmartTransactionsTraceName.CancelTransaction },
             expect.any(Function),
           );
         },
@@ -2497,7 +2501,7 @@ describe('SmartTransactionsController', () => {
           await controller.fetchLiveness();
 
           expect(traceCallback).toHaveBeenCalledWith(
-            { name: 'SmartTransactions:fetchLiveness' },
+            { name: SmartTransactionsTraceName.FetchLiveness },
             expect.any(Function),
           );
         },

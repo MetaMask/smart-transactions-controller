@@ -28,7 +28,11 @@ import { TransactionStatus } from '@metamask/transaction-controller';
 import { BigNumber } from 'bignumber.js';
 import cloneDeep from 'lodash/cloneDeep';
 
-import { MetaMetricsEventCategory, MetaMetricsEventName } from './constants';
+import {
+  MetaMetricsEventCategory,
+  MetaMetricsEventName,
+  SmartTransactionsTraceName,
+} from './constants';
 import type {
   Fees,
   Hex,
@@ -887,7 +891,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     }
     transactions.push(unsignedTradeTransactionWithNonce);
     const data = await this.#trace(
-      { name: 'SmartTransactions:getFees' },
+      { name: SmartTransactionsTraceName.GetFees },
       async () =>
         await this.#fetch(getAPIRequestURL(APIType.GET_FEES, chainId), {
           method: 'POST',
@@ -951,7 +955,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       networkClientId: selectedNetworkClientId,
     });
     const data = await this.#trace(
-      { name: 'SmartTransactions:submitTransactions' },
+      { name: SmartTransactionsTraceName.SubmitTransactions },
       async () =>
         await this.#fetch(
           getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
@@ -1101,7 +1105,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   ): Promise<void> {
     const chainId = this.#getChainId({ networkClientId });
     await this.#trace(
-      { name: 'SmartTransactions:cancelTransaction' },
+      { name: SmartTransactionsTraceName.CancelTransaction },
       async () =>
         await this.#fetch(getAPIRequestURL(APIType.CANCEL, chainId), {
           method: 'POST',
@@ -1119,7 +1123,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     let liveness = false;
     try {
       const response = await this.#trace(
-        { name: 'SmartTransactions:fetchLiveness' },
+        { name: SmartTransactionsTraceName.FetchLiveness },
         async () =>
           await this.#fetch(getAPIRequestURL(APIType.LIVENESS, chainId)),
       );
