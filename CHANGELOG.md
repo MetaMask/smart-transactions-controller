@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.4.0]
 
-### Uncategorized
+### Added
 
-- feat: Add tracing to the STX controller ([#515](https://github.com/MetaMask/smart-transactions-controller/pull/515))
+- Add performance tracing to the STX controller ([#515](https://github.com/MetaMask/smart-transactions-controller/pull/515))
 
 ## [16.3.1]
 
