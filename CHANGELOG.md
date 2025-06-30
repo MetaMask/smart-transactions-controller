@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [16.5.0]
 
-### Uncategorized
+### Added
 
-- feat: Add Arbitrum URL for Sentinel ([#517](https://github.com/MetaMask/smart-transactions-controller/pull/517))
+- Add Arbitrum URL for Sentinel ([#517](https://github.com/MetaMask/smart-transactions-controller/pull/517))
 
 ## [16.4.0]
 
