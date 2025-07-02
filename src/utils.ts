@@ -224,15 +224,39 @@ export const incrementNonceInHex = (nonceInHex: string): string => {
   return hexlify(Number(nonceInDec) + 1);
 };
 
-export const getTxHash = (signedTxHex: any) => {
+export const getTxHash = (signedTxHex: any, chainId?: number) => {
   if (!signedTxHex) {
     return '';
   }
-  const txHashBytes = TransactionFactory.fromSerializedData(
-    // eslint-disable-next-line no-restricted-globals
-    Buffer.from(signedTxHex.slice(2), 'hex'),
-  ).hash();
-  return bytesToHex(txHashBytes);
+  
+  const txBuffer = Buffer.from(signedTxHex.slice(2), 'hex');
+  
+  // Check the transaction type byte to detect EIP-7702 transactions
+  // EIP-7702 transactions have type 0x04
+  const transactionType = txBuffer[0];
+  const isEIP7702 = transactionType === 0x04;
+  
+  try {
+    let txHashBytes;
+    
+    if (isEIP7702) {
+      // EIP-7702 support is not yet available in the current version of @ethereumjs/common
+      // When support is added, we'll need to create a Common instance with Prague hardfork
+      // or use custom configuration with EIP-7702 enabled
+      throw new Error(
+        'EIP-7702 transactions are not yet supported. Please ensure your dependencies ' +
+        'include a version of @ethereumjs/common and @ethereumjs/tx that support EIP-7702.'
+      );
+    } else {
+      // For non-EIP-7702 transactions, use the default deserialization
+      txHashBytes = TransactionFactory.fromSerializedData(txBuffer).hash();
+    }
+    
+    return bytesToHex(txHashBytes);
+  } catch (error: any) {
+    console.error('Error computing transaction hash:', error.message);
+    throw error;
+  }
 };
 
 export const getSmartTransactionMetricsProperties = (

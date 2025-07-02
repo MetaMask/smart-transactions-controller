@@ -1002,7 +1002,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       }
     }
 
-    const txHashes = signedTransactions.map((tx) => getTxHash(tx));
+    const txHashes = signedTransactions.map((tx) => getTxHash(tx, parseInt(chainId, 16)));
     const submitTransactionResponse = {
       ...data,
       txHash: txHashes[txHashes.length - 1], // For backward compatibility - use the last tx hash

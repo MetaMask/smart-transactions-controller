@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.24.1",
+    "@ethereumjs/common": "^4.2.0",
     "@ethereumjs/tx": "^5.2.1",
     "@ethereumjs/util": "^9.0.2",
     "@ethersproject/bytes": "^5.7.0",
