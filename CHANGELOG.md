@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING:** Bump peer dependency on `@metamask/network-controller` to `^24.0.0` ([#519](https://github.com/MetaMask/smart-transactions-controller/pull/519))
+
+## [16.5.0]
+
+### Added
+
+- Add Arbitrum URL for Sentinel ([#517](https://github.com/MetaMask/smart-transactions-controller/pull/517))
+
+## [16.4.0]
+
+### Added
+
+- Add performance tracing to the STX controller ([#515](https://github.com/MetaMask/smart-transactions-controller/pull/515))
+
+## [16.3.1]
+
+### Fixed
+
+- Improve error handling and monitoring ([#508](https://github.com/MetaMask/smart-transactions-controller/pull/508))
+
 ## [16.3.0]
 
 ### Added
@@ -543,7 +565,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.3.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.5.0...HEAD
+[16.5.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.4.0...v16.5.0
+[16.4.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.3.1...v16.4.0
+[16.3.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.3.0...v16.3.1
 [16.3.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.2.0...v16.3.0
 [16.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.1.0...v16.2.0
 [16.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.0.1...v16.1.0

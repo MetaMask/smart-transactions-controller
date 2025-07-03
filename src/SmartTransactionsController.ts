@@ -9,6 +9,7 @@ import {
   safelyExecute,
   ChainId,
   isSafeDynamicKey,
+  type TraceCallback,
 } from '@metamask/controller-utils';
 import EthQuery from '@metamask/eth-query';
 import type {
@@ -27,7 +28,11 @@ import { TransactionStatus } from '@metamask/transaction-controller';
 import { BigNumber } from 'bignumber.js';
 import cloneDeep from 'lodash/cloneDeep';
 
-import { MetaMetricsEventCategory, MetaMetricsEventName } from './constants';
+import {
+  MetaMetricsEventCategory,
+  MetaMetricsEventName,
+  SmartTransactionsTraceName,
+} from './constants';
 import type {
   Fees,
   Hex,
@@ -206,6 +211,7 @@ type SmartTransactionsControllerOptions = {
   getMetaMetricsProps: () => Promise<MetaMetricsProps>;
   getFeatureFlags: () => FeatureFlags;
   updateTransaction: (transaction: TransactionMeta, note: string) => void;
+  trace?: TraceCallback;
 };
 
 export type SmartTransactionsControllerPollingInput = {
@@ -245,6 +251,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #updateTransaction: SmartTransactionsControllerOptions['updateTransaction'];
 
+  #trace: TraceCallback;
+
   /* istanbul ignore next */
   async #fetch(request: string, options?: RequestInit) {
     const fetchOptions = {
@@ -272,6 +280,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     getMetaMetricsProps,
     getFeatureFlags,
     updateTransaction,
+    trace,
   }: SmartTransactionsControllerOptions) {
     super({
       name: controllerName,
@@ -295,6 +304,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.#getMetaMetricsProps = getMetaMetricsProps;
     this.#getFeatureFlags = getFeatureFlags;
     this.#updateTransaction = updateTransaction;
+    this.#trace = trace ?? (((_request, fn) => fn?.()) as TraceCallback);
 
     this.initializeSmartTransactionsForChainId();
 
@@ -513,12 +523,20 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       smartTransaction.uuid,
       chainId,
     );
-    if (this.#ethQuery === undefined) {
+    if (ethQuery === undefined) {
       throw new Error(ETH_QUERY_ERROR_MSG);
     }
 
     if (isNewSmartTransaction) {
-      await this.#addMetaMetricsPropsToNewSmartTransaction(smartTransaction);
+      try {
+        await this.#addMetaMetricsPropsToNewSmartTransaction(smartTransaction);
+      } catch (error) {
+        console.error(
+          'Failed to add metrics props to smart transaction:',
+          error,
+        );
+        // Continue without metrics props
+      }
     }
 
     this.trackStxStatusChange(
@@ -852,7 +870,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const chainId = this.#getChainId({
       networkClientId: selectedNetworkClientId,
     });
-    const transactions = [];
+    const transactions: UnsignedTransaction[] = [];
     let unsignedTradeTransactionWithNonce;
     if (approvalTx) {
       const unsignedApprovalTransactionWithNonce =
@@ -872,14 +890,15 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       );
     }
     transactions.push(unsignedTradeTransactionWithNonce);
-    const data = await this.#fetch(
-      getAPIRequestURL(APIType.GET_FEES, chainId),
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          txs: transactions,
+    const data = await this.#trace(
+      { name: SmartTransactionsTraceName.GetFees },
+      async () =>
+        await this.#fetch(getAPIRequestURL(APIType.GET_FEES, chainId), {
+          method: 'POST',
+          body: JSON.stringify({
+            txs: transactions,
+          }),
         }),
-      },
     );
     let approvalTxFees: IndividualTxFees | null;
     let tradeTxFees: IndividualTxFees | null;
@@ -935,15 +954,19 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const ethQuery = this.#getEthQuery({
       networkClientId: selectedNetworkClientId,
     });
-    const data = await this.#fetch(
-      getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          rawTxs: signedTransactions,
-          rawCancelTxs: signedCanceledTransactions,
-        }),
-      },
+    const data = await this.#trace(
+      { name: SmartTransactionsTraceName.SubmitTransactions },
+      async () =>
+        await this.#fetch(
+          getAPIRequestURL(APIType.SUBMIT_TRANSACTIONS, chainId),
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              rawTxs: signedTransactions,
+              rawCancelTxs: signedCanceledTransactions,
+            }),
+          },
+        ),
     );
     const time = Date.now();
     let preTxBalance;
@@ -955,7 +978,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         preTxBalance = new BigNumber(preTxBalanceBN).toString(16);
       }
     } catch (error) {
-      console.error('provider error', error);
+      console.error('ethQuery.getBalance error:', error);
     }
 
     const requiresNonce = txParams && !txParams.nonce;
@@ -963,20 +986,26 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     let nonceLock;
     let nonceDetails = {};
 
+    // This should only happen for Swaps. Non-swaps transactions should already have a nonce
     if (requiresNonce) {
-      nonceLock = await this.#getNonceLock(
-        txParams.from,
-        selectedNetworkClientId,
-      );
-      nonce = hexlify(nonceLock.nextNonce);
-      nonceDetails = nonceLock.nonceDetails;
-      txParams.nonce ??= nonce;
+      try {
+        nonceLock = await this.#getNonceLock(
+          txParams.from,
+          selectedNetworkClientId,
+        );
+        nonce = hexlify(nonceLock.nextNonce);
+        nonceDetails = nonceLock.nonceDetails;
+        txParams.nonce ??= nonce;
+      } catch (error) {
+        console.error('Failed to acquire nonce lock:', error);
+        throw error;
+      }
     }
 
     const txHashes = signedTransactions.map((tx) => getTxHash(tx));
     const submitTransactionResponse = {
       ...data,
-      txHash: txHashes[0], // For backward compatibility
+      txHash: txHashes[txHashes.length - 1], // For backward compatibility - use the last tx hash
       txHashes,
     };
 
@@ -999,8 +1028,13 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
         },
         { chainId, ethQuery },
       );
+    } catch (error) {
+      console.error('Failed to create a smart transaction:', error);
+      throw error;
     } finally {
-      nonceLock?.releaseLock();
+      if (nonceLock) {
+        nonceLock.releaseLock();
+      }
     }
 
     return submitTransactionResponse;
@@ -1070,10 +1104,14 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     } = {},
   ): Promise<void> {
     const chainId = this.#getChainId({ networkClientId });
-    await this.#fetch(getAPIRequestURL(APIType.CANCEL, chainId), {
-      method: 'POST',
-      body: JSON.stringify({ uuid }),
-    });
+    await this.#trace(
+      { name: SmartTransactionsTraceName.CancelTransaction },
+      async () =>
+        await this.#fetch(getAPIRequestURL(APIType.CANCEL, chainId), {
+          method: 'POST',
+          body: JSON.stringify({ uuid }),
+        }),
+    );
   }
 
   async fetchLiveness({
@@ -1084,8 +1122,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const chainId = this.#getChainId({ networkClientId });
     let liveness = false;
     try {
-      const response = await this.#fetch(
-        getAPIRequestURL(APIType.LIVENESS, chainId),
+      const response = await this.#trace(
+        { name: SmartTransactionsTraceName.FetchLiveness },
+        async () =>
+          await this.#fetch(getAPIRequestURL(APIType.LIVENESS, chainId)),
       );
       liveness = Boolean(response.smartTransactions);
     } catch (error) {
