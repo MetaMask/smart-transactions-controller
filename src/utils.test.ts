@@ -372,7 +372,7 @@ describe('src/utils.js', () => {
     it('throws an error with an incorrect signed transaction', () => {
       expect(() => {
         utils.getTxHash('0x0302b75dfb9fd9eb34056af0');
-      }).toThrow('kzg instance required to instantiate blob tx');
+      }).toThrow('unsupported transaction type: 3');
     });
   });
 
