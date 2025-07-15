@@ -1,4 +1,5 @@
-import { hexlify } from '@ethersproject/bytes';
+import { arrayify, hexlify } from '@ethersproject/bytes';
+import { keccak256 } from '@ethersproject/keccak256';
 import { parse } from '@ethersproject/transactions';
 import type { TransactionMeta } from '@metamask/transaction-controller';
 import { TransactionStatus } from '@metamask/transaction-controller';
@@ -227,8 +228,15 @@ export const getTxHash = (signedTxHex: any) => {
   if (!signedTxHex) {
     return '';
   }
-  const parsed = parse(signedTxHex);
-  return parsed?.hash ?? '';
+  try {
+    const parsed = parse(signedTxHex);
+    return parsed?.hash ?? '';
+  } catch (error) {
+    if (typeof signedTxHex === 'string' && signedTxHex.startsWith('0x04')) {
+      return hexlify(keccak256(arrayify(signedTxHex)));
+    }
+    throw error;
+  }
 };
 
 export const getSmartTransactionMetricsProperties = (
