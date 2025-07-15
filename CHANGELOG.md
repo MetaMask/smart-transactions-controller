@@ -9,10 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [17.0.0]
 
-### Uncategorized
+### Added
 
-- feat: Add support for type 4 transaction ([#521](https://github.com/MetaMask/smart-transactions-controller/pull/521))
-- chore: update security-code-scanner@main to action-security-code-scanner@v1 ([#507](https://github.com/MetaMask/smart-transactions-controller/pull/507))
+- Add support for type 4 transaction ([#521](https://github.com/MetaMask/smart-transactions-controller/pull/521))
 
 ### Changed
 
