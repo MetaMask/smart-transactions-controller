@@ -224,6 +224,10 @@ export const incrementNonceInHex = (nonceInHex: string): string => {
   return hexlify(Number(nonceInDec) + 1);
 };
 
+const isType4Transaction = (signedTxHex: string) => {
+  return typeof signedTxHex === 'string' && signedTxHex.startsWith('0x04');
+};
+
 export const getTxHash = (signedTxHex: any) => {
   if (!signedTxHex) {
     return '';
@@ -232,7 +236,7 @@ export const getTxHash = (signedTxHex: any) => {
     const parsed = parse(signedTxHex);
     return parsed?.hash ?? '';
   } catch (error) {
-    if (typeof signedTxHex === 'string' && signedTxHex.startsWith('0x04')) {
+    if (isType4Transaction(signedTxHex)) {
       return hexlify(keccak256(arrayify(signedTxHex)));
     }
     throw error;

@@ -1,3 +1,5 @@
+import { arrayify, hexlify } from '@ethersproject/bytes';
+import { keccak256 } from '@ethersproject/keccak256';
 import { ChainId, NetworkType } from '@metamask/controller-utils';
 import {
   type TransactionMeta,
@@ -373,6 +375,13 @@ describe('src/utils.js', () => {
       expect(() => {
         utils.getTxHash('0x0302b75dfb9fd9eb34056af0');
       }).toThrow('unsupported transaction type: 3');
+    });
+
+    it('computes hash for type 4 transaction', () => {
+      const type4TxHex = '0x04010203040506070809';
+      const expectedHash = hexlify(keccak256(arrayify(type4TxHex)));
+      const txHash = utils.getTxHash(type4TxHex);
+      expect(txHash).toBe(expectedHash);
     });
   });
 
