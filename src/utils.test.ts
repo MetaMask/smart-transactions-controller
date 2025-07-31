@@ -621,4 +621,24 @@ describe('src/utils.js', () => {
       expect(updateTransactionMock).not.toHaveBeenCalled();
     });
   });
+
+  describe('getSentinelBaseUrl', () => {
+    it('returns the correct base URL for Ethereum Mainnet', () => {
+      const chainId = ChainId.mainnet;
+      const result = utils.getSentinelBaseUrl(chainId);
+      expect(result).toBe(SENTINEL_API_BASE_URL_MAP[parseInt(ChainId.mainnet, 16)]);
+    });
+
+    it('returns the correct base URL for Sepolia', () => {
+      const chainId = ChainId.sepolia;
+      const result = utils.getSentinelBaseUrl(chainId);
+      expect(result).toBe(SENTINEL_API_BASE_URL_MAP[parseInt(ChainId.sepolia, 16)]);
+    });
+
+    it('returns undefined for unsupported chainId', () => {
+      const unsupportedChainId = '0x999'; // Arbitrary unsupported chain
+      const result = utils.getSentinelBaseUrl(unsupportedChainId);
+      expect(result).toBeUndefined();
+    });
+  });
 });

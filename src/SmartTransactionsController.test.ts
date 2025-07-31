@@ -1141,6 +1141,26 @@ describe('SmartTransactionsController', () => {
       });
     });
 
+    it('fetches liveness using custom getSentinelUrl', async () => {
+      const customSentinelUrl = 'https://custom-sentinel.example.com';
+      await withController(
+        {
+          options: {
+            getSentinelUrl: (_chainId: Hex) => customSentinelUrl,
+          },
+        },
+        async ({ controller }) => {
+          nock(customSentinelUrl)
+            .get(`/network`)
+            .reply(200, createSuccessLivenessApiResponse());
+
+          const liveness = await controller.fetchLiveness();
+
+          expect(liveness).toBe(true);
+        },
+      );
+    });
+
     it('fetches liveness and sets in feesByChainId state for the Smart Transactions API for the chainId of the networkClientId passed in', async () => {
       await withController(async ({ controller }) => {
         nock(SENTINEL_API_BASE_URL_MAP[sepoliaChainIdDec])

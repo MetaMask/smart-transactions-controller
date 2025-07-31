@@ -36,37 +36,46 @@ export const isSmartTransactionStatusResolved = (
 ) => stxStatus === 'uuid_not_found';
 
 // TODO use actual url once API is defined
-export function getAPIRequestURL(apiType: APIType, chainId: string): string {
+export function getAPIRequestURL(
+  apiType: APIType,
+  chainId: string,
+  sentinelUrl?: string,
+): string {
   const chainIdDec = parseInt(chainId, 16);
   switch (apiType) {
+    case APIType.LIVENESS: {
+      const effectiveSentinelUrl: string | undefined =
+        sentinelUrl ?? getSentinelBaseUrl(chainId);
+
+      if (effectiveSentinelUrl === undefined) {
+        throw new Error(`No sentinel URL for chainId ${chainId}`);
+      }
+      return `${effectiveSentinelUrl}/network`;
+    }
     case APIType.GET_FEES: {
       return `${API_BASE_URL}/networks/${chainIdDec}/getFees`;
     }
-
     case APIType.ESTIMATE_GAS: {
       return `${API_BASE_URL}/networks/${chainIdDec}/estimateGas`;
     }
-
     case APIType.SUBMIT_TRANSACTIONS: {
       return `${API_BASE_URL}/networks/${chainIdDec}/submitTransactions?stxControllerVersion=${packageJson.version}`;
     }
-
     case APIType.CANCEL: {
       return `${API_BASE_URL}/networks/${chainIdDec}/cancel`;
     }
-
     case APIType.BATCH_STATUS: {
       return `${API_BASE_URL}/networks/${chainIdDec}/batchStatus`;
     }
-
-    case APIType.LIVENESS: {
-      return `${SENTINEL_API_BASE_URL_MAP[chainIdDec]}/network`;
-    }
-
     default: {
-      throw new Error(`Invalid APIType`); // It can never get here thanks to TypeScript.
+      throw new Error(`Invalid APIType`);
     }
   }
+}
+
+export function getSentinelBaseUrl(chainId: string): string | undefined {
+  const chainIdDec = parseInt(chainId, 16);
+  return SENTINEL_API_BASE_URL_MAP[chainIdDec];
 }
 
 export const calculateStatus = (stxStatus: SmartTransactionsStatus) => {

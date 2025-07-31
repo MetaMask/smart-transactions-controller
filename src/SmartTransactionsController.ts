@@ -212,6 +212,7 @@ type SmartTransactionsControllerOptions = {
   getFeatureFlags: () => FeatureFlags;
   updateTransaction: (transaction: TransactionMeta, note: string) => void;
   trace?: TraceCallback;
+  getSentinelUrl?: (chainId: Hex) => string | undefined;
 };
 
 export type SmartTransactionsControllerPollingInput = {
@@ -253,6 +254,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #trace: TraceCallback;
 
+  #getSentinelUrl?: SmartTransactionsControllerOptions['getSentinelUrl'];
+
   /* istanbul ignore next */
   async #fetch(request: string, options?: RequestInit) {
     const fetchOptions = {
@@ -281,6 +284,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     getFeatureFlags,
     updateTransaction,
     trace,
+    getSentinelUrl,
   }: SmartTransactionsControllerOptions) {
     super({
       name: controllerName,
@@ -305,6 +309,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.#getFeatureFlags = getFeatureFlags;
     this.#updateTransaction = updateTransaction;
     this.#trace = trace ?? (((_request, fn) => fn?.()) as TraceCallback);
+    this.#getSentinelUrl = getSentinelUrl;
 
     this.initializeSmartTransactionsForChainId();
 
@@ -1122,14 +1127,18 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const chainId = this.#getChainId({ networkClientId });
     let liveness = false;
     try {
+      const url = getAPIRequestURL(
+        APIType.LIVENESS,
+        chainId,
+        this.#getSentinelUrl?.(chainId),
+      );
       const response = await this.#trace(
         { name: SmartTransactionsTraceName.FetchLiveness },
-        async () =>
-          await this.#fetch(getAPIRequestURL(APIType.LIVENESS, chainId)),
+        async () => await this.#fetch(url),
       );
       liveness = Boolean(response.smartTransactions);
     } catch (error) {
-      console.log('"fetchLiveness" API call failed');
+      console.error('"fetchLiveness" API call failed:', error);
     }
 
     this.update((state) => {
