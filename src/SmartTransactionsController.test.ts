@@ -415,7 +415,7 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            supportedChainIds: [ChainId.mainnet],
+            getSupportedChainIds: () => [ChainId.mainnet],
           },
         },
         ({ controller, triggerNetworStateChange }) => {
@@ -1889,7 +1889,7 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            // pending transactions in state are required to test polling
+            getSupportedChainIds: () => [ChainId.mainnet, ChainId.sepolia],
             state: {
               smartTransactionsState: {
                 ...getDefaultSmartTransactionsControllerState()
@@ -2009,7 +2009,7 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            // pending transactions in state are required to test polling
+            getSupportedChainIds: () => [ChainId.mainnet],
             state: {
               smartTransactionsState: {
                 ...getDefaultSmartTransactionsControllerState()
@@ -2186,12 +2186,10 @@ describe('SmartTransactionsController', () => {
       );
     });
 
-    it('removes transactions from the current chainId (even if it is not in supportedChainIds) if ignoreNetwork is false', async () => {
+    it('removes transactions from the current chainId (even if it is not returned by getSupportedChainIds) if ignoreNetwork is false', async () => {
       await withController(
         {
           options: {
-            supportedChainIds: [ChainId.sepolia],
-            chainId: ChainId.mainnet,
             state: {
               smartTransactionsState: {
                 ...getDefaultSmartTransactionsControllerState()
@@ -2238,11 +2236,11 @@ describe('SmartTransactionsController', () => {
       );
     });
 
-    it('removes transactions from all chains (even if they are not in supportedChainIds) if ignoreNetwork is true', async () => {
+    it('removes transactions from all chains (even if they are not returned by getSupportedChainIds) if ignoreNetwork is true', async () => {
       await withController(
         {
           options: {
-            supportedChainIds: [],
+            getSupportedChainIds: () => [],
             state: {
               smartTransactionsState: {
                 ...getDefaultSmartTransactionsControllerState()
