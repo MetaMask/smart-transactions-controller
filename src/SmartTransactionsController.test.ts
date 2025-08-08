@@ -2190,6 +2190,7 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
+            getSupportedChainIds: () => [ChainId.sepolia],
             state: {
               smartTransactionsState: {
                 ...getDefaultSmartTransactionsControllerState()
