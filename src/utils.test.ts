@@ -626,13 +626,17 @@ describe('src/utils.js', () => {
     it('returns the correct base URL for Ethereum Mainnet', () => {
       const chainId = ChainId.mainnet;
       const result = utils.getSentinelBaseUrl(chainId);
-      expect(result).toBe(SENTINEL_API_BASE_URL_MAP[parseInt(ChainId.mainnet, 16)]);
+      expect(result).toBe(
+        SENTINEL_API_BASE_URL_MAP[parseInt(ChainId.mainnet, 16)],
+      );
     });
 
     it('returns the correct base URL for Sepolia', () => {
       const chainId = ChainId.sepolia;
       const result = utils.getSentinelBaseUrl(chainId);
-      expect(result).toBe(SENTINEL_API_BASE_URL_MAP[parseInt(ChainId.sepolia, 16)]);
+      expect(result).toBe(
+        SENTINEL_API_BASE_URL_MAP[parseInt(ChainId.sepolia, 16)],
+      );
     });
 
     it('returns undefined for unsupported chainId', () => {
