@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.0.0]
 
-### Uncategorized
+### Changed
 
-- chore: Don't persist controller state ([#525](https://github.com/MetaMask/smart-transactions-controller/pull/525))
+- **BREAKING:**: Don't persist controller state ([#525](https://github.com/MetaMask/smart-transactions-controller/pull/525))
 
 ## [17.0.0]
 
