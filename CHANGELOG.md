@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [18.1.0]
 
-### Uncategorized
+### Added
 
-- feat: Add Linea URL for Sentinel ([#527](https://github.com/MetaMask/smart-transactions-controller/pull/527))
+- Add Linea URL for Sentinel ([#527](https://github.com/MetaMask/smart-transactions-controller/pull/527))
 
 ## [18.0.0]
 
