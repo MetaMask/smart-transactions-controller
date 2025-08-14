@@ -13,8 +13,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING:** Bump peer dependency on `@metamask/network-controller` to `^24.0.0` ([#519](https://github.com/MetaMask/smart-transactions-controller/pull/519))
 - **BREAKING:** Disallow subpath exports ([#469](https://github.com/MetaMask/smart-transactions-controller/pull/469))
+
+## [18.1.0]
+
+### Added
+
+- Add Linea URL for Sentinel ([#527](https://github.com/MetaMask/smart-transactions-controller/pull/527))
+
+## [18.0.0]
+
+### Changed
+
+- **BREAKING:**: Don't persist controller state ([#525](https://github.com/MetaMask/smart-transactions-controller/pull/525))
+
+## [17.0.0]
+
+### Added
+
+- Add support for type 4 transaction ([#521](https://github.com/MetaMask/smart-transactions-controller/pull/521))
+
+### Changed
+
+- **BREAKING:** Bump peer dependency on `@metamask/network-controller` to `^24.0.0` ([#519](https://github.com/MetaMask/smart-transactions-controller/pull/519))
 
 ## [16.5.0]
 
@@ -570,7 +591,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.5.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v18.1.0...HEAD
+[18.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v18.0.0...v18.1.0
+[18.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v17.0.0...v18.0.0
+[17.0.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.5.0...v17.0.0
 [16.5.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.4.0...v16.5.0
 [16.4.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.3.1...v16.4.0
 [16.3.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v16.3.0...v16.3.1
