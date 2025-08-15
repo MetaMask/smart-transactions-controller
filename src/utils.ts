@@ -200,6 +200,7 @@ export async function handleFetch(request: string, options?: RequestInit) {
     console.log(`response`, response);
     throw new Error(
       `Fetch error:${JSON.stringify({
+        request,
         status: response.status,
         ...mapKeysToCamel(json),
       })}`,
