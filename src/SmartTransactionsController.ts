@@ -190,7 +190,6 @@ type SmartTransactionsControllerOptions = {
   interval?: number;
   clientId: ClientId;
   chainId?: Hex;
-  supportedChainIds?: Hex[];
   getNonceLock: TransactionController['getNonceLock'];
   confirmExternalTransaction: TransactionController['confirmExternalTransaction'];
   trackMetaMetricsEvent: (
@@ -211,6 +210,8 @@ type SmartTransactionsControllerOptions = {
   getFeatureFlags: () => FeatureFlags;
   updateTransaction: (transaction: TransactionMeta, note: string) => void;
   trace?: TraceCallback;
+  getSentinelUrl?: (chainId: Hex) => string | undefined;
+  getSupportedChainIds?: () => Hex[];
 };
 
 export type SmartTransactionsControllerPollingInput = {
@@ -227,8 +228,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   #clientId: ClientId;
 
   #chainId: Hex;
-
-  #supportedChainIds: Hex[];
 
   timeoutHandle?: NodeJS.Timeout;
 
@@ -252,6 +251,10 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
   #trace: TraceCallback;
 
+  #getSentinelUrl?: SmartTransactionsControllerOptions['getSentinelUrl'];
+
+  #getSupportedChainIds: () => Hex[];
+
   /* istanbul ignore next */
   async #fetch(request: string, options?: RequestInit) {
     const fetchOptions = {
@@ -269,7 +272,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     interval = DEFAULT_INTERVAL,
     clientId,
     chainId: InitialChainId = ChainId.mainnet,
-    supportedChainIds = [ChainId.mainnet, ChainId.sepolia],
     getNonceLock,
     confirmExternalTransaction,
     trackMetaMetricsEvent,
@@ -280,6 +282,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     getFeatureFlags,
     updateTransaction,
     trace,
+    getSentinelUrl,
+    getSupportedChainIds = () => [ChainId.mainnet, ChainId.sepolia],
   }: SmartTransactionsControllerOptions) {
     super({
       name: controllerName,
@@ -293,7 +297,6 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.#interval = interval;
     this.#clientId = clientId;
     this.#chainId = InitialChainId;
-    this.#supportedChainIds = supportedChainIds;
     this.setIntervalLength(interval);
     this.#getNonceLock = getNonceLock;
     this.#ethQuery = undefined;
@@ -304,6 +307,8 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     this.#getFeatureFlags = getFeatureFlags;
     this.#updateTransaction = updateTransaction;
     this.#trace = trace ?? (((_request, fn) => fn?.()) as TraceCallback);
+    this.#getSentinelUrl = getSentinelUrl;
+    this.#getSupportedChainIds = getSupportedChainIds;
 
     this.initializeSmartTransactionsForChainId();
 
@@ -338,7 +343,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     // wondering if we should add some kind of predicate to the polling controller to check whether
     // we should poll or not
     const filteredChainIds = (chainIds ?? []).filter((chainId) =>
-      this.#supportedChainIds.includes(chainId),
+      this.#getSupportedChainIds().includes(chainId),
     );
 
     if (filteredChainIds.length === 0) {
@@ -364,7 +369,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
   }
 
   initializeSmartTransactionsForChainId() {
-    if (this.#supportedChainIds.includes(this.#chainId)) {
+    if (this.#getSupportedChainIds().includes(this.#chainId)) {
       this.update((state) => {
         state.smartTransactionsState.smartTransactions[this.#chainId] =
           state.smartTransactionsState.smartTransactions[this.#chainId] ?? [];
@@ -379,7 +384,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
 
     this.timeoutHandle && clearInterval(this.timeoutHandle);
 
-    if (!this.#supportedChainIds.includes(this.#chainId)) {
+    if (!this.#getSupportedChainIds().includes(this.#chainId)) {
       return;
     }
 
@@ -1058,7 +1063,7 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     );
     return Object.keys(networkConfigurationsByChainId).filter(
       (chainId): chainId is Hex =>
-        this.#supportedChainIds.includes(chainId as Hex),
+        this.#getSupportedChainIds().includes(chainId as Hex),
     );
   }
 
@@ -1121,14 +1126,18 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
     const chainId = this.#getChainId({ networkClientId });
     let liveness = false;
     try {
+      const url = getAPIRequestURL(
+        APIType.LIVENESS,
+        chainId,
+        this.#getSentinelUrl?.(chainId),
+      );
       const response = await this.#trace(
         { name: SmartTransactionsTraceName.FetchLiveness },
-        async () =>
-          await this.#fetch(getAPIRequestURL(APIType.LIVENESS, chainId)),
+        async () => await this.#fetch(url),
       );
       liveness = Boolean(response.smartTransactions);
     } catch (error) {
-      console.log('"fetchLiveness" API call failed');
+      console.error('"fetchLiveness" API call failed:', error);
     }
 
     this.update((state) => {
