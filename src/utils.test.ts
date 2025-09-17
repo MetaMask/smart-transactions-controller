@@ -1,6 +1,11 @@
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { keccak256 } from '@ethersproject/keccak256';
+import { Messenger } from '@metamask/base-controller';
 import { ChainId, NetworkType } from '@metamask/controller-utils';
+import type {
+  TransactionControllerGetTransactionsAction,
+  TransactionControllerUpdateTransactionAction,
+} from '@metamask/transaction-controller';
 import {
   type TransactionMeta,
   TransactionStatus,
@@ -560,13 +565,33 @@ describe('src/utils.js', () => {
 
     it('updates transaction with failed status and error message', () => {
       const updateTransactionMock = jest.fn();
+      const messenger = new Messenger<
+        | TransactionControllerGetTransactionsAction
+        | TransactionControllerUpdateTransactionAction,
+        never
+      >();
+      const restrictedMessenger = messenger.getRestricted({
+        name: 'SmartTransactionController',
+        allowedActions: [
+          'TransactionController:getTransactions',
+          'TransactionController:updateTransaction',
+        ],
+        allowedEvents: [],
+      });
+      messenger.registerActionHandler(
+        'TransactionController:getTransactions',
+        () => [mockTransaction],
+      );
+      messenger.registerActionHandler(
+        'TransactionController:updateTransaction',
+        updateTransactionMock,
+      );
 
       utils.markRegularTransactionAsFailed({
+        messenger: restrictedMessenger,
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED,
         ),
-        getRegularTransactions: () => [mockTransaction],
-        updateTransaction: updateTransactionMock,
       });
 
       expect(updateTransactionMock).toHaveBeenCalledWith(
@@ -583,16 +608,36 @@ describe('src/utils.js', () => {
     });
 
     it('throws error if original transaction cannot be found', () => {
+      const getTransactionsMock = jest.fn(() => []);
       const updateTransactionMock = jest.fn();
-      const getRegularTransactionsMock = jest.fn(() => []);
+      const messenger = new Messenger<
+        | TransactionControllerGetTransactionsAction
+        | TransactionControllerUpdateTransactionAction,
+        never
+      >();
+      const restrictedMessenger = messenger.getRestricted({
+        name: 'SmartTransactionController',
+        allowedActions: [
+          'TransactionController:getTransactions',
+          'TransactionController:updateTransaction',
+        ],
+        allowedEvents: [],
+      });
+      messenger.registerActionHandler(
+        'TransactionController:getTransactions',
+        getTransactionsMock,
+      );
+      messenger.registerActionHandler(
+        'TransactionController:updateTransaction',
+        updateTransactionMock,
+      );
 
       expect(() =>
         utils.markRegularTransactionAsFailed({
+          messenger: restrictedMessenger,
           smartTransaction: createSmartTransaction(
             SmartTransactionStatuses.CANCELLED,
           ),
-          getRegularTransactions: getRegularTransactionsMock,
-          updateTransaction: updateTransactionMock,
         }),
       ).toThrow('Cannot find regular transaction to mark it as failed');
 
@@ -600,7 +645,6 @@ describe('src/utils.js', () => {
     });
 
     it('does not update transaction if status is already failed', () => {
-      const updateTransactionMock = jest.fn();
       const failedTransaction = {
         ...mockTransaction,
         status: TransactionStatus.failed,
@@ -609,13 +653,34 @@ describe('src/utils.js', () => {
           message: 'Smart transaction failed',
         },
       };
+      const updateTransactionMock = jest.fn();
+      const messenger = new Messenger<
+        | TransactionControllerGetTransactionsAction
+        | TransactionControllerUpdateTransactionAction,
+        never
+      >();
+      const restrictedMessenger = messenger.getRestricted({
+        name: 'SmartTransactionController',
+        allowedActions: [
+          'TransactionController:getTransactions',
+          'TransactionController:updateTransaction',
+        ],
+        allowedEvents: [],
+      });
+      messenger.registerActionHandler(
+        'TransactionController:getTransactions',
+        () => [failedTransaction],
+      );
+      messenger.registerActionHandler(
+        'TransactionController:updateTransaction',
+        updateTransactionMock,
+      );
 
       utils.markRegularTransactionAsFailed({
+        messenger: restrictedMessenger,
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED,
         ),
-        getRegularTransactions: () => [failedTransaction],
-        updateTransaction: updateTransactionMock,
       });
 
       expect(updateTransactionMock).not.toHaveBeenCalled();

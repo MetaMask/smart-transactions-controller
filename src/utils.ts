@@ -1,7 +1,12 @@
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { keccak256 } from '@ethersproject/keccak256';
 import { parse } from '@ethersproject/transactions';
-import type { TransactionMeta } from '@metamask/transaction-controller';
+import type { RestrictedMessenger } from '@metamask/base-controller';
+import type {
+  TransactionControllerGetTransactionsAction,
+  TransactionControllerUpdateTransactionAction,
+  TransactionMeta,
+} from '@metamask/transaction-controller';
 import { TransactionStatus } from '@metamask/transaction-controller';
 import { BigNumber } from 'bignumber.js';
 import jsonDiffer from 'fast-json-patch';
@@ -26,6 +31,18 @@ import {
   cancellationReasonToStatusMap,
   ClientId,
 } from './types';
+
+export type MarkRegularTransactionsAsFailedMessenger = RestrictedMessenger<
+  string,
+  | TransactionControllerGetTransactionsAction
+  | TransactionControllerUpdateTransactionAction,
+  never,
+  (
+    | TransactionControllerGetTransactionsAction
+    | TransactionControllerUpdateTransactionAction
+  )['type'],
+  never
+>;
 
 export function isSmartTransactionPending(smartTransaction: SmartTransaction) {
   return smartTransaction.status === SmartTransactionStatuses.PENDING;
@@ -320,18 +337,16 @@ export const shouldMarkRegularTransactionAsFailed = ({
 };
 
 export const markRegularTransactionAsFailed = ({
+  messenger,
   smartTransaction,
-  getRegularTransactions,
-  updateTransaction,
 }: {
+  messenger: MarkRegularTransactionsAsFailedMessenger;
   smartTransaction: SmartTransaction;
-  getRegularTransactions: () => TransactionMeta[];
-  updateTransaction: (transaction: TransactionMeta, note: string) => void;
 }) => {
   const { transactionId, status } = smartTransaction;
-  const originalTransaction = getRegularTransactions().find(
-    (transaction) => transaction.id === transactionId,
-  );
+  const originalTransaction = messenger
+    .call('TransactionController:getTransactions')
+    .find((transaction) => transaction.id === transactionId);
   if (!originalTransaction) {
     throw new Error('Cannot find regular transaction to mark it as failed');
   }
@@ -346,5 +361,9 @@ export const markRegularTransactionAsFailed = ({
       message: `Smart transaction failed with status: ${status}`,
     },
   };
-  updateTransaction(updatedTransaction, `Smart transaction status: ${status}`);
+  messenger.call(
+    'TransactionController:updateTransaction',
+    updatedTransaction,
+    `Smart transaction status: ${status}`,
+  );
 };
