@@ -12,6 +12,12 @@ import {
   RpcEndpointType,
   type NetworkState,
 } from '@metamask/network-controller';
+import type {
+  TransactionControllerConfirmExternalTransactionAction,
+  TransactionControllerGetNonceLockAction,
+  TransactionControllerGetTransactionsAction,
+  TransactionControllerUpdateTransactionAction,
+} from '@metamask/transaction-controller';
 import {
   type TransactionParams,
   TransactionStatus,
@@ -733,9 +739,7 @@ describe('SmartTransactionsController', () => {
 
       await withController(
         {
-          options: {
-            getNonceLock: mockGetNonceLock,
-          },
+          getNonceLock: mockGetNonceLock,
         },
         async ({ controller }) => {
           const signedTransaction = createSignedTransaction();
@@ -802,9 +806,7 @@ describe('SmartTransactionsController', () => {
 
       await withController(
         {
-          options: {
-            getNonceLock: mockGetNonceLock,
-          },
+          getNonceLock: mockGetNonceLock,
         },
         async ({ controller }) => {
           const signedTransaction = createSignedTransaction();
@@ -859,9 +861,7 @@ describe('SmartTransactionsController', () => {
 
       await withController(
         {
-          options: {
-            getNonceLock: mockGetNonceLock,
-          },
+          getNonceLock: mockGetNonceLock,
         },
         async ({ controller }) => {
           const signedTransaction = createSignedTransaction();
@@ -1240,9 +1240,9 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
-            confirmExternalTransaction: confirmExternalTransactionSpy,
-            getTransactions: getRegularTransactionsSpy,
           },
+          confirmExternalTransaction: confirmExternalTransactionSpy,
+          getTransactions: getRegularTransactionsSpy,
         },
         async ({ controller }) => {
           const updateTransaction = {
@@ -1299,9 +1299,9 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
-            confirmExternalTransaction: confirmExternalTransactionSpy,
-            getTransactions: getRegularTransactionsSpy,
           },
+          confirmExternalTransaction: confirmExternalTransactionSpy,
+          getTransactions: getRegularTransactionsSpy,
         },
         async ({ controller }) => {
           const updateTransaction = {
@@ -1358,9 +1358,9 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
-            confirmExternalTransaction: confirmExternalTransactionSpy,
-            getTransactions: getRegularTransactionsSpy,
           },
+          confirmExternalTransaction: confirmExternalTransactionSpy,
+          getTransactions: getRegularTransactionsSpy,
         },
         async ({ controller }) => {
           const updateTransaction = {
@@ -1417,9 +1417,9 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
-            confirmExternalTransaction: confirmExternalTransactionSpy,
-            getTransactions: getRegularTransactionsSpy,
           },
+          confirmExternalTransaction: confirmExternalTransactionSpy,
+          getTransactions: getRegularTransactionsSpy,
         },
         async ({ controller }) => {
           const updateTransaction = {
@@ -1476,9 +1476,9 @@ describe('SmartTransactionsController', () => {
                 },
               },
             },
-            confirmExternalTransaction: confirmExternalTransactionSpy,
-            getTransactions: getRegularTransactionsSpy,
           },
+          confirmExternalTransaction: confirmExternalTransactionSpy,
+          getTransactions: getRegularTransactionsSpy,
         },
         async ({ controller }) => {
           const updateTransaction = {
@@ -1520,24 +1520,11 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            updateTransaction: mockUpdateTransaction,
             getFeatureFlags: () => ({
               smartTransactions: {
                 mobileReturnTxHashAsap: true,
               },
             }),
-            getTransactions: () => [
-              {
-                id: 'test-tx-id',
-                status: TransactionStatus.submitted,
-                chainId: '0x1',
-                time: 123,
-                txParams: {
-                  from: '0x123',
-                },
-                networkClientId: NetworkType.mainnet,
-              },
-            ],
             state: {
               smartTransactionsState: {
                 ...defaultState.smartTransactionsState,
@@ -1547,6 +1534,19 @@ describe('SmartTransactionsController', () => {
               },
             },
           },
+          updateTransaction: mockUpdateTransaction,
+          getTransactions: () => [
+            {
+              id: 'test-tx-id',
+              status: TransactionStatus.submitted,
+              chainId: '0x1',
+              time: 123,
+              txParams: {
+                from: '0x123',
+              },
+              networkClientId: NetworkType.mainnet,
+            },
+          ],
         },
         async ({ controller }) => {
           const smartTransaction = {
@@ -1583,25 +1583,25 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            updateTransaction: mockUpdateTransaction,
             getFeatureFlags: () => ({
               smartTransactions: {
                 mobileReturnTxHashAsap: false,
               },
             }),
-            getTransactions: () => [
-              {
-                id: 'test-tx-id',
-                status: TransactionStatus.submitted,
-                chainId: '0x1',
-                time: 123,
-                txParams: {
-                  from: '0x123',
-                },
-                networkClientId: NetworkType.mainnet,
-              },
-            ],
           },
+          updateTransaction: mockUpdateTransaction,
+          getTransactions: () => [
+            {
+              id: 'test-tx-id',
+              status: TransactionStatus.submitted,
+              chainId: '0x1',
+              time: 123,
+              txParams: {
+                from: '0x123',
+              },
+              networkClientId: NetworkType.mainnet,
+            },
+          ],
         },
         async ({ controller }) => {
           const smartTransaction = {
@@ -1623,14 +1623,14 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            updateTransaction: mockUpdateTransaction,
             getFeatureFlags: () => ({
               smartTransactions: {
                 mobileReturnTxHashAsap: true,
               },
             }),
-            getTransactions: () => [],
           },
+          updateTransaction: mockUpdateTransaction,
+          getTransactions: () => [],
         },
         async ({ controller }) => {
           const smartTransaction = {
@@ -1651,25 +1651,25 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            updateTransaction: mockUpdateTransaction,
             getFeatureFlags: () => ({
               smartTransactions: {
                 mobileReturnTxHashAsap: true,
               },
             }),
-            getTransactions: () => [
-              {
-                id: 'test-tx-id',
-                status: TransactionStatus.submitted,
-                chainId: '0x1',
-                time: 123,
-                txParams: {
-                  from: '0x123',
-                },
-                networkClientId: NetworkType.mainnet,
-              },
-            ],
           },
+          updateTransaction: mockUpdateTransaction,
+          getTransactions: () => [
+            {
+              id: 'test-tx-id',
+              status: TransactionStatus.submitted,
+              chainId: '0x1',
+              time: 123,
+              txParams: {
+                from: '0x123',
+              },
+              networkClientId: NetworkType.mainnet,
+            },
+          ],
         },
         async ({ controller }) => {
           const smartTransaction = {
@@ -2683,6 +2683,10 @@ type WithControllerOptions = {
   options?: Partial<
     ConstructorParameters<typeof SmartTransactionsController>[0]
   >;
+  getNonceLock?: TransactionControllerGetNonceLockAction['handler'];
+  confirmExternalTransaction?: TransactionControllerConfirmExternalTransactionAction['handler'];
+  getTransactions?: TransactionControllerGetTransactionsAction['handler'];
+  updateTransaction?: TransactionControllerUpdateTransactionAction['handler'];
 };
 
 type WithControllerArgs<ReturnValue> =
@@ -2702,11 +2706,25 @@ async function withController<ReturnValue>(
   ...args: WithControllerArgs<ReturnValue>
 ): Promise<ReturnValue> {
   const [{ ...rest }, fn] = args.length === 2 ? args : [{}, args[0]];
-  const { options } = rest;
+  const {
+    options,
+    getNonceLock = jest.fn().mockResolvedValue({
+      nextNonce: 42,
+      releaseLock: jest.fn(),
+    }),
+    confirmExternalTransaction = jest.fn(),
+    getTransactions = jest.fn(),
+    updateTransaction = jest.fn(),
+  } = rest;
+
   const controllerMessenger = new Messenger<
     | SmartTransactionsControllerActions
     | NetworkControllerGetNetworkClientByIdAction
-    | NetworkControllerGetStateAction,
+    | NetworkControllerGetStateAction
+    | TransactionControllerGetNonceLockAction
+    | TransactionControllerConfirmExternalTransactionAction
+    | TransactionControllerGetTransactionsAction
+    | TransactionControllerUpdateTransactionAction,
     SmartTransactionsControllerEvents | NetworkControllerStateChangeEvent
   >();
   controllerMessenger.registerActionHandler(
@@ -2732,7 +2750,6 @@ async function withController<ReturnValue>(
       }
     }),
   );
-
   controllerMessenger.registerActionHandler(
     'NetworkController:getState',
     jest.fn().mockReturnValue({
@@ -2771,12 +2788,32 @@ async function withController<ReturnValue>(
       },
     }),
   );
+  controllerMessenger.registerActionHandler(
+    'TransactionController:getNonceLock',
+    getNonceLock,
+  );
+  controllerMessenger.registerActionHandler(
+    'TransactionController:confirmExternalTransaction',
+    confirmExternalTransaction,
+  );
+  controllerMessenger.registerActionHandler(
+    'TransactionController:getTransactions',
+    getTransactions,
+  );
+  controllerMessenger.registerActionHandler(
+    'TransactionController:updateTransaction',
+    updateTransaction,
+  );
 
   const messenger = controllerMessenger.getRestricted({
     name: 'SmartTransactionsController',
     allowedActions: [
       'NetworkController:getNetworkClientById',
       'NetworkController:getState',
+      'TransactionController:getNonceLock',
+      'TransactionController:confirmExternalTransaction',
+      'TransactionController:getTransactions',
+      'TransactionController:updateTransaction',
     ],
     allowedEvents: ['NetworkController:stateChange'],
   });
@@ -2784,12 +2821,6 @@ async function withController<ReturnValue>(
   const controller = new SmartTransactionsController({
     messenger,
     clientId: ClientId.Mobile,
-    getNonceLock: jest.fn().mockResolvedValue({
-      nextNonce: 42,
-      releaseLock: jest.fn(),
-    }),
-    confirmExternalTransaction: jest.fn(),
-    getTransactions: jest.fn(),
     trackMetaMetricsEvent: trackMetaMetricsEventSpy,
     getMetaMetricsProps: jest.fn(async () => {
       return Promise.resolve({
@@ -2799,7 +2830,6 @@ async function withController<ReturnValue>(
       });
     }),
     getFeatureFlags: jest.fn(),
-    updateTransaction: jest.fn(),
     ...options,
   });
 
