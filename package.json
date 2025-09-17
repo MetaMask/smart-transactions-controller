@@ -93,7 +93,7 @@
   },
   "peerDependencies": {
     "@metamask/network-controller": "^24.0.0",
-    "@metamask/transaction-controller": "^60.0.0"
+    "@metamask/transaction-controller": "^60.4.0"
   },
   "peerDependenciesMeta": {
     "@metamask/accounts-controller": {
