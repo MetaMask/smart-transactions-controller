@@ -578,8 +578,15 @@ export default class SmartTransactionsController extends StaticIntervalPollingCo
       })
     ) {
       markRegularTransactionAsFailed({
-        messenger: this.messagingSystem,
         smartTransaction: nextSmartTransaction,
+        getRegularTransactions: () =>
+          this.messagingSystem.call('TransactionController:getTransactions'),
+        updateTransaction: (transactionMeta: TransactionMeta, note: string) =>
+          this.messagingSystem.call(
+            'TransactionController:updateTransaction',
+            transactionMeta,
+            note,
+          ),
       });
     }
 
