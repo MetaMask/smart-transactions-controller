@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [19.2.0]
 
-### Uncategorized
-
-- feat: export MetaMetrics helpers and constants ([#539](https://github.com/MetaMask/smart-transactions-controller/pull/539))
-
 ### Added
 
 - Add missing constants and helpers exports ([#538](https://github.com/MetaMask/smart-transactions-controller/pull/538))
