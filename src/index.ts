@@ -15,4 +15,11 @@ export type {
   IndividualTxFees,
   MetaMetricsProps,
   FeatureFlags,
+  SmartTransactionMinedTx,
+  SmartTransaction,
+  SmartTransactionCancellationReason,
+  SmartTransactionStatuses,
+  APIType,
+  ClientId,
+  cancellationReasonToStatusMap,
 } from './types';
