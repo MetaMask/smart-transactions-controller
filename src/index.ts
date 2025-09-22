@@ -9,3 +9,10 @@ export type {
   SmartTransactionsControllerSmartTransactionConfirmationDoneEvent,
   SmartTransactionsControllerEvents,
 } from './SmartTransactionsController';
+export type {
+  Fee,
+  Fees,
+  IndividualTxFees,
+  MetaMetricsProps,
+  FeatureFlags,
+} from './types';
