@@ -13,15 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Fee`
   - `Fees`
   - `IndividualTxFees`
-  - `MetaMetricsProps`
   - `FeatureFlags`
   - `SmartTransactionMinedTx`
   - `SmartTransaction`
   - `SmartTransactionCancellationReason`
   - `SmartTransactionStatuses`
-  - `APIType`
   - `ClientId`
-  - `cancellationReasonToStatusMap`
 
 ## [19.0.0]
 
