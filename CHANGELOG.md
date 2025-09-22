@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Export `Fee`, `Fees`, `IndividualTxFees`, `MetaMetricsProps` and `FeatureFlags` types ([#000](https://github.com/MetaMask/smart-transactions-controller/pull/000))
+- Export `Fee`, `Fees`, `IndividualTxFees`, `MetaMetricsProps` and `FeatureFlags` types ([#537](https://github.com/MetaMask/smart-transactions-controller/pull/537))
 
 ## [19.0.0]
 
