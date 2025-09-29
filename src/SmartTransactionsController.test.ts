@@ -1,9 +1,16 @@
-import { deriveStateFromMetadata, Messenger } from '@metamask/base-controller';
+import { deriveStateFromMetadata } from '@metamask/base-controller/next';
 import {
   NetworkType,
   convertHexToDecimal,
   ChainId,
 } from '@metamask/controller-utils';
+import {
+  Messenger,
+  MessengerActions,
+  MessengerEvents,
+  MockAnyNamespace,
+  MOCK_ANY_NAMESPACE,
+} from '@metamask/messenger';
 import {
   type NetworkControllerGetNetworkClientByIdAction,
   type NetworkControllerGetStateAction,
@@ -37,6 +44,7 @@ import {
   DEFAULT_INTERVAL,
   SmartTransactionsController,
   getDefaultSmartTransactionsControllerState,
+  type SmartTransactionsControllerMessenger,
 } from './SmartTransactionsController';
 import type {
   SmartTransactionsControllerActions,
@@ -45,6 +53,12 @@ import type {
 import type { SmartTransaction, UnsignedTransaction, Hex } from './types';
 import { SmartTransactionStatuses, ClientId } from './types';
 import * as utils from './utils';
+
+type AllActions = MessengerActions<SmartTransactionsControllerMessenger>;
+
+type AllEvents = MessengerEvents<SmartTransactionsControllerMessenger>;
+
+type RootMessenger = Messenger<MockAnyNamespace, AllActions, AllEvents>;
 
 jest.mock('@metamask/eth-query', () => {
   const EthQuery = jest.requireActual('@metamask/eth-query');
@@ -2540,7 +2554,7 @@ describe('SmartTransactionsController', () => {
           deriveStateFromMetadata(
             controller.state,
             controller.metadata,
-            'anonymous',
+            'includeInDebugSnapshot',
           ),
         ).toMatchInlineSnapshot(`
           {
@@ -2717,17 +2731,10 @@ async function withController<ReturnValue>(
     updateTransaction = jest.fn(),
   } = rest;
 
-  const controllerMessenger = new Messenger<
-    | SmartTransactionsControllerActions
-    | NetworkControllerGetNetworkClientByIdAction
-    | NetworkControllerGetStateAction
-    | TransactionControllerGetNonceLockAction
-    | TransactionControllerConfirmExternalTransactionAction
-    | TransactionControllerGetTransactionsAction
-    | TransactionControllerUpdateTransactionAction,
-    SmartTransactionsControllerEvents | NetworkControllerStateChangeEvent
-  >();
-  controllerMessenger.registerActionHandler(
+  const rootMessenger: RootMessenger = new Messenger({
+    namespace: MOCK_ANY_NAMESPACE,
+  });
+  rootMessenger.registerActionHandler(
     'NetworkController:getNetworkClientById',
     jest.fn().mockImplementation((networkClientId) => {
       switch (networkClientId) {
@@ -2750,7 +2757,7 @@ async function withController<ReturnValue>(
       }
     }),
   );
-  controllerMessenger.registerActionHandler(
+  rootMessenger.registerActionHandler(
     'NetworkController:getState',
     jest.fn().mockReturnValue({
       selectedNetworkClientId: NetworkType.mainnet,
@@ -2788,26 +2795,35 @@ async function withController<ReturnValue>(
       },
     }),
   );
-  controllerMessenger.registerActionHandler(
+  rootMessenger.registerActionHandler(
     'TransactionController:getNonceLock',
     getNonceLock,
   );
-  controllerMessenger.registerActionHandler(
+  rootMessenger.registerActionHandler(
     'TransactionController:confirmExternalTransaction',
     confirmExternalTransaction,
   );
-  controllerMessenger.registerActionHandler(
+  rootMessenger.registerActionHandler(
     'TransactionController:getTransactions',
     getTransactions,
   );
-  controllerMessenger.registerActionHandler(
+  rootMessenger.registerActionHandler(
     'TransactionController:updateTransaction',
     updateTransaction,
   );
 
-  const messenger = controllerMessenger.getRestricted({
-    name: 'SmartTransactionsController',
-    allowedActions: [
+  const messenger = new Messenger<
+    'SmartTransactionsController',
+    AllActions,
+    AllEvents,
+    RootMessenger
+  >({
+    namespace: 'SmartTransactionsController',
+    parent: rootMessenger,
+  });
+  rootMessenger.delegate({
+    messenger,
+    actions: [
       'NetworkController:getNetworkClientById',
       'NetworkController:getState',
       'TransactionController:getNonceLock',
@@ -2815,7 +2831,7 @@ async function withController<ReturnValue>(
       'TransactionController:getTransactions',
       'TransactionController:updateTransaction',
     ],
-    allowedEvents: ['NetworkController:stateChange'],
+    events: ['NetworkController:stateChange'],
   });
 
   const controller = new SmartTransactionsController({
@@ -2834,7 +2850,7 @@ async function withController<ReturnValue>(
   });
 
   function triggerNetworStateChange(state: NetworkState) {
-    controllerMessenger.publish('NetworkController:stateChange', state, []);
+    rootMessenger.publish('NetworkController:stateChange', state, []);
   }
 
   triggerNetworStateChange({

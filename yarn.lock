@@ -1424,7 +1424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/base-controller@npm:^8.0.1, @metamask/base-controller@npm:^8.3.0, @metamask/base-controller@npm:^8.4.0":
+"@metamask/base-controller@npm:^8.0.1, @metamask/base-controller@npm:^8.4.0":
   version: 8.4.0
   resolution: "@metamask/base-controller@npm:8.4.0"
   dependencies:
@@ -1435,7 +1435,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/controller-utils@npm:^11.0.0, @metamask/controller-utils@npm:^11.10.0, @metamask/controller-utils@npm:^11.14.0, @metamask/controller-utils@npm:^11.4.2, @metamask/controller-utils@npm:^11.4.3":
+"@metamask/controller-utils@npm:^11.0.0, @metamask/controller-utils@npm:^11.10.0, @metamask/controller-utils@npm:^11.14.0, @metamask/controller-utils@npm:^11.4.3":
   version: 11.14.0
   resolution: "@metamask/controller-utils@npm:11.14.0"
   dependencies:
@@ -1772,35 +1772,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/polling-controller@npm:^12.0.1":
-  version: 12.0.1
-  resolution: "@metamask/polling-controller@npm:12.0.1"
+"@metamask/polling-controller@npm:@metamask-previews/polling-controller@14.0.0-preview-b896289e":
+  version: 14.0.0-preview-b896289e
+  resolution: "@metamask-previews/polling-controller@npm:14.0.0-preview-b896289e"
   dependencies:
-    "@metamask/base-controller": ^7.0.2
-    "@metamask/controller-utils": ^11.4.2
-    "@metamask/utils": ^10.0.0
-    "@types/uuid": ^8.3.0
-    fast-json-stable-stringify: ^2.1.0
-    uuid: ^8.3.2
-  peerDependencies:
-    "@metamask/network-controller": ^22.0.0
-  checksum: 93cd0f85a34b6ae1aa4ac48869e0adcd4b413acaf95b25edba842973b7196bbdfa8a0f5f93fca8b9355db47020b5d50e7ee5f5eefb756e6488d7201f1cf927f5
-  languageName: node
-  linkType: hard
-
-"@metamask/polling-controller@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "@metamask/polling-controller@npm:14.0.0"
-  dependencies:
-    "@metamask/base-controller": ^8.0.1
-    "@metamask/controller-utils": ^11.10.0
-    "@metamask/utils": ^11.2.0
+    "@metamask/base-controller": ^8.4.0
+    "@metamask/controller-utils": ^11.14.0
+    "@metamask/utils": ^11.8.0
     "@types/uuid": ^8.3.0
     fast-json-stable-stringify: ^2.1.0
     uuid: ^8.3.2
   peerDependencies:
     "@metamask/network-controller": ^24.0.0
-  checksum: 6e38015ee0c52c0f24c2e2746ec8f406a6a7df9095f0353baaae8e201c00fe06c7d57021bf7e340adc0058ed3a64a3842fd8833ff747587015cc4046259d7e57
+  checksum: 618e9610dcf05b8e14a151c7b444d6793676a5b8d88677e1b7e487ebadce53855fca244583b367974e462c47c0e5d25f59521a451c0440cb5de2b5bba04c2910
   languageName: node
   linkType: hard
 
@@ -1835,7 +1819,7 @@ __metadata:
     "@lavamoat/allow-scripts": ^3.2.1
     "@lavamoat/preinstall-always-fail": ^2.1.0
     "@metamask/auto-changelog": ^3.1.0
-    "@metamask/base-controller": ^8.3.0
+    "@metamask/base-controller": ^8.4.0
     "@metamask/controller-utils": ^11.0.0
     "@metamask/eslint-config": ^12.2.0
     "@metamask/eslint-config-jest": ^12.1.0
@@ -1845,6 +1829,7 @@ __metadata:
     "@metamask/eth-query": ^4.0.0
     "@metamask/gas-fee-controller": ^22.0.0
     "@metamask/json-rpc-engine": ^10.0.1
+    "@metamask/messenger": ^0.3.0
     "@metamask/network-controller": ^24.0.0
     "@metamask/polling-controller": ^14.0.0
     "@metamask/transaction-controller": ^60.4.0
