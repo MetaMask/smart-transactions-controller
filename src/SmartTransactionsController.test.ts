@@ -6,15 +6,12 @@ import {
 } from '@metamask/controller-utils';
 import {
   Messenger,
-  MessengerActions,
-  MessengerEvents,
-  MockAnyNamespace,
   MOCK_ANY_NAMESPACE,
+  type MessengerActions,
+  type MessengerEvents,
+  type MockAnyNamespace,
 } from '@metamask/messenger';
 import {
-  type NetworkControllerGetNetworkClientByIdAction,
-  type NetworkControllerGetStateAction,
-  type NetworkControllerStateChangeEvent,
   NetworkStatus,
   RpcEndpointType,
   type NetworkState,
@@ -45,10 +42,6 @@ import {
   SmartTransactionsController,
   getDefaultSmartTransactionsControllerState,
   type SmartTransactionsControllerMessenger,
-} from './SmartTransactionsController';
-import type {
-  SmartTransactionsControllerActions,
-  SmartTransactionsControllerEvents,
 } from './SmartTransactionsController';
 import type { SmartTransaction, UnsignedTransaction, Hex } from './types';
 import { SmartTransactionStatuses, ClientId } from './types';
