@@ -5,8 +5,9 @@
 set -euo pipefail
 
 prepare-preview-manifest() {
-  local manifest_file="$1"
-  local short_commit_id="$2"
+  local npm_scope="$1"
+  local manifest_file="$2"
+  local short_commit_id="$3"
 
   # jq does not support in-place modification of files, so a temporary file is
   # used to store the result of the operation. The original file is then
@@ -31,7 +32,7 @@ main() {
   local short_commit_id="$2"
 
   echo "Preparing manifest..."
-  prepare-preview-manifest "package.json" "$short_commit_id"
+  prepare-preview-manifest "package.json" "$npm_scope" "$short_commit_id"
 
   echo "Installing dependencies..."
   yarn install --no-immutable
