@@ -14,7 +14,7 @@ You can configure your project to use the preview build with this identifier:
 
     npm:${package_name}@${package_version}
 
-[See these instructions](https://github.com/MetaMask/swaps-controller/blob/main/README.md#testing-changes-in-other-projects-using-preview-builds) for more information about preview builds.\
+[See these instructions](https://github.com/MetaMask/smart-transactions-controller/blob/main/README.md#testing-changes-in-other-projects-using-preview-builds) for more information about preview builds.\
 "
 
   echo "$preview_build_message"
