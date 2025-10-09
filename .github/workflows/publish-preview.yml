@@ -9,6 +9,9 @@ jobs:
     name: Determine whether this issue comment was on a pull request from a fork
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '@metamaskbot publish-preview') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       IS_FORK: ${{ steps.is-fork.outputs.IS_FORK }}
     steps:
@@ -17,7 +20,7 @@ jobs:
         id: is-fork
         run: echo "IS_FORK=$(gh pr view --json isCrossRepository --jq '.isCrossRepository' "${PR_NUMBER}" )" >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.issue.number }}
 
   react-to-comment:
@@ -27,10 +30,10 @@ jobs:
     if: ${{ needs.is-fork-pull-request.outputs.IS_FORK == 'false' }}
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: React to the comment
         run: |
           gh api \
@@ -40,7 +43,7 @@ jobs:
             "/repos/${REPO}/issues/comments/${COMMENT_ID}/reactions" \
             -f content='+1'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ github.event.comment.id }}
           REPO: ${{ github.repository }}
 
@@ -49,13 +52,14 @@ jobs:
     needs: react-to-comment
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Check out pull request
         run: gh pr checkout "${PR_NUMBER}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.issue.number }}
       - name: Checkout and setup environment
         uses: MetaMask/action-checkout-and-setup@v1
@@ -73,6 +77,6 @@ jobs:
       - name: Post build preview in comment
         run: ./scripts/generate-preview-build-message.sh | gh pr comment "${PR_NUMBER}" --body-file -
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_SHA: ${{ steps.commit-sha.outputs.COMMIT_SHA }}
           PR_NUMBER: ${{ github.event.issue.number }}
