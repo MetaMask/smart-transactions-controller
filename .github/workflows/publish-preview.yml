@@ -69,7 +69,7 @@ jobs:
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.PUBLISH_PREVIEW_NPM_TOKEN }}
       - name: Post build preview in comment
-        run: ./scripts/generate-preview-build-message | gh pr comment "${PR_NUMBER}" --body-file -
+        run: ./scripts/generate-preview-build-message.sh | gh pr comment "${PR_NUMBER}" --body-file -
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_SHA: ${{ steps.commit-sha.outputs.COMMIT_SHA }}
