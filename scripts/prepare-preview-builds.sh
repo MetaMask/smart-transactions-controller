@@ -5,8 +5,8 @@
 set -euo pipefail
 
 prepare-preview-manifest() {
-  local npm_scope="$1"
-  local manifest_file="$2"
+  local manifest_file="$1"
+  local npm_scope="$2"
   local short_commit_id="$3"
 
   # jq does not support in-place modification of files, so a temporary file is
