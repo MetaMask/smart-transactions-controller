@@ -17,7 +17,7 @@ prepare-preview-manifest() {
 }
 
 main() {
-  if [[ $# -eq 0 ]]; then
+  if [[ $# -lt 2 ]]; then
     echo "USAGE: $0 NPM_SCOPE SHORT_GIT_COMMIT_HASH"
     exit 1
   fi
