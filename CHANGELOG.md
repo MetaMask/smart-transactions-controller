@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [20.0.0]
 
-### Uncategorized
-
-- Add preview builds ([#544](https://github.com/MetaMask/smart-transactions-controller/pull/544))
-
 ### Changed
 
 - **BREAKING:** Migrate `SmartTransactionsController` to new `Messenger` from `@metamask/messenger` ([#543](https://github.com/MetaMask/smart-transactions-controller/pull/543))
