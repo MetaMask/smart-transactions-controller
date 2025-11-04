@@ -17,7 +17,6 @@ import {
   type NetworkState,
 } from '@metamask/network-controller';
 import type {
-  TransactionControllerConfirmExternalTransactionAction,
   TransactionControllerGetNonceLockAction,
   TransactionControllerGetTransactionsAction,
   TransactionControllerUpdateTransactionAction,
@@ -1225,301 +1224,6 @@ describe('SmartTransactionsController', () => {
       );
     });
 
-    it('confirms a smart transaction that has status success', async () => {
-      const { smartTransactionsState } =
-        getDefaultSmartTransactionsControllerState();
-      const pendingStx = {
-        ...createStateAfterPending()[0],
-        history: testHistory,
-      };
-      const confirmExternalTransactionSpy = jest.fn();
-      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
-        return [createTransactionMeta()];
-      });
-      await withController(
-        {
-          options: {
-            state: {
-              smartTransactionsState: {
-                ...smartTransactionsState,
-                smartTransactions: {
-                  [ChainId.mainnet]: [pendingStx] as SmartTransaction[],
-                },
-              },
-            },
-          },
-          confirmExternalTransaction: confirmExternalTransactionSpy,
-          getTransactions: getRegularTransactionsSpy,
-        },
-        async ({ controller }) => {
-          const updateTransaction = {
-            ...pendingStx,
-            statusMetadata: {
-              ...pendingStx.statusMetadata,
-              minedHash: txHash,
-            },
-            status: SmartTransactionStatuses.SUCCESS,
-          };
-
-          controller.updateSmartTransaction(
-            updateTransaction as SmartTransaction,
-            {
-              networkClientId: NetworkType.mainnet,
-            },
-          );
-          await flushPromises();
-
-          expect(confirmExternalTransactionSpy).toHaveBeenCalledTimes(1);
-          expect(
-            controller.state.smartTransactionsState.smartTransactions[
-              ChainId.mainnet
-            ],
-          ).toStrictEqual([
-            {
-              ...updateTransaction,
-              confirmed: true,
-            },
-          ]);
-        },
-      );
-    });
-
-    it('confirms a smart transaction that was not found in the list of regular transactions', async () => {
-      const { smartTransactionsState } =
-        getDefaultSmartTransactionsControllerState();
-      const pendingStx = {
-        ...createStateAfterPending()[0],
-        history: testHistory,
-      };
-      const confirmExternalTransactionSpy = jest.fn();
-      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
-        return [];
-      });
-      await withController(
-        {
-          options: {
-            state: {
-              smartTransactionsState: {
-                ...smartTransactionsState,
-                smartTransactions: {
-                  [ChainId.mainnet]: [pendingStx] as SmartTransaction[],
-                },
-              },
-            },
-          },
-          confirmExternalTransaction: confirmExternalTransactionSpy,
-          getTransactions: getRegularTransactionsSpy,
-        },
-        async ({ controller }) => {
-          const updateTransaction = {
-            ...pendingStx,
-            statusMetadata: {
-              ...pendingStx.statusMetadata,
-              minedHash: txHash,
-            },
-            status: SmartTransactionStatuses.SUCCESS,
-          };
-
-          controller.updateSmartTransaction(
-            updateTransaction as SmartTransaction,
-            {
-              networkClientId: NetworkType.mainnet,
-            },
-          );
-          await flushPromises();
-
-          expect(confirmExternalTransactionSpy).toHaveBeenCalledTimes(1);
-          expect(
-            controller.state.smartTransactionsState.smartTransactions[
-              ChainId.mainnet
-            ],
-          ).toStrictEqual([
-            {
-              ...updateTransaction,
-              confirmed: true,
-            },
-          ]);
-        },
-      );
-    });
-
-    it('confirms a smart transaction that does not have a minedHash', async () => {
-      const { smartTransactionsState } =
-        getDefaultSmartTransactionsControllerState();
-      const pendingStx = {
-        ...createStateAfterPending()[0],
-        history: testHistory,
-      };
-      const confirmExternalTransactionSpy = jest.fn();
-      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
-        return [createTransactionMeta(TransactionStatus.confirmed)];
-      });
-      await withController(
-        {
-          options: {
-            state: {
-              smartTransactionsState: {
-                ...smartTransactionsState,
-                smartTransactions: {
-                  [ChainId.mainnet]: [pendingStx] as SmartTransaction[],
-                },
-              },
-            },
-          },
-          confirmExternalTransaction: confirmExternalTransactionSpy,
-          getTransactions: getRegularTransactionsSpy,
-        },
-        async ({ controller }) => {
-          const updateTransaction = {
-            ...pendingStx,
-            statusMetadata: {
-              ...pendingStx.statusMetadata,
-              minedHash: '',
-            },
-            status: SmartTransactionStatuses.SUCCESS,
-          };
-
-          controller.updateSmartTransaction(
-            updateTransaction as SmartTransaction,
-            {
-              networkClientId: NetworkType.mainnet,
-            },
-          );
-          await flushPromises();
-
-          expect(confirmExternalTransactionSpy).toHaveBeenCalledTimes(1);
-          expect(
-            controller.state.smartTransactionsState.smartTransactions[
-              ChainId.mainnet
-            ],
-          ).toStrictEqual([
-            {
-              ...updateTransaction,
-              confirmed: true,
-            },
-          ]);
-        },
-      );
-    });
-
-    it('does not call the "confirmExternalTransaction" fn if a tx is already confirmed', async () => {
-      const { smartTransactionsState } =
-        getDefaultSmartTransactionsControllerState();
-      const pendingStx = {
-        ...createStateAfterPending()[0],
-        history: testHistory,
-      };
-      const confirmExternalTransactionSpy = jest.fn();
-      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
-        return [createTransactionMeta(TransactionStatus.confirmed)];
-      });
-      await withController(
-        {
-          options: {
-            state: {
-              smartTransactionsState: {
-                ...smartTransactionsState,
-                smartTransactions: {
-                  [ChainId.mainnet]: [pendingStx] as SmartTransaction[],
-                },
-              },
-            },
-          },
-          confirmExternalTransaction: confirmExternalTransactionSpy,
-          getTransactions: getRegularTransactionsSpy,
-        },
-        async ({ controller }) => {
-          const updateTransaction = {
-            ...pendingStx,
-            status: SmartTransactionStatuses.SUCCESS,
-            statusMetadata: {
-              ...pendingStx.statusMetadata,
-              minedHash: txHash,
-            },
-          };
-
-          controller.updateSmartTransaction(
-            updateTransaction as SmartTransaction,
-            {
-              networkClientId: NetworkType.mainnet,
-            },
-          );
-          await flushPromises();
-
-          expect(confirmExternalTransactionSpy).not.toHaveBeenCalled();
-          expect(
-            controller.state.smartTransactionsState.smartTransactions[
-              ChainId.mainnet
-            ],
-          ).toStrictEqual([
-            {
-              ...updateTransaction,
-              confirmed: true,
-            },
-          ]);
-        },
-      );
-    });
-
-    it('does not call the "confirmExternalTransaction" fn if a tx is already submitted', async () => {
-      const { smartTransactionsState } =
-        getDefaultSmartTransactionsControllerState();
-      const pendingStx = {
-        ...createStateAfterPending()[0],
-        history: testHistory,
-      };
-      const confirmExternalTransactionSpy = jest.fn();
-      const getRegularTransactionsSpy = jest.fn().mockImplementation(() => {
-        return [createTransactionMeta(TransactionStatus.submitted)];
-      });
-      await withController(
-        {
-          options: {
-            state: {
-              smartTransactionsState: {
-                ...smartTransactionsState,
-                smartTransactions: {
-                  [ChainId.mainnet]: [pendingStx] as SmartTransaction[],
-                },
-              },
-            },
-          },
-          confirmExternalTransaction: confirmExternalTransactionSpy,
-          getTransactions: getRegularTransactionsSpy,
-        },
-        async ({ controller }) => {
-          const updateTransaction = {
-            ...pendingStx,
-            status: SmartTransactionStatuses.SUCCESS,
-            statusMetadata: {
-              ...pendingStx.statusMetadata,
-              minedHash: txHash,
-            },
-          };
-
-          controller.updateSmartTransaction(
-            updateTransaction as SmartTransaction,
-            {
-              networkClientId: NetworkType.mainnet,
-            },
-          );
-          await flushPromises();
-
-          expect(confirmExternalTransactionSpy).not.toHaveBeenCalled();
-          expect(
-            controller.state.smartTransactionsState.smartTransactions[
-              ChainId.mainnet
-            ],
-          ).toStrictEqual([
-            {
-              ...updateTransaction,
-              confirmed: true,
-            },
-          ]);
-        },
-      );
-    });
-
     it('calls updateTransaction when smart transaction is cancelled and returnTxHashAsap is true', async () => {
       const mockUpdateTransaction = jest.fn();
       const defaultState = getDefaultSmartTransactionsControllerState();
@@ -2691,7 +2395,6 @@ type WithControllerOptions = {
     ConstructorParameters<typeof SmartTransactionsController>[0]
   >;
   getNonceLock?: TransactionControllerGetNonceLockAction['handler'];
-  confirmExternalTransaction?: TransactionControllerConfirmExternalTransactionAction['handler'];
   getTransactions?: TransactionControllerGetTransactionsAction['handler'];
   updateTransaction?: TransactionControllerUpdateTransactionAction['handler'];
 };
@@ -2719,7 +2422,6 @@ async function withController<ReturnValue>(
       nextNonce: 42,
       releaseLock: jest.fn(),
     }),
-    confirmExternalTransaction = jest.fn(),
     getTransactions = jest.fn(),
     updateTransaction = jest.fn(),
   } = rest;
@@ -2793,10 +2495,6 @@ async function withController<ReturnValue>(
     getNonceLock,
   );
   rootMessenger.registerActionHandler(
-    'TransactionController:confirmExternalTransaction',
-    confirmExternalTransaction,
-  );
-  rootMessenger.registerActionHandler(
     'TransactionController:getTransactions',
     getTransactions,
   );
@@ -2820,7 +2518,6 @@ async function withController<ReturnValue>(
       'NetworkController:getNetworkClientById',
       'NetworkController:getState',
       'TransactionController:getNonceLock',
-      'TransactionController:confirmExternalTransaction',
       'TransactionController:getTransactions',
       'TransactionController:updateTransaction',
     ],
