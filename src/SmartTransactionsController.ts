@@ -11,6 +11,7 @@ import {
   isSafeDynamicKey,
   type TraceCallback,
 } from '@metamask/controller-utils';
+import type { ErrorReportingServiceCaptureExceptionAction } from '@metamask/error-reporting-service';
 import EthQuery from '@metamask/eth-query';
 import type { Messenger } from '@metamask/messenger';
 import type {
@@ -21,12 +22,17 @@ import type {
 } from '@metamask/network-controller';
 import { StaticIntervalPollingController } from '@metamask/polling-controller';
 import type {
+  RemoteFeatureFlagControllerGetStateAction,
+  RemoteFeatureFlagControllerStateChangeEvent,
+} from '@metamask/remote-feature-flag-controller';
+import type {
   TransactionControllerGetNonceLockAction,
   TransactionControllerGetTransactionsAction,
   TransactionControllerUpdateTransactionAction,
   TransactionMeta,
   TransactionParams,
 } from '@metamask/transaction-controller';
+import type { Hex } from '@metamask/utils';
 import { BigNumber } from 'bignumber.js';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -37,7 +43,6 @@ import {
 } from './constants';
 import type {
   Fees,
-  Hex,
   IndividualTxFees,
   SignedCanceledTransaction,
   SignedTransaction,
@@ -62,6 +67,11 @@ import {
   shouldMarkRegularTransactionAsFailed,
   markRegularTransactionAsFailed,
 } from './utils';
+import {
+  getSmartTransactionsFeatureFlags,
+  getSmartTransactionsFeatureFlagsForChain,
+} from './utils/feature-flags';
+import { validateSmartTransactionsFeatureFlags } from './utils/validators';
 
 const SECOND = 1000;
 export const DEFAULT_INTERVAL = SECOND * 5;
@@ -148,9 +158,11 @@ export type SmartTransactionsControllerActions =
 type AllowedActions =
   | NetworkControllerGetNetworkClientByIdAction
   | NetworkControllerGetStateAction
+  | RemoteFeatureFlagControllerGetStateAction
   | TransactionControllerGetNonceLockAction
   | TransactionControllerGetTransactionsAction
-  | TransactionControllerUpdateTransactionAction;
+  | TransactionControllerUpdateTransactionAction
+  | ErrorReportingServiceCaptureExceptionAction;
 
 export type SmartTransactionsControllerStateChangeEvent =
   ControllerStateChangeEvent<
@@ -176,7 +188,9 @@ export type SmartTransactionsControllerEvents =
   | SmartTransactionsControllerSmartTransactionEvent
   | SmartTransactionsControllerSmartTransactionConfirmationDoneEvent;
 
-type AllowedEvents = NetworkControllerStateChangeEvent;
+type AllowedEvents =
+  | NetworkControllerStateChangeEvent
+  | RemoteFeatureFlagControllerStateChangeEvent;
 
 /**
  * The messenger of the {@link SmartTransactionsController}.
@@ -206,7 +220,12 @@ type SmartTransactionsControllerOptions = {
   state?: Partial<SmartTransactionsControllerState>;
   messenger: SmartTransactionsControllerMessenger;
   getMetaMetricsProps: () => Promise<MetaMetricsProps>;
-  getFeatureFlags: () => FeatureFlags;
+  /**
+   * @deprecated This option is ignored. Feature flags are now read directly
+   * from RemoteFeatureFlagController via the messenger. This option will be
+   * removed in a future version.
+   */
+  getFeatureFlags?: () => FeatureFlags;
   trace?: TraceCallback;
 };
 
@@ -235,9 +254,38 @@ export class SmartTransactionsController extends StaticIntervalPollingController
 
   readonly #getMetaMetricsProps: () => Promise<MetaMetricsProps>;
 
-  #getFeatureFlags: SmartTransactionsControllerOptions['getFeatureFlags'];
-
   #trace: TraceCallback;
+
+  /**
+   * Validates the smart transactions feature flags from the remote feature flag controller
+   * and reports any validation errors to Sentry via ErrorReportingService.
+   * Does not report errors when flags are undefined (not yet fetched).
+   */
+  #validateAndReportFeatureFlags(): void {
+    const remoteFeatureFlagControllerState = this.messenger.call(
+      'RemoteFeatureFlagController:getState',
+    );
+    const rawFlags =
+      remoteFeatureFlagControllerState?.remoteFeatureFlags
+        ?.smartTransactionsNetworks;
+
+    // Skip validation if flags haven't been fetched yet
+    if (rawFlags === undefined) {
+      return;
+    }
+
+    const { errors } = validateSmartTransactionsFeatureFlags(rawFlags);
+
+    // Report each validation error to Sentry
+    for (const error of errors) {
+      this.messenger.call(
+        'ErrorReportingService:captureException',
+        new Error(
+          `[SmartTransactionsController] Feature flag validation failed: ${error.message}`,
+        ),
+      );
+    }
+  }
 
   /* istanbul ignore next */
   async #fetch(request: string, options?: RequestInit) {
@@ -261,7 +309,6 @@ export class SmartTransactionsController extends StaticIntervalPollingController
     state = {},
     messenger,
     getMetaMetricsProps,
-    getFeatureFlags,
     trace,
   }: SmartTransactionsControllerOptions) {
     super({
@@ -281,7 +328,6 @@ export class SmartTransactionsController extends StaticIntervalPollingController
     this.#ethQuery = undefined;
     this.#trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.#getMetaMetricsProps = getMetaMetricsProps;
-    this.#getFeatureFlags = getFeatureFlags;
     this.#trace = trace ?? (((_request, fn) => fn?.()) as TraceCallback);
 
     this.initializeSmartTransactionsForChainId();
@@ -306,6 +352,12 @@ export class SmartTransactionsController extends StaticIntervalPollingController
     this.messenger.subscribe(`${controllerName}:stateChange`, (currentState) =>
       this.checkPoll(currentState),
     );
+
+    // Validate feature flags immediately on construction and on changes
+    this.#validateAndReportFeatureFlags();
+    this.messenger.subscribe('RemoteFeatureFlagController:stateChange', () => {
+      this.#validateAndReportFeatureFlags();
+    });
   }
 
   async _executePoll({
@@ -560,11 +612,16 @@ export class SmartTransactionsController extends StaticIntervalPollingController
       nextSmartTransaction,
     );
 
+    const featureFlags = getSmartTransactionsFeatureFlagsForChain(
+      getSmartTransactionsFeatureFlags(this.messenger),
+      chainId,
+    );
+
     if (
       shouldMarkRegularTransactionAsFailed({
         smartTransaction: nextSmartTransaction,
         clientId: this.#clientId,
-        getFeatureFlags: this.#getFeatureFlags,
+        featureFlags,
       })
     ) {
       markRegularTransactionAsFailed({

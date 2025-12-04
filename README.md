@@ -24,6 +24,45 @@ or
 Run `yarn test` to run the tests once. To run tests on file changes, run `yarn test:watch`.
 
 Run `yarn lint` to run the linter, or run `yarn lint:fix` to run the linter and fix any automatically fixable issues.
+### Feature Flags
+
+Smart transactions feature flags are managed via `RemoteFeatureFlagController` (LaunchDarkly). The configuration uses a `default` object for global settings and chain-specific overrides keyed by hex chain ID.
+
+#### Adding a New Flag
+
+1. **Add the field to the schema** in `src/utils/validators.ts`:
+
+   ```typescript
+   export const SmartTransactionsNetworkConfigSchema = type({
+     // ... existing fields
+     myNewFlag: optional(boolean()),
+   });
+   ```
+
+   The `SmartTransactionsNetworkConfig` type is automatically inferred from this schema.
+
+2. **Add default value** in `src/constants.ts` under `DEFAULT_SMART_TRANSACTIONS_FEATURE_FLAGS`:
+
+   ```typescript
+   export const DEFAULT_SMART_TRANSACTIONS_FEATURE_FLAGS = {
+     default: {
+       // ... existing defaults
+       myNewFlag: false,
+     },
+   };
+   ```
+
+3. **Use in clients** via the exported selectors:
+
+   ```typescript
+   import { selectSmartTransactionsFeatureFlagsForChain } from '@metamask/smart-transactions-controller';
+
+   const chainConfig = selectSmartTransactionsFeatureFlagsForChain(state, '0x1');
+   if (chainConfig.myNewFlag) {
+     // Feature is enabled
+   }
+   ```
+
 
 ### Release & Publishing
 
