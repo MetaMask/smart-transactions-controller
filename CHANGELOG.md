@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [21.0.0]
 
-### Uncategorized
+### Changed
 
-- fix: Mark multiple transactions as failed if a batch smart transaction fails ([#551](https://github.com/MetaMask/smart-transactions-controller/pull/551))
-- fix: Remove an unnecessary confirmExternalTransaction call ([#548](https://github.com/MetaMask/smart-transactions-controller/pull/548))
+- Mark multiple transactions as failed if a batch smart transaction fails ([#551](https://github.com/MetaMask/smart-transactions-controller/pull/551))
+- **BREAKING:** Remove an unnecessary confirmExternalTransaction call ([#548](https://github.com/MetaMask/smart-transactions-controller/pull/548))
 
 ## [20.1.0]
 
