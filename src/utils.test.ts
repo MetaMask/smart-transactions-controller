@@ -403,7 +403,7 @@ describe('src/utils.js', () => {
     });
   });
 
-  describe('shouldMarkRegularTransactionAsFailed', () => {
+  describe('shouldMarkRegularTransactionsAsFailed', () => {
     const createSmartTransaction = (status: SmartTransactionStatuses) => ({
       uuid: 'test-uuid',
       status,
@@ -428,7 +428,7 @@ describe('src/utils.js', () => {
       });
 
     it('returns true for "cancelled" status when feature flag is enabled', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED,
         ),
@@ -439,7 +439,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns true for "cancelled_user_cancelled" status when feature flag is enabled', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED_USER_CANCELLED,
         ),
@@ -450,7 +450,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns true for "unknown" status when feature flag is enabled', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.UNKNOWN,
         ),
@@ -461,7 +461,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns true for "resolved" status when feature flag is enabled', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.RESOLVED,
         ),
@@ -472,7 +472,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns false for "pending" status when feature flag is enabled', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.PENDING,
         ),
@@ -483,7 +483,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns false for "success" status when feature flag is enabled', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.SUCCESS,
         ),
@@ -494,7 +494,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns false when feature flag is disabled regardless of status', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED,
         ),
@@ -509,7 +509,7 @@ describe('src/utils.js', () => {
         ...createSmartTransaction(SmartTransactionStatuses.CANCELLED),
         transactionId: undefined,
       };
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction,
         clientId: ClientId.Extension,
         getFeatureFlags: mockGetFeatureFlags(true),
@@ -518,7 +518,7 @@ describe('src/utils.js', () => {
     });
 
     it('returns true for mobile client when mobile feature flag is enabled', () => {
-      const result = utils.shouldMarkRegularTransactionAsFailed({
+      const result = utils.shouldMarkRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED,
         ),
@@ -529,7 +529,7 @@ describe('src/utils.js', () => {
     });
   });
 
-  describe('markRegularTransactionAsFailed', () => {
+  describe('markRegularTransactionsAsFailed', () => {
     const createSmartTransaction = (status: SmartTransactionStatuses) => ({
       uuid: 'test-uuid',
       status,
@@ -561,7 +561,7 @@ describe('src/utils.js', () => {
     it('updates transaction with failed status and error message', () => {
       const updateTransactionMock = jest.fn();
 
-      utils.markRegularTransactionAsFailed({
+      utils.markRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED,
         ),
@@ -587,7 +587,7 @@ describe('src/utils.js', () => {
       const getRegularTransactionsMock = jest.fn(() => []);
 
       expect(() =>
-        utils.markRegularTransactionAsFailed({
+        utils.markRegularTransactionsAsFailed({
           smartTransaction: createSmartTransaction(
             SmartTransactionStatuses.CANCELLED,
           ),
@@ -610,7 +610,7 @@ describe('src/utils.js', () => {
         },
       };
 
-      utils.markRegularTransactionAsFailed({
+      utils.markRegularTransactionsAsFailed({
         smartTransaction: createSmartTransaction(
           SmartTransactionStatuses.CANCELLED,
         ),
@@ -638,7 +638,7 @@ describe('src/utils.js', () => {
         txHashes: ['0xhash1', '0xhash2'],
       };
 
-      utils.markRegularTransactionAsFailed({
+      utils.markRegularTransactionsAsFailed({
         smartTransaction,
         getRegularTransactions: () => [transaction1, transaction2],
         updateTransaction: updateTransactionMock,

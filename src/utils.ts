@@ -240,7 +240,7 @@ export const getReturnTxHashAsap = (
     : smartTransactionsFeatureFlags?.mobileReturnTxHashAsap;
 };
 
-export const shouldMarkRegularTransactionAsFailed = ({
+export const shouldMarkRegularTransactionsAsFailed = ({
   smartTransaction,
   clientId,
   getFeatureFlags,
@@ -271,7 +271,7 @@ export const shouldMarkRegularTransactionAsFailed = ({
   return Boolean(returnTxHashAsapEnabled && transactionId);
 };
 
-export const markRegularTransactionAsFailed = ({
+export const markRegularTransactionsAsFailed = ({
   smartTransaction,
   getRegularTransactions,
   updateTransaction,
