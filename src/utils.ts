@@ -291,6 +291,9 @@ export const markRegularTransactionAsFailed = ({
   }
 
   for (const tx of transactionsToFail) {
+    if (tx.status === TransactionStatus.failed) {
+      continue; // Already marked as failed.
+    }
     const updatedTransaction: TransactionMeta = {
       ...tx,
       status: TransactionStatus.failed,

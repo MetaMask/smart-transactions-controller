@@ -620,5 +620,53 @@ describe('src/utils.js', () => {
 
       expect(updateTransactionMock).not.toHaveBeenCalled();
     });
+
+    it('marks multiple transactions as failed when txHashes match', () => {
+      const updateTransactionMock = jest.fn();
+      const transaction1: TransactionMeta = {
+        ...mockTransaction,
+        id: '456',
+        hash: '0xhash1',
+      };
+      const transaction2: TransactionMeta = {
+        ...mockTransaction,
+        id: '789',
+        hash: '0xhash2',
+      };
+      const smartTransaction = {
+        ...createSmartTransaction(SmartTransactionStatuses.CANCELLED),
+        txHashes: ['0xhash1', '0xhash2'],
+      };
+
+      utils.markRegularTransactionAsFailed({
+        smartTransaction,
+        getRegularTransactions: () => [transaction1, transaction2],
+        updateTransaction: updateTransactionMock,
+      });
+
+      expect(updateTransactionMock).toHaveBeenCalledTimes(2);
+      expect(updateTransactionMock).toHaveBeenCalledWith(
+        {
+          ...transaction1,
+          status: TransactionStatus.failed,
+          error: {
+            name: 'SmartTransactionFailed',
+            message: 'Smart transaction failed with status: cancelled',
+          },
+        },
+        'Smart transaction status: cancelled',
+      );
+      expect(updateTransactionMock).toHaveBeenCalledWith(
+        {
+          ...transaction2,
+          status: TransactionStatus.failed,
+          error: {
+            name: 'SmartTransactionFailed',
+            message: 'Smart transaction failed with status: cancelled',
+          },
+        },
+        'Smart transaction status: cancelled',
+      );
+    });
   });
 });
