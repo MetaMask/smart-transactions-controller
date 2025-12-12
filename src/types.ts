@@ -140,3 +140,38 @@ export type FeatureFlags = {
     extensionReturnTxHashAsap?: boolean;
   };
 };
+
+/**
+ * Transaction feature - identifies which MetaMask feature initiated the transaction
+ */
+export enum TransactionFeature {
+  Swap = 'Swap',
+  Bridge = 'Bridge',
+  Send = 'Send',
+  Sell = 'Sell',
+  Perps = 'Perps',
+  Predictions = 'Predictions',
+  Card = 'Card',
+  Pay = 'Pay',
+  DAppTransaction = 'dAppTransaction',
+  Earn = 'Earn',
+  AccountUpgrade = 'AccountUpgrade',
+}
+
+/**
+ * Transaction kind - identifies the type of transaction mechanism used
+ */
+export enum TransactionKind {
+  Regular = 'Regular',
+  STX = 'STX',
+  GaslessSendBundle = 'GaslessSendBundle',
+  GaslessEIP7702 = 'GaslessEIP7702',
+}
+
+/**
+ * Optional headers for tracking transaction feature and kind
+ */
+export type TransactionTrackingHeaders = {
+  feature?: TransactionFeature;
+  kind?: TransactionKind;
+};

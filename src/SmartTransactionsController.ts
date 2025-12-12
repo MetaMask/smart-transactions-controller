@@ -47,6 +47,7 @@ import type {
   MetaMetricsProps,
   FeatureFlags,
   ClientId,
+  TransactionTrackingHeaders,
 } from './types';
 import { APIType, SmartTransactionStatuses } from './types';
 import {
@@ -240,12 +241,22 @@ export class SmartTransactionsController extends StaticIntervalPollingController
   #trace: TraceCallback;
 
   /* istanbul ignore next */
-  async #fetch(request: string, options?: RequestInit) {
+  async #fetch(
+    request: string,
+    options?: RequestInit,
+    trackingHeaders?: TransactionTrackingHeaders,
+  ) {
     const fetchOptions = {
       ...options,
       headers: {
         'Content-Type': 'application/json',
         ...(this.#clientId && { 'X-Client-Id': this.#clientId }),
+        ...(trackingHeaders?.feature && {
+          'X-Transaction-Feature': trackingHeaders.feature,
+        }),
+        ...(trackingHeaders?.kind && {
+          'X-Transaction-Kind': trackingHeaders.kind,
+        }),
       },
     };
 
@@ -846,12 +857,14 @@ export class SmartTransactionsController extends StaticIntervalPollingController
     signedTransactions,
     signedCanceledTransactions = [],
     networkClientId,
+    trackingHeaders,
   }: {
     signedTransactions: SignedTransaction[];
     signedCanceledTransactions?: SignedCanceledTransaction[];
     transactionMeta?: TransactionMeta;
     txParams?: TransactionParams;
     networkClientId?: NetworkClientId;
+    trackingHeaders?: TransactionTrackingHeaders;
   }) {
     const selectedNetworkClientId =
       networkClientId ??
@@ -874,6 +887,7 @@ export class SmartTransactionsController extends StaticIntervalPollingController
               rawCancelTxs: signedCanceledTransactions,
             }),
           },
+          trackingHeaders,
         ),
     );
     const time = Date.now();

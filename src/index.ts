@@ -15,10 +15,13 @@ export {
   type IndividualTxFees,
   type FeatureFlags,
   type SmartTransaction,
+  type TransactionTrackingHeaders,
   SmartTransactionMinedTx,
   SmartTransactionCancellationReason,
   SmartTransactionStatuses,
   ClientId,
+  TransactionFeature,
+  TransactionKind,
 } from './types';
 export { MetaMetricsEventName, MetaMetricsEventCategory } from './constants';
 export {
