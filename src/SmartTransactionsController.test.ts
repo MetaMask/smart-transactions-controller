@@ -42,7 +42,12 @@ import {
   type SmartTransactionsControllerMessenger,
 } from './SmartTransactionsController';
 import type { SmartTransaction, UnsignedTransaction, Hex } from './types';
-import { SmartTransactionStatuses, ClientId } from './types';
+import {
+  SmartTransactionStatuses,
+  ClientId,
+  TransactionFeature,
+  TransactionKind,
+} from './types';
 import * as utils from './utils';
 
 type AllActions = MessengerActions<SmartTransactionsControllerMessenger>;
@@ -977,6 +982,211 @@ describe('SmartTransactionsController', () => {
         expect(submittedSmartTransaction.uuid).toBe(
           'dP23W7c2kt4FK9TmXOkz1UM2F20',
         );
+      });
+    });
+
+    describe('trackingHeaders', () => {
+      it('sends X-Transaction-Feature and X-Transaction-Kind headers when trackingHeaders is provided', async () => {
+        await withController(async ({ controller }) => {
+          const signedTransaction = createSignedTransaction();
+          const submitTransactionsApiResponse =
+            createSubmitTransactionsApiResponse();
+
+          const handleFetchSpy = jest
+            .spyOn(utils, 'handleFetch')
+            .mockResolvedValue(submitTransactionsApiResponse);
+
+          await controller.submitSignedTransactions({
+            signedTransactions: [signedTransaction],
+            txParams: createTxParams(),
+            trackingHeaders: {
+              feature: TransactionFeature.Send,
+              kind: TransactionKind.STX,
+            },
+          });
+
+          expect(handleFetchSpy).toHaveBeenCalledWith(
+            expect.stringContaining('/submitTransactions'),
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'Content-Type': 'application/json',
+                'X-Client-Id': ClientId.Mobile,
+                'X-Transaction-Feature': 'Send',
+                'X-Transaction-Kind': 'STX',
+              }),
+            }),
+          );
+
+          handleFetchSpy.mockRestore();
+        });
+      });
+
+      it('sends only X-Transaction-Feature header when only feature is provided', async () => {
+        await withController(async ({ controller }) => {
+          const signedTransaction = createSignedTransaction();
+          const submitTransactionsApiResponse =
+            createSubmitTransactionsApiResponse();
+
+          const handleFetchSpy = jest
+            .spyOn(utils, 'handleFetch')
+            .mockResolvedValue(submitTransactionsApiResponse);
+
+          await controller.submitSignedTransactions({
+            signedTransactions: [signedTransaction],
+            txParams: createTxParams(),
+            trackingHeaders: {
+              feature: TransactionFeature.Swap,
+            },
+          });
+
+          expect(handleFetchSpy).toHaveBeenCalledWith(
+            expect.stringContaining('/submitTransactions'),
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'Content-Type': 'application/json',
+                'X-Client-Id': ClientId.Mobile,
+                'X-Transaction-Feature': 'Swap',
+              }),
+            }),
+          );
+
+          // Ensure X-Transaction-Kind is NOT in the headers
+          const [, options] = handleFetchSpy.mock.calls[0];
+          expect(options?.headers).not.toHaveProperty('X-Transaction-Kind');
+
+          handleFetchSpy.mockRestore();
+        });
+      });
+
+      it('sends only X-Transaction-Kind header when only kind is provided', async () => {
+        await withController(async ({ controller }) => {
+          const signedTransaction = createSignedTransaction();
+          const submitTransactionsApiResponse =
+            createSubmitTransactionsApiResponse();
+
+          const handleFetchSpy = jest
+            .spyOn(utils, 'handleFetch')
+            .mockResolvedValue(submitTransactionsApiResponse);
+
+          await controller.submitSignedTransactions({
+            signedTransactions: [signedTransaction],
+            txParams: createTxParams(),
+            trackingHeaders: {
+              kind: TransactionKind.GaslessSendBundle,
+            },
+          });
+
+          expect(handleFetchSpy).toHaveBeenCalledWith(
+            expect.stringContaining('/submitTransactions'),
+            expect.objectContaining({
+              headers: expect.objectContaining({
+                'Content-Type': 'application/json',
+                'X-Client-Id': ClientId.Mobile,
+                'X-Transaction-Kind': 'GaslessSendBundle',
+              }),
+            }),
+          );
+
+          // Ensure X-Transaction-Feature is NOT in the headers
+          const [, options] = handleFetchSpy.mock.calls[0];
+          expect(options?.headers).not.toHaveProperty('X-Transaction-Feature');
+
+          handleFetchSpy.mockRestore();
+        });
+      });
+
+      it('does not include tracking headers when trackingHeaders is not provided', async () => {
+        await withController(async ({ controller }) => {
+          const signedTransaction = createSignedTransaction();
+          const submitTransactionsApiResponse =
+            createSubmitTransactionsApiResponse();
+
+          const handleFetchSpy = jest
+            .spyOn(utils, 'handleFetch')
+            .mockResolvedValue(submitTransactionsApiResponse);
+
+          await controller.submitSignedTransactions({
+            signedTransactions: [signedTransaction],
+            txParams: createTxParams(),
+            // No trackingHeaders provided
+          });
+
+          const [, options] = handleFetchSpy.mock.calls[0];
+          expect(options?.headers).not.toHaveProperty('X-Transaction-Feature');
+          expect(options?.headers).not.toHaveProperty('X-Transaction-Kind');
+
+          handleFetchSpy.mockRestore();
+        });
+      });
+
+      it('supports all TransactionFeature values', async () => {
+        await withController(async ({ controller }) => {
+          const signedTransaction = createSignedTransaction();
+          const submitTransactionsApiResponse =
+            createSubmitTransactionsApiResponse();
+
+          const handleFetchSpy = jest
+            .spyOn(utils, 'handleFetch')
+            .mockResolvedValue(submitTransactionsApiResponse);
+
+          // Test each feature value
+          const features = Object.values(TransactionFeature);
+          for (const feature of features) {
+            handleFetchSpy.mockClear();
+
+            await controller.submitSignedTransactions({
+              signedTransactions: [signedTransaction],
+              txParams: createTxParams(),
+              trackingHeaders: { feature },
+            });
+
+            expect(handleFetchSpy).toHaveBeenCalledWith(
+              expect.stringContaining('/submitTransactions'),
+              expect.objectContaining({
+                headers: expect.objectContaining({
+                  'X-Transaction-Feature': feature,
+                }),
+              }),
+            );
+          }
+
+          handleFetchSpy.mockRestore();
+        });
+      });
+
+      it('supports all TransactionKind values', async () => {
+        await withController(async ({ controller }) => {
+          const signedTransaction = createSignedTransaction();
+          const submitTransactionsApiResponse =
+            createSubmitTransactionsApiResponse();
+
+          const handleFetchSpy = jest
+            .spyOn(utils, 'handleFetch')
+            .mockResolvedValue(submitTransactionsApiResponse);
+
+          // Test each kind value
+          const kinds = Object.values(TransactionKind);
+          for (const kind of kinds) {
+            handleFetchSpy.mockClear();
+
+            await controller.submitSignedTransactions({
+              signedTransactions: [signedTransaction],
+              txParams: createTxParams(),
+              trackingHeaders: { kind },
+            });
+
+            expect(handleFetchSpy).toHaveBeenCalledWith(
+              expect.stringContaining('/submitTransactions'),
+              expect.objectContaining({
+                headers: expect.objectContaining({
+                  'X-Transaction-Kind': kind,
+                }),
+              }),
+            );
+          }
+
+          handleFetchSpy.mockRestore();
+        });
       });
     });
   });
