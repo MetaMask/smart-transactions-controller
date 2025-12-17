@@ -9,17 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [21.1.0]
 
-### Uncategorized
-
-- feat(liveness): Add chainId parameter to fetchLiveness ([#554](https://github.com/MetaMask/smart-transactions-controller/pull/554))
-
 ### Added
 
-- Add `chainId` parameter to `fetchLiveness` method, allowing direct chain ID specification without requiring a network client ID
+- Add `chainId` parameter to `fetchLiveness` method, allowing direct chain ID specification without requiring a network client ID ([#554](https://github.com/MetaMask/smart-transactions-controller/pull/554))
 
 ### Deprecated
 
-- Deprecate `networkClientId` parameter in `fetchLiveness` in favor of `chainId`
+- Deprecate `networkClientId` parameter in `fetchLiveness` in favor of `chainId` ([#554](https://github.com/MetaMask/smart-transactions-controller/pull/554))
 
 ## [21.0.0]
 
