@@ -9,13 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.0.0]
 
-### Uncategorized
-
-- feat(STX-331): migrate STX flags to smart-transactions-controller ([#550](https://github.com/MetaMask/smart-transactions-controller/pull/550))
-
 ### Changed
 
-- **BREAKING**: The controller now reads feature flags directly from `RemoteFeatureFlagController` via the messenger instead of using the `getFeatureFlags` callback
+- **BREAKING**: The controller now reads feature flags directly from `RemoteFeatureFlagController` via the messenger instead of using the `getFeatureFlags` callback ([#550](https://github.com/MetaMask/smart-transactions-controller/pull/550))
   - Clients must configure the following as allowed actions in the controller messenger:
     - `RemoteFeatureFlagController:getState`
     - `ErrorReportingService:captureException` (for reporting validation errors to Sentry)
