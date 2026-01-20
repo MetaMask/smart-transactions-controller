@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.1.0]
 
-### Uncategorized
+### Added
 
 - feat: add support for signed transactions with metadata in SmartTransactionsController ([#557](https://github.com/MetaMask/smart-transactions-controller/pull/557))
 
