@@ -9,15 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.2.0]
 
-### Uncategorized
+### Added
 
-- feat(analytics): add fields to SentinelMeta ([#560](https://github.com/MetaMask/smart-transactions-controller/pull/560))
+- Add `Feature`, `Kind`, `Client` and `Wallet` fields to `SentinelMeta` ([#560](https://github.com/MetaMask/smart-transactions-controller/pull/560))
 
 ## [22.1.0]
 
 ### Added
 
-- feat: add support for signed transactions with metadata in SmartTransactionsController ([#557](https://github.com/MetaMask/smart-transactions-controller/pull/557))
+- Add support for signed transactions with metadata in SmartTransactionsController ([#557](https://github.com/MetaMask/smart-transactions-controller/pull/557))
 
 ## [22.0.0]
 
