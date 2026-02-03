@@ -9,13 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.4.0]
 
-### Uncategorized
-
-- feat(stx-metadata): add origin ([#564](https://github.com/MetaMask/smart-transactions-controller/pull/564))
-
 ### Added
 
-- Add optional `origin` field to `SentinelMeta` type for transaction origin tracking
+- Add `origin` to sentinel metadata ([#564](https://github.com/MetaMask/smart-transactions-controller/pull/564))
 
 ## [22.3.0]
 
