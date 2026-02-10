@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.5.0]
 
-### Uncategorized
+### Changed
 
-- feat: Log the original transaction status ([#566](https://github.com/MetaMask/smart-transactions-controller/pull/566))
+- Log the original transaction status ([#566](https://github.com/MetaMask/smart-transactions-controller/pull/566))
 
 ## [22.4.0]
 
