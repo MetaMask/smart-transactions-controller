@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.6.0]
 
-### Uncategorized
+### Added
 
 - chore(gasless-bridge): add gaslessBridgeWith7702Enabled feature flag ([#568](https://github.com/MetaMask/smart-transactions-controller/pull/568))
 
