@@ -267,7 +267,10 @@ export class SmartTransactionsController extends StaticIntervalPollingController
 
   readonly #getMetaMetricsProps: () => Promise<MetaMetricsProps>;
 
-  readonly #getBearerToken?: () => Promise<string | undefined> | string | undefined;
+  readonly #getBearerToken?: () =>
+    | Promise<string | undefined>
+    | string
+    | undefined;
 
   #trace: TraceCallback;
 
@@ -307,12 +310,12 @@ export class SmartTransactionsController extends StaticIntervalPollingController
       'Content-Type': 'application/json',
       ...(this.#clientId && { 'X-Client-Id': this.#clientId }),
     };
-    
+
     const urlMatches = request.startsWith(API_BASE_URL);
     if (this.#getBearerToken && urlMatches) {
       const token = await Promise.resolve(this.#getBearerToken());
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers.Authorization = `Bearer ${token}`;
       }
     }
 

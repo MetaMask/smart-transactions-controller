@@ -2200,7 +2200,7 @@ describe('SmartTransactionsController', () => {
       await withController(
         {
           options: {
-            getBearerToken: () => Promise.resolve(bearerToken),
+            getBearerToken: async () => Promise.resolve(bearerToken),
           },
         },
         async ({ controller }) => {
