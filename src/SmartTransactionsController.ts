@@ -37,6 +37,7 @@ import { BigNumber } from 'bignumber.js';
 import cloneDeep from 'lodash/cloneDeep';
 
 import {
+  API_BASE_URL,
   DEFAULT_DISABLED_SMART_TRANSACTIONS_FEATURE_FLAGS,
   MetaMetricsEventCategory,
   MetaMetricsEventName,
@@ -230,6 +231,14 @@ type SmartTransactionsControllerOptions = {
    * removed in a future version.
    */
   getFeatureFlags?: () => FeatureFlags;
+  /**
+   * Optional callback to obtain a bearer token for authenticating requests to
+   * the Transaction API. When provided, the token is sent in the
+   * Authorization header for all Transaction API calls. Can be used with
+   * the authentication flow from @metamask/core-backend (e.g. from
+   * AuthenticationController.getBearerToken).
+   */
+  getBearerToken?: () => Promise<string | undefined> | string | undefined;
   trace?: TraceCallback;
 };
 
@@ -257,6 +266,8 @@ export class SmartTransactionsController extends StaticIntervalPollingController
   readonly #trackMetaMetricsEvent: SmartTransactionsControllerOptions['trackMetaMetricsEvent'];
 
   readonly #getMetaMetricsProps: () => Promise<MetaMetricsProps>;
+
+  readonly #getBearerToken?: () => Promise<string | undefined> | string | undefined;
 
   #trace: TraceCallback;
 
@@ -292,11 +303,24 @@ export class SmartTransactionsController extends StaticIntervalPollingController
 
   /* istanbul ignore next */
   async #fetch(request: string, options?: RequestInit) {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(this.#clientId && { 'X-Client-Id': this.#clientId }),
+    };
+    
+    const urlMatches = request.startsWith(API_BASE_URL);
+    if (this.#getBearerToken && urlMatches) {
+      const token = await Promise.resolve(this.#getBearerToken());
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+
     const fetchOptions = {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
-        ...(this.#clientId && { 'X-Client-Id': this.#clientId }),
+        ...headers,
+        ...options?.headers,
       },
     };
 
@@ -312,6 +336,7 @@ export class SmartTransactionsController extends StaticIntervalPollingController
     state = {},
     messenger,
     getMetaMetricsProps,
+    getBearerToken,
     trace,
   }: SmartTransactionsControllerOptions) {
     super({
@@ -323,6 +348,7 @@ export class SmartTransactionsController extends StaticIntervalPollingController
         ...state,
       },
     });
+
     this.#interval = interval;
     this.#clientId = clientId;
     this.#chainId = InitialChainId;
@@ -331,6 +357,7 @@ export class SmartTransactionsController extends StaticIntervalPollingController
     this.#ethQuery = undefined;
     this.#trackMetaMetricsEvent = trackMetaMetricsEvent;
     this.#getMetaMetricsProps = getMetaMetricsProps;
+    this.#getBearerToken = getBearerToken;
     this.#trace = trace ?? (((_request, fn) => fn?.()) as TraceCallback);
 
     this.initializeSmartTransactionsForChainId();
