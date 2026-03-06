@@ -41,6 +41,7 @@ import {
   DEFAULT_DISABLED_SMART_TRANSACTIONS_FEATURE_FLAGS,
   MetaMetricsEventCategory,
   MetaMetricsEventName,
+  SENTINEL_API_BASE_URL_MAP,
   SmartTransactionsTraceName,
 } from './constants';
 import {
@@ -311,7 +312,11 @@ export class SmartTransactionsController extends StaticIntervalPollingController
       ...(this.#clientId && { 'X-Client-Id': this.#clientId }),
     };
 
-    const urlMatches = request.startsWith(API_BASE_URL);
+    const urlMatches =
+      request.startsWith(API_BASE_URL) ||
+      Object.values(SENTINEL_API_BASE_URL_MAP).some((baseUrl) =>
+        request.startsWith(baseUrl),
+      );
     if (this.#getBearerToken && urlMatches) {
       const token = await Promise.resolve(this.#getBearerToken());
       if (token) {
