@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [22.7.0]
 
-### Uncategorized
+### Added
 
-- feat: authenticate calls to transaction api ([#570](https://github.com/MetaMask/smart-transactions-controller/pull/570))
+- Authenticate calls to transaction api ([#570](https://github.com/MetaMask/smart-transactions-controller/pull/570))
 
 ## [22.6.0]
 
