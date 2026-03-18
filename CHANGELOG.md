@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING:** `ErrorReportingService:captureException` is no longer an allowed action on the messenger; consumers must stop allowlisting it ([#572](https://github.com/MetaMask/smart-transactions-controller/pull/572))
+- Move controller packages from peer to direct dependencies and bump to latest majors ([#572](https://github.com/MetaMask/smart-transactions-controller/pull/572))
+  - `@metamask/network-controller` ^25.0.0 → ^30.0.0
+  - `@metamask/transaction-controller` ^61.0.0 → ^63.0.0
+  - `@metamask/remote-feature-flag-controller` ^2.0.0 → ^4.1.0
+
+### Removed
+
+- **BREAKING:** Remove `@metamask/error-reporting-service` dependency, replaced by `messenger.captureException` ([#572](https://github.com/MetaMask/smart-transactions-controller/pull/572))
+
 ## [22.7.0]
 
 ### Added
