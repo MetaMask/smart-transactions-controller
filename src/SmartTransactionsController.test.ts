@@ -342,9 +342,10 @@ describe('SmartTransactionsController', () => {
 
   describe('feature flag validation error reporting', () => {
     it('reports error to ErrorReportingService when feature flags are invalid after state change', async () => {
+      const captureExceptionSpy = jest.fn();
       const rootMessenger: RootMessenger = new Messenger({
         namespace: MOCK_ANY_NAMESPACE,
-        captureException: jest.fn(),
+        captureException: captureExceptionSpy,
       });
 
       rootMessenger.registerActionHandler(
@@ -381,7 +382,6 @@ describe('SmartTransactionsController', () => {
           },
         }),
       );
-      const captureExceptionSpy = jest.spyOn(rootMessenger, 'captureException');
 
       const messenger = new Messenger<
         'SmartTransactionsController',
@@ -444,9 +444,10 @@ describe('SmartTransactionsController', () => {
     });
 
     it('does not report error when feature flags are valid after state change', async () => {
+      const captureExceptionSpy = jest.fn();
       const rootMessenger: RootMessenger = new Messenger({
         namespace: MOCK_ANY_NAMESPACE,
-        captureException: jest.fn(),
+        captureException: captureExceptionSpy,
       });
 
       rootMessenger.registerActionHandler(
@@ -485,7 +486,6 @@ describe('SmartTransactionsController', () => {
           },
         }),
       );
-      const captureExceptionSpy = jest.spyOn(rootMessenger, 'captureException');
 
       const messenger = new Messenger<
         'SmartTransactionsController',
@@ -544,9 +544,10 @@ describe('SmartTransactionsController', () => {
     });
 
     it('reports error when smartTransactionsNetworks flag is missing after state change', async () => {
+      const captureExceptionSpy = jest.fn();
       const rootMessenger: RootMessenger = new Messenger({
         namespace: MOCK_ANY_NAMESPACE,
-        captureException: jest.fn(),
+        captureException: captureExceptionSpy,
       });
 
       rootMessenger.registerActionHandler(
@@ -583,7 +584,6 @@ describe('SmartTransactionsController', () => {
           },
         }),
       );
-      const captureExceptionSpy = jest.spyOn(rootMessenger, 'captureException');
 
       const messenger = new Messenger<
         'SmartTransactionsController',
@@ -653,9 +653,10 @@ describe('SmartTransactionsController', () => {
           },
         },
       });
+      const captureExceptionSpy = jest.fn();
       const rootMessenger: RootMessenger = new Messenger({
         namespace: MOCK_ANY_NAMESPACE,
-        captureException: jest.fn(),
+        captureException: captureExceptionSpy,
       });
 
       rootMessenger.registerActionHandler(
@@ -688,7 +689,6 @@ describe('SmartTransactionsController', () => {
         'RemoteFeatureFlagController:getState',
         getStateMock,
       );
-      const captureExceptionSpy = jest.spyOn(rootMessenger, 'captureException');
 
       const messenger = new Messenger<
         'SmartTransactionsController',
@@ -757,9 +757,10 @@ describe('SmartTransactionsController', () => {
     });
 
     it('reports multiple errors to ErrorReportingService when multiple chains are invalid after state change', async () => {
+      const captureExceptionSpy = jest.fn();
       const rootMessenger: RootMessenger = new Messenger({
         namespace: MOCK_ANY_NAMESPACE,
-        captureException: jest.fn(),
+        captureException: captureExceptionSpy,
       });
 
       rootMessenger.registerActionHandler(
@@ -801,7 +802,6 @@ describe('SmartTransactionsController', () => {
           },
         }),
       );
-      const captureExceptionSpy = jest.spyOn(rootMessenger, 'captureException');
 
       const messenger = new Messenger<
         'SmartTransactionsController',
