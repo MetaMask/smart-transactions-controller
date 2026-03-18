@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `@metamask/network-controller` ^25.0.0 → ^30.0.0
   - `@metamask/transaction-controller` ^61.0.0 → ^63.0.0
   - `@metamask/remote-feature-flag-controller` ^2.0.0 → ^4.1.0
+  - `@metamask/polling-controller` ^15.0.0 → ^16.0.0
 
 ### Removed
 
