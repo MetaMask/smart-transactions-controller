@@ -16,10 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `@metamask/remote-feature-flag-controller` ^2.0.0 → ^4.1.0
   - `@metamask/polling-controller` ^15.0.0 → ^16.0.0
 
-### Removed
-
-- **BREAKING:** Remove `@metamask/error-reporting-service` dependency, replaced by `messenger.captureException` ([#572](https://github.com/MetaMask/smart-transactions-controller/pull/572))
-
 ## [22.7.0]
 
 ### Added
