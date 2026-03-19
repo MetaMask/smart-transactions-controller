@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Expose `SmartTransactionsController` methods through its messenger ([#574](https://github.com/MetaMask/smart-transactions-controller/pull/574))
+  - The following actions are now available:
+    - `SmartTransactionsController:checkPoll`
+    - `SmartTransactionsController:initializeSmartTransactionsForChainId`
+    - `SmartTransactionsController:poll`
+    - `SmartTransactionsController:stop`
+    - `SmartTransactionsController:setOptInState`
+    - `SmartTransactionsController:trackStxStatusChange`
+    - `SmartTransactionsController:isNewSmartTransaction`
+    - `SmartTransactionsController:updateSmartTransaction`
+    - `SmartTransactionsController:updateSmartTransactions`
+    - `SmartTransactionsController:fetchSmartTransactionsStatus`
+    - `SmartTransactionsController:clearFees`
+    - `SmartTransactionsController:getFees`
+    - `SmartTransactionsController:submitSignedTransactions`
+    - `SmartTransactionsController:cancelSmartTransaction`
+    - `SmartTransactionsController:fetchLiveness`
+    - `SmartTransactionsController:setStatusRefreshInterval`
+    - `SmartTransactionsController:getTransactions`
+    - `SmartTransactionsController:getSmartTransactionByMinedTxHash`
+    - `SmartTransactionsController:wipeSmartTransactions`
+  - Corresponding action types (e.g. `SmartTransactionsControllerCheckPollAction`) are available as well.
+
+### Changed
+
+- Upgrade TypeScript from `~4.8.4` to `~5.3.3` ([#574](https://github.com/MetaMask/smart-transactions-controller/pull/574))
+
 ## [23.0.0]
 
 ### Changed
