@@ -39,6 +39,10 @@
     "test": "jest && attw --pack",
     "test:watch": "jest --watchAll"
   },
+  "resolutions": {
+    "@metamask/base-controller": "npm:@metamask-previews/base-controller@9.0.0-preview-74da211",
+    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-74da211"
+  },
   "dependencies": {
     "@babel/runtime": "^7.24.1",
     "@ethereumjs/tx": "^5.2.1",
@@ -113,10 +117,6 @@
     "@metamask/gas-fee-controller": {
       "optional": true
     }
-  },
-  "resolutions": {
-    "@metamask/base-controller": "npm:@metamask-previews/base-controller@9.0.0-preview-74da211",
-    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-74da211"
   },
   "packageManager": "yarn@3.2.1",
   "engines": {
