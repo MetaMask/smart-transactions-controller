@@ -1623,14 +1623,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/base-controller@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "@metamask/base-controller@npm:9.0.0"
+"@metamask/base-controller@npm:@metamask-previews/base-controller@9.0.0-preview-74da211":
+  version: 9.0.0-preview-74da211
+  resolution: "@metamask-previews/base-controller@npm:9.0.0-preview-74da211"
   dependencies:
     "@metamask/messenger": ^0.3.0
-    "@metamask/utils": ^11.8.1
+    "@metamask/utils": ^11.9.0
     immer: ^9.0.6
-  checksum: 02da25ce528ccd18c253127972b39830b59d9c56a703cf9cc34505185191742ab2e28aca4d6f42f7ee5769ff3a989a9d536911f83baee9b44ce44bf91f08d7d7
+  checksum: 6f41787887c0eeeda78f04683bbd0a0b93b353d27062e5075dc1b84567662844063d7a0ed53b4f0735d2005f69e10435557eb3f1efaeedac3607b9598a9fdf76
   languageName: node
   linkType: hard
 
@@ -2206,13 +2206,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/messenger@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@metamask/messenger@npm:0.3.0"
-  checksum: 72050d7ba672bc82319a6b6ff126c52d372418a9049555a1b94f520e664b6e8037e44203f2ecffb33f8de8e3b874174ad40da306fb8cb17decccaeb50f36f180
-  languageName: node
-  linkType: hard
-
 "@metamask/metamask-eth-abis@npm:^3.1.1":
   version: 3.1.1
   resolution: "@metamask/metamask-eth-abis@npm:3.1.1"
@@ -2457,7 +2450,7 @@ __metadata:
     "@metamask/eth-query": ^4.0.0
     "@metamask/gas-fee-controller": ^26.0.0
     "@metamask/json-rpc-engine": ^10.0.1
-    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-74da211"
+    "@metamask/messenger": ^0.3.0
     "@metamask/network-controller": ^30.0.0
     "@metamask/polling-controller": ^16.0.0
     "@metamask/remote-feature-flag-controller": ^4.1.0
