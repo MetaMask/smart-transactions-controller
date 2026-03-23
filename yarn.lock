@@ -2183,16 +2183,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/messenger@npm:@metamask-previews/messenger@0.3.0-preview-f11c28cc2":
-  version: 0.3.0-preview-f11c28cc2
-  resolution: "@metamask-previews/messenger@npm:0.3.0-preview-f11c28cc2"
-  dependencies:
-    "@metamask/utils": ^11.9.0
+"@metamask/messenger@npm:@metamask-previews/messenger@0.3.0-preview-74da211":
+  version: 0.3.0-preview-74da211
+  resolution: "@metamask-previews/messenger@npm:0.3.0-preview-74da211"
   peerDependencies:
+    "@metamask/utils": ^11.9.0
     eslint: ">=8"
     typescript: ~5.3.3
     yargs: ^17.7.2
   peerDependenciesMeta:
+    "@metamask/utils":
+      optional: true
     eslint:
       optional: true
     typescript:
@@ -2201,7 +2202,7 @@ __metadata:
       optional: true
   bin:
     messenger-generate-action-types: ./dist/generate-action-types/cli.mjs
-  checksum: 6b89b47201cdf4e20c79f991460109a3df9fe98e6ef56f50c347454eb05bc66ceae1d53ac8cb34f0a80b47d49daa41f373c50e210bbaa61d87c1ba5f36e029a3
+  checksum: 8093b7a0f572c0a63804ee23ddccd7d363fd8a10d3b0cd0f44299738a02f612953d7f8c493db0a55bf2177a975cab3d5635368a07612814aa675a83f117733d3
   languageName: node
   linkType: hard
 
@@ -2456,7 +2457,7 @@ __metadata:
     "@metamask/eth-query": ^4.0.0
     "@metamask/gas-fee-controller": ^26.0.0
     "@metamask/json-rpc-engine": ^10.0.1
-    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-f11c28cc2"
+    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-74da211"
     "@metamask/network-controller": ^30.0.0
     "@metamask/polling-controller": ^16.0.0
     "@metamask/remote-feature-flag-controller": ^4.1.0
@@ -3308,17 +3309,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-schema@npm:*":
+"@types/json-schema@npm:*, @types/json-schema@npm:^7.0.9":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 97ed0cb44d4070aecea772b7b2e2ed971e10c81ec87dd4ecc160322ffa55ff330dace1793489540e3e318d90942064bb697cc0f8989391797792d919737b3b98
-  languageName: node
-  linkType: hard
-
-"@types/json-schema@npm:^7.0.9":
-  version: 7.0.11
-  resolution: "@types/json-schema@npm:7.0.11"
-  checksum: 527bddfe62db9012fccd7627794bd4c71beb77601861055d87e3ee464f2217c85fca7a4b56ae677478367bbd248dbde13553312b7d4dbc702a2f2bbf60c4018d
   languageName: node
   linkType: hard
 
