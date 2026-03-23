@@ -1623,14 +1623,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/base-controller@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "@metamask/base-controller@npm:9.0.0"
+"@metamask/base-controller@npm:@metamask-previews/base-controller@9.0.0-preview-a462582":
+  version: 9.0.0-preview-a462582
+  resolution: "@metamask-previews/base-controller@npm:9.0.0-preview-a462582"
   dependencies:
     "@metamask/messenger": ^0.3.0
-    "@metamask/utils": ^11.8.1
+    "@metamask/utils": ^11.9.0
     immer: ^9.0.6
-  checksum: 02da25ce528ccd18c253127972b39830b59d9c56a703cf9cc34505185191742ab2e28aca4d6f42f7ee5769ff3a989a9d536911f83baee9b44ce44bf91f08d7d7
+  checksum: 081fdb919d3d26a0ab662dccafecbd28a721101d362836319493aed27dc5410842e8ee157004ad3a2d47b9992d8e8636d3f1cfe96006c3a74eebef48061f29d7
   languageName: node
   linkType: hard
 
@@ -2183,10 +2183,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/messenger@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@metamask/messenger@npm:0.3.0"
-  checksum: 72050d7ba672bc82319a6b6ff126c52d372418a9049555a1b94f520e664b6e8037e44203f2ecffb33f8de8e3b874174ad40da306fb8cb17decccaeb50f36f180
+"@metamask/messenger@npm:@metamask-previews/messenger@0.3.0-preview-a462582":
+  version: 0.3.0-preview-a462582
+  resolution: "@metamask-previews/messenger@npm:0.3.0-preview-a462582"
+  peerDependencies:
+    "@metamask/utils": ^11.9.0
+    eslint: ">=8"
+    typescript: ~5.3.3
+    yargs: ^17.7.2
+  peerDependenciesMeta:
+    "@metamask/utils":
+      optional: true
+    eslint:
+      optional: true
+    typescript:
+      optional: true
+    yargs:
+      optional: true
+  bin:
+    messenger-generate-action-types: ./dist/generate-action-types/cli.mjs
+  checksum: 0e3863d062674b8a1e5bd14359af23fc7bdb354f06ce9149e6ca0f72d98fd3f0e59877fce83c2a4f84990ea89fa904a66930356787d795b1d901f6df223d37f3
   languageName: node
   linkType: hard
 
@@ -3286,17 +3302,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-schema@npm:*":
+"@types/json-schema@npm:*, @types/json-schema@npm:^7.0.9":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 97ed0cb44d4070aecea772b7b2e2ed971e10c81ec87dd4ecc160322ffa55ff330dace1793489540e3e318d90942064bb697cc0f8989391797792d919737b3b98
-  languageName: node
-  linkType: hard
-
-"@types/json-schema@npm:^7.0.9":
-  version: 7.0.11
-  resolution: "@types/json-schema@npm:7.0.11"
-  checksum: 527bddfe62db9012fccd7627794bd4c71beb77601861055d87e3ee464f2217c85fca7a4b56ae677478367bbd248dbde13553312b7d4dbc702a2f2bbf60c4018d
   languageName: node
   linkType: hard
 

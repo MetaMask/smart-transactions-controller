@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "build": "ts-bridge --project tsconfig.build.json --clean",
-    "generate-method-action-types": "tsx ./scripts/generate-method-action-types.ts ./src",
+    "generate-method-action-types": "messenger-generate-action-types ./src",
     "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:changelog && yarn generate-method-action-types --check",
     "lint:changelog": "auto-changelog validate --prettier",
     "lint:eslint": "eslint . --cache --ext js,ts",
@@ -38,6 +38,10 @@
     "prepack": "./scripts/prepack.sh",
     "test": "jest && attw --pack",
     "test:watch": "jest --watchAll"
+  },
+  "resolutions": {
+    "@metamask/base-controller": "npm:@metamask-previews/base-controller@9.0.0-preview-a462582",
+    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-a462582"
   },
   "dependencies": {
     "@babel/runtime": "^7.24.1",
