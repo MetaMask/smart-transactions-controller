@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "build": "ts-bridge --project tsconfig.build.json --clean",
-    "generate-method-action-types": "tsx ./scripts/generate-method-action-types.ts ./src",
+    "generate-method-action-types": "messenger-generate-action-types ./src",
     "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:changelog && yarn generate-method-action-types --check",
     "lint:changelog": "auto-changelog validate --prettier",
     "lint:eslint": "eslint . --cache --ext js,ts",
@@ -50,7 +50,7 @@
     "@metamask/controller-utils": "^11.0.0",
     "@metamask/eth-json-rpc-provider": "^4.1.6",
     "@metamask/eth-query": "^4.0.0",
-    "@metamask/messenger": "^0.3.0",
+    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-f11c28cc2",
     "@metamask/network-controller": "^30.0.0",
     "@metamask/polling-controller": "^16.0.0",
     "@metamask/remote-feature-flag-controller": "^4.1.0",

@@ -2183,6 +2183,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/messenger@npm:@metamask-previews/messenger@0.3.0-preview-f11c28cc2":
+  version: 0.3.0-preview-f11c28cc2
+  resolution: "@metamask-previews/messenger@npm:0.3.0-preview-f11c28cc2"
+  dependencies:
+    "@metamask/utils": ^11.9.0
+  peerDependencies:
+    eslint: ">=8"
+    typescript: ~5.3.3
+    yargs: ^17.7.2
+  peerDependenciesMeta:
+    eslint:
+      optional: true
+    typescript:
+      optional: true
+    yargs:
+      optional: true
+  bin:
+    messenger-generate-action-types: ./dist/generate-action-types/cli.mjs
+  checksum: 6b89b47201cdf4e20c79f991460109a3df9fe98e6ef56f50c347454eb05bc66ceae1d53ac8cb34f0a80b47d49daa41f373c50e210bbaa61d87c1ba5f36e029a3
+  languageName: node
+  linkType: hard
+
 "@metamask/messenger@npm:^0.3.0":
   version: 0.3.0
   resolution: "@metamask/messenger@npm:0.3.0"
@@ -2434,7 +2456,7 @@ __metadata:
     "@metamask/eth-query": ^4.0.0
     "@metamask/gas-fee-controller": ^26.0.0
     "@metamask/json-rpc-engine": ^10.0.1
-    "@metamask/messenger": ^0.3.0
+    "@metamask/messenger": "npm:@metamask-previews/messenger@0.3.0-preview-f11c28cc2"
     "@metamask/network-controller": ^30.0.0
     "@metamask/polling-controller": ^16.0.0
     "@metamask/remote-feature-flag-controller": ^4.1.0
