@@ -36,6 +36,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING:** Upgrade TypeScript from `~4.8.4` to `~5.3.3` ([#574](https://github.com/MetaMask/smart-transactions-controller/pull/574))
   - Consumers on TypeScript 4.x may experience type errors and should upgrade to TypeScript 5.x.
+- Bump `@metamask/base-controller` from `^9.0.0` to `^9.0.1` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/controller-utils` from `^11.0.0` to `^11.19.0` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/eth-json-rpc-provider` from `^4.1.6` to `^6.0.1` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/messenger` from `^0.3.0` to `^1.0.0` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/network-controller` from `^30.0.0` to `^30.0.1` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/polling-controller` from `^16.0.0` to `^16.0.4` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/remote-feature-flag-controller` from `^4.1.0` to `^4.2.0` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/transaction-controller` from `^63.0.0` to `^63.3.1` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
+- Bump `@metamask/utils` from `^11.0.0` to `^11.9.0` ([#576](https://github.com/MetaMask/smart-transactions-controller/pull/576))
 
 ## [23.0.0]
 
