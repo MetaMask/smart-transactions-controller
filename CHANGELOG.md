@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING:** Upgrade TypeScript from `~4.8.4` to `~5.3.3` ([#574](https://github.com/MetaMask/smart-transactions-controller/pull/574))
   - Consumers on TypeScript 4.x may experience type errors and should upgrade to TypeScript 5.x.
+- Bump `@metamask/messenger` from `^0.3.0` to `^1.1.0`
 
 ## [23.0.0]
 

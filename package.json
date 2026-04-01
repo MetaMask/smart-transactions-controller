@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "build": "ts-bridge --project tsconfig.build.json --clean",
-    "generate-method-action-types": "tsx ./scripts/generate-method-action-types.ts ./src",
+    "generate-method-action-types": "messenger-generate-action-types",
     "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:changelog && yarn generate-method-action-types --check",
     "lint:changelog": "auto-changelog validate --prettier",
     "lint:eslint": "eslint . --cache --ext js,ts",
@@ -50,7 +50,7 @@
     "@metamask/controller-utils": "^11.0.0",
     "@metamask/eth-json-rpc-provider": "^4.1.6",
     "@metamask/eth-query": "^4.0.0",
-    "@metamask/messenger": "^0.3.0",
+    "@metamask/messenger": "^1.1.0",
     "@metamask/network-controller": "^30.0.0",
     "@metamask/polling-controller": "^16.0.0",
     "@metamask/remote-feature-flag-controller": "^4.1.0",
@@ -96,7 +96,6 @@
     "prettier-plugin-packagejson": "^2.4.3",
     "sinon": "^9.2.4",
     "ts-jest": "^29.1.4",
-    "tsx": "^4.20.5",
     "typescript": "~5.3.3",
     "yargs": "^17.7.2"
   },
@@ -129,8 +128,7 @@
       "@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>secp256k1": false,
       "@metamask/controller-utils>babel-runtime>core-js": false,
       "@metamask/transaction-controller>@metamask/core-backend>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>keccak": false,
-      "@metamask/transaction-controller>@metamask/core-backend>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>secp256k1": false,
-      "tsx>esbuild": false
+      "@metamask/transaction-controller>@metamask/core-backend>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>secp256k1": false
     }
   }
 }
