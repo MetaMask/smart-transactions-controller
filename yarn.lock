@@ -2001,13 +2001,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/messenger@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@metamask/messenger@npm:0.3.0"
-  checksum: 72050d7ba672bc82319a6b6ff126c52d372418a9049555a1b94f520e664b6e8037e44203f2ecffb33f8de8e3b874174ad40da306fb8cb17decccaeb50f36f180
-  languageName: node
-  linkType: hard
-
 "@metamask/messenger@npm:^1.1.0":
   version: 1.1.0
   resolution: "@metamask/messenger@npm:1.1.0"

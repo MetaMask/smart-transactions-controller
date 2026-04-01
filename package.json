@@ -114,6 +114,9 @@
     }
   },
   "packageManager": "yarn@3.2.1",
+  "resolutions": {
+    "@metamask/messenger": "^1.1.0"
+  },
   "engines": {
     "node": "^18.18 || >=20"
   },
