@@ -39,9 +39,6 @@
     "test": "jest && attw --pack",
     "test:watch": "jest --watchAll"
   },
-  "resolutions": {
-    "@metamask/messenger": "^1.1.0"
-  },
   "dependencies": {
     "@babel/runtime": "^7.24.1",
     "@ethereumjs/tx": "^5.2.1",
@@ -117,6 +114,9 @@
     }
   },
   "packageManager": "yarn@3.2.1",
+  "resolutions": {
+    "@metamask/messenger": "^1.1.0"
+  },
   "engines": {
     "node": "^18.18 || >=20"
   },
