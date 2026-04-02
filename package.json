@@ -130,7 +130,6 @@
       "@metamask/controller-utils>babel-runtime>core-js": false,
       "@metamask/transaction-controller>@metamask/core-backend>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>keccak": false,
       "@metamask/transaction-controller>@metamask/core-backend>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>secp256k1": false,
-      "tsx>esbuild": false,
       "@metamask/profile-sync-controller>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>keccak": false,
       "@metamask/profile-sync-controller>@metamask/keyring-controller>ethereumjs-wallet>ethereum-cryptography>secp256k1": false
     }
