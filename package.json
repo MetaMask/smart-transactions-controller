@@ -29,15 +29,16 @@
   ],
   "scripts": {
     "build": "ts-bridge --project tsconfig.build.json --clean",
-    "generate-method-action-types": "messenger-generate-action-types",
-    "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:changelog && yarn generate-method-action-types --check",
+    "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:changelog && yarn messenger-action-types:check",
     "lint:changelog": "auto-changelog validate --prettier",
     "lint:eslint": "eslint . --cache --ext js,ts",
-    "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write && yarn lint:changelog && yarn generate-method-action-types --fix",
+    "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write && yarn lint:changelog && yarn messenger-action-types:generate",
     "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' '!.yarnrc.yml' --ignore-path .gitignore --no-error-on-unmatched-pattern",
     "prepack": "./scripts/prepack.sh",
     "test": "jest && attw --pack",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "messenger-action-types:check": "messenger-action-types --check",
+    "messenger-action-types:generate": "messenger-action-types --generate"
   },
   "dependencies": {
     "@babel/runtime": "^7.24.1",
@@ -74,6 +75,7 @@
     "@metamask/eslint-config-typescript": "^12.1.0",
     "@metamask/gas-fee-controller": "^26.0.0",
     "@metamask/json-rpc-engine": "^10.0.1",
+    "@metamask/messenger-cli": "^0.1.0",
     "@ts-bridge/cli": "^0.6.3",
     "@types/eslint": "^9.6.1",
     "@types/jest": "^26.0.24",

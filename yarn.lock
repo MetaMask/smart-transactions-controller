@@ -1990,6 +1990,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/messenger-cli@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@metamask/messenger-cli@npm:0.1.0"
+  dependencies:
+    "@metamask/utils": ^11.9.0
+    yargs: ^17.7.2
+  peerDependencies:
+    eslint: ">=8"
+    typescript: ">=5.0.0"
+  peerDependenciesMeta:
+    eslint:
+      optional: true
+  bin:
+    messenger-action-types: ./dist/cli.mjs
+  checksum: 2724d143cd6ab1af8d546d981ba04326014ee504f54e77aa1037391d814158ad13ce90c0a8a4dfbfce662619c580cc86847e87a1eeb969a27d8a8bfcae2df63b
+  languageName: node
+  linkType: hard
+
 "@metamask/messenger@npm:^0.3.0":
   version: 0.3.0
   resolution: "@metamask/messenger@npm:0.3.0"
@@ -2257,6 +2275,7 @@ __metadata:
     "@metamask/gas-fee-controller": ^26.0.0
     "@metamask/json-rpc-engine": ^10.0.1
     "@metamask/messenger": ^1.1.0
+    "@metamask/messenger-cli": ^0.1.0
     "@metamask/network-controller": ^30.0.0
     "@metamask/polling-controller": ^16.0.0
     "@metamask/profile-sync-controller": ^28.0.2
