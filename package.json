@@ -34,11 +34,11 @@
     "lint:eslint": "eslint . --cache --ext js,ts",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write && yarn lint:changelog && yarn messenger-action-types:generate",
     "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' '!.yarnrc.yml' --ignore-path .gitignore --no-error-on-unmatched-pattern",
+    "messenger-action-types:check": "messenger-action-types --check",
+    "messenger-action-types:generate": "messenger-action-types --generate",
     "prepack": "./scripts/prepack.sh",
     "test": "jest && attw --pack",
-    "test:watch": "jest --watchAll",
-    "messenger-action-types:check": "messenger-action-types --check",
-    "messenger-action-types:generate": "messenger-action-types --generate"
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
     "@babel/runtime": "^7.24.1",
