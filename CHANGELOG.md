@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [24.1.0]
 
-### Uncategorized
+### Changed
 
-- chore: bump `@metamask/transaction-controller` to `^64.3.0` ([#583](https://github.com/MetaMask/smart-transactions-controller/pull/583))
+- Bump `@metamask/transaction-controller` from `^63.0.0` to `^64.3.0` ([#583](https://github.com/MetaMask/smart-transactions-controller/pull/583))
 
 ## [24.0.0]
 
