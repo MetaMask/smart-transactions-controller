@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Bump `prettier` from `^2.8.8` to `^3.3.3`, `eslint-plugin-prettier` from `^4.2.1` to `^5.2.1`, and `eslint-config-prettier` from `^8.8.0` to `^9.1.0` ([#TBD](https://github.com/MetaMask/smart-transactions-controller/pull/TBD))
+- Bump `prettier` from `^2.8.8` to `^3.3.3`, `eslint-plugin-prettier` from `^4.2.1` to `^5.2.1`, and `eslint-config-prettier` from `^8.8.0` to `^9.1.0` ([#594](https://github.com/MetaMask/smart-transactions-controller/pull/594))
 - Bump `@metamask/controller-utils` from `^12.1.0` to `^12.2.0` ([#590](https://github.com/MetaMask/smart-transactions-controller/pull/590))
 - Bump `@metamask/profile-sync-controller` from `^28.1.0` to `^28.1.1` ([#590](https://github.com/MetaMask/smart-transactions-controller/pull/590))
 - Bump `@metamask/remote-feature-flag-controller` from `^4.2.1` to `^4.2.2` ([#590](https://github.com/MetaMask/smart-transactions-controller/pull/590))
