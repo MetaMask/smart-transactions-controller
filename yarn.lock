@@ -2437,7 +2437,6 @@ __metadata:
     "@types/eslint": ^8.44.7
     "@types/jest": ^29.5.14
     "@types/lodash": ^4.14.191
-    "@types/node": ^16.18.54
     bignumber.js: ^9.1.2
     eslint: ^9.39.1
     eslint-config-prettier: ^9.1.0
@@ -3377,13 +3376,6 @@ __metadata:
   version: 20.1.7
   resolution: "@types/node@npm:20.1.7"
   checksum: b722794290d22db1741e739c256876ca774b76ea2d647d9ec9d52c49b1b01049cc6f6332499a01ac81d641e8d078b33e4c5c59e409db80390ac6b8d7ef0c08a7
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^16.18.54":
-  version: 16.18.126
-  resolution: "@types/node@npm:16.18.126"
-  checksum: 86112e7499f8a4d1bb60696cab0bf464adf3c141fca4bc5451e8f3aba5736529b76d4b4396edb21e5d7c19592852f7d6cb81ee70074fd13bde2db2d0db720467
   languageName: node
   linkType: hard
 
