@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING:** Relicense the package under the MIT License, replacing the previous ConsenSys non-commercial license ([#TBD](https://github.com/MetaMask/smart-transactions-controller/pull/TBD))
+- **BREAKING:** Relicense the package under the MIT License, replacing the previous ConsenSys non-commercial license ([#593](https://github.com/MetaMask/smart-transactions-controller/pull/593))
 - Bump `@metamask/controller-utils` from `^12.1.0` to `^12.2.0` ([#590](https://github.com/MetaMask/smart-transactions-controller/pull/590))
 - Bump `@metamask/profile-sync-controller` from `^28.1.0` to `^28.1.1` ([#590](https://github.com/MetaMask/smart-transactions-controller/pull/590))
 - Bump `@metamask/remote-feature-flag-controller` from `^4.2.1` to `^4.2.2` ([#590](https://github.com/MetaMask/smart-transactions-controller/pull/590))
