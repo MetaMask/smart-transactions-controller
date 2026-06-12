@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `typedoc.json` configuration for API doc generation ([#TBD](https://github.com/MetaMask/smart-transactions-controller/pull/TBD))
+- Add `typedoc.json` configuration for API doc generation ([#592](https://github.com/MetaMask/smart-transactions-controller/pull/592))
 
 ### Changed
 
