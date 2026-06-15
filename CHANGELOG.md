@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [24.2.1]
 
-### Added
-
-- Add `typedoc.json` configuration for API doc generation ([#592](https://github.com/MetaMask/smart-transactions-controller/pull/592))
-
 ### Changed
 
 - Bump `@ethereumjs/tx` from `^5.2.1` to `^5.4.0` ([#597](https://github.com/MetaMask/smart-transactions-controller/pull/597))
