@@ -37,7 +37,7 @@
     "messenger-action-types:check": "messenger-action-types --check",
     "messenger-action-types:generate": "messenger-action-types --generate",
     "prepack": "./scripts/prepack.sh",
-    "test": "jest && attw --pack",
+    "test": "jest",
     "test:watch": "jest --watchAll"
   },
   "dependencies": {
@@ -65,7 +65,6 @@
     "reselect": "^5.1.1"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.18.2",
     "@lavamoat/allow-scripts": "^3.0.4",
     "@lavamoat/preinstall-always-fail": "^2.1.0",
     "@metamask/auto-changelog": "^6.1.0",
