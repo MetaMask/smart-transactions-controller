@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [24.2.1]
+
+### Uncategorized
+
+- chore: remove sinon, use jest fake timers ([#596](https://github.com/MetaMask/smart-transactions-controller/pull/596))
+- chore: bump ESLint stack + auto-changelog + messenger-cli ([#595](https://github.com/MetaMask/smart-transactions-controller/pull/595))
+- chore: bump Prettier to `^3.3.3` + interop deps ([#594](https://github.com/MetaMask/smart-transactions-controller/pull/594))
+- chore: add migration notice to README ([#589](https://github.com/MetaMask/smart-transactions-controller/pull/589))
+
 ### Added
 
 - Add `typedoc.json` configuration for API doc generation ([#592](https://github.com/MetaMask/smart-transactions-controller/pull/592))
@@ -824,7 +833,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add initial SmartTransactionsController ([#1](https://github.com/MetaMask/smart-transactions-controller/pull/1))
 - Initial commit
 
-[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v24.2.0...HEAD
+[Unreleased]: https://github.com/MetaMask/smart-transactions-controller/compare/v24.2.1...HEAD
+[24.2.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v24.2.0...v24.2.1
 [24.2.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v24.1.1...v24.2.0
 [24.1.1]: https://github.com/MetaMask/smart-transactions-controller/compare/v24.1.0...v24.1.1
 [24.1.0]: https://github.com/MetaMask/smart-transactions-controller/compare/v24.0.0...v24.1.0
